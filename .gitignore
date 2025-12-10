@@ -1,0 +1,41 @@
+# my
+--x/
+FileContentIndex/
+ipch/
+v17/
+!VS-2022/.vs/ModelM-25/v17/.suo
+*.db
+Debug/
+Release/
+!VS-2022/x64/Release/
+*.pdb
+*.metagen
+assimp-vc143-mt.lib
+
+
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+
+# Executables
+*.out
+*.app
