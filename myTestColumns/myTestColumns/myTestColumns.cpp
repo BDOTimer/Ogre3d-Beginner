@@ -24,17 +24,25 @@ public:
 
     void setup();
     bool keyPressed(const KeyboardEvent& evt);
+
+    void locateResources() override {
+        // Не создавать директорию в Documents
+        //ApplicationContext::locateResources();
+    }
 };
 
 
 BasicTutorial1::BasicTutorial1()
     : ApplicationContext("OgreTutorialApp")
-{
+{   
 }
 
 
 void BasicTutorial1::setup()
 {
+
+
+
     ApplicationContext::setup();
     addInputListener(this);
 
