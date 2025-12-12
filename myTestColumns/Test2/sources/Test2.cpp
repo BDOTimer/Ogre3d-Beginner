@@ -11,6 +11,12 @@
 #include "OgreInput.h"
 #include "OgreRTShaderSystem.h"
 #include "OgreCameraMan.h"
+
+///-------------------------------------------|
+/// Свой путь к "ogre.h"                      |
+///-------------------------------------------:
+#include "OgreConfigPaths.h"
+#include "OgreOverlaySystem.h"
 #pragma warning(pop)
 
 
@@ -227,7 +233,46 @@ namespace mdl
         
         Ogre::RTShader::ShaderGenerator* shadergen;
 
-        void setup()
+    protected:
+
+        ///-------------------------------------------|
+        /// Свой путь к "ogre.h"                      |
+        ///-------------------------------------------:
+        void createRoot() override
+        {
+            std::cout << "RUN: createRoot() override\n\n";
+
+#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
+            mRoot = OGRE_NEW Ogre::Root("");
+#else
+            Ogre::String pluginsPath;
+#   ifndef OGRE_BITES_STATIC_PLUGINS
+            pluginsPath = mFSLayer->getConfigFilePath("plugins.cfg");
+
+        if (!Ogre::FileSystemLayer::fileExists(pluginsPath))
+        {
+            pluginsPath = Ogre::FileSystemLayer::resolveBundlePath(
+                OGRE_CONFIG_DIR "/plugins.cfg"
+            );
+        }
+#   endif
+            Ogre::String ogreCfgPath{"ogre.cfg"};
+            mRoot = OGRE_NEW Ogre::Root(
+                pluginsPath,
+            /// mFSLayer->getWritablePath("ogre.cfg"),
+                ogreCfgPath,
+                mFSLayer->getWritablePath("ogre.log")
+            );
+#endif
+
+#ifdef OGRE_BITES_STATIC_PLUGINS
+            mStaticPluginLoader.load();
+#endif
+            mOverlaySystem = OGRE_NEW Ogre::OverlaySystem();
+        }
+
+
+        void setup() override
         {   
             OgreBites::ApplicationContext::setup();
             addInputListener(this);

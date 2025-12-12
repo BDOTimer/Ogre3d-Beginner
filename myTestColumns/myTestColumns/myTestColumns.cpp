@@ -10,7 +10,7 @@
 #include <iostream>
 #pragma warning(pop)
 
-
+/*
 #include <cstdlib>
 struct  _1start
 {       _1start()
@@ -23,7 +23,7 @@ struct  _1start
         #endif
         }
 }_1start$;
-
+*/
 
 
 using namespace Ogre;
