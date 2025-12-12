@@ -256,10 +256,13 @@ namespace mdl
             );
         }
 #   endif
+            ///---------------------------------------|
+            /// Наш првильный путь: "ogre.h"          |
+            ///---------------------------------------:
             Ogre::String ogreCfgPath{"ogre.cfg"};
             mRoot = OGRE_NEW Ogre::Root(
                 pluginsPath,
-            /// mFSLayer->getWritablePath("ogre.cfg"),
+            /// mFSLayer->getWritablePath("ogre.cfg"), /// Было.
                 ogreCfgPath,
                 mFSLayer->getWritablePath("ogre.log")
             );
