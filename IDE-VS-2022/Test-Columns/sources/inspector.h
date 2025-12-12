@@ -29,6 +29,7 @@ namespace mdl
         Sphere sphere;
         Lights lights;
         UI         ui;
+        Tree     tree;
         
         Ogre::RTShader::ShaderGenerator* shadergen;
 
@@ -38,7 +39,6 @@ namespace mdl
         /// Свой путь к "ogre.h"                      |
         ///-------------------------------------------:
         void createRoot() override;
-
 
         void setup() override
         {   
@@ -54,6 +54,8 @@ namespace mdl
             scnMgr->setShadowTechnique(
                 ShadowTechnique::SHADOWTYPE_STENCIL_ADDITIVE);
 
+        /// root->loadPlugin("OgreAssimp");
+
             shadergen
           = RTShader::ShaderGenerator::getSingletonPtr();
             shadergen->addSceneManager(scnMgr);
@@ -62,6 +64,7 @@ namespace mdl
             ninja .setup(scnMgr);
             sphere.setup(scnMgr);
             lights.setup(scnMgr);
+            tree  .setup(scnMgr);
 
             Plane plane(Vector3::UNIT_Y, 0);
 

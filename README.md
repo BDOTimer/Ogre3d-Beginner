@@ -2,7 +2,7 @@
 # Columns-2025
 ---
 
-<img src="doc/1.jpg"/>
+<img src="doc/2.jpg"/>
  
 ### :snowflake: Что тут:
 - Солушен VS-2022 с проектами Ogre3d ---> ВСЁ ВКЛЮЧЕНО!

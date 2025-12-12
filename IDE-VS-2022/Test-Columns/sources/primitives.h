@@ -71,8 +71,8 @@ namespace mdl
 
         void setup(Ogre::SceneManager* scnMgr)
         {   
-            entity  = scnMgr->createEntity("ninja.mesh");
-            entity  ->setCastShadows  (true);
+            entity = scnMgr->createEntity("ninja.mesh");
+            entity ->setCastShadows(true);
 
             node = scnMgr->getRootSceneNode()->createChildSceneNode();
             node->attachObject   (entity);
@@ -197,6 +197,55 @@ namespace mdl
             spotLight->setSpotlightRange(Degree(100), Degree(100));
 
             spotLight->setVisible(false);
+        }
+    };
+
+    ///------------------------------------------------------------------------|
+    /// Нидзя.
+    ///------------------------------------------------------------------ Ninja:
+    struct  Obj5File : Base
+    {       
+        Ogre::Entity*  entity;
+        SceneNode*     node  ;
+        Ogre::MeshPtr  mesh  ;
+
+        const char* name1{"myModel"};
+
+        void setup(Ogre::SceneManager* scnMgr, Ogre::String filename)
+        {   
+            mesh = Ogre::MeshManager::getSingleton().load(
+                "model.obj",            // имя файла
+                Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+                Ogre::HardwareBuffer::HBU_STATIC,
+                Ogre::HardwareBuffer::HBU_STATIC
+            );
+
+            entity = scnMgr->createEntity("myModel", "model.obj");
+            node   = scnMgr->getRootSceneNode()->createChildSceneNode();
+            node->attachObject(entity);
+            node->setPosition (0, 0, 0);
+            node->setScale    (0.1f, 0.1f, 0.1f);
+        }
+    };
+
+    ///------------------------------------------------------------------------|
+    /// Ёлка.
+    ///------------------------------------------------------------------ Ninja:
+    struct  Tree : Base
+    {       
+        Ogre::Entity*  entity;
+        SceneNode*     node  ;
+
+        void setup(Ogre::SceneManager* scnMgr)
+        {   
+            entity = scnMgr->createEntity("12150_Christmas_Tree_V2_L2.mesh");
+            entity ->setCastShadows(true);
+
+            node = scnMgr->getRootSceneNode()->createChildSceneNode();
+            node->attachObject       (entity);
+            node->pitch(Ogre::Degree   (-90));
+            node->setPosition    (-200, 0, 0);
+            node->setScale    (2.5, 2.5, 2.5);
         }
     };
 }

@@ -4,10 +4,11 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <OutDir>..\..\bin\</OutDir>
+    <LibraryPath>..\..\engine;..\..\engine\ext;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <Link>
-      <AdditionalDependencies>..\..\engine\OgreBites.lib;..\..\engine\OgreOverlay.lib;..\..\engine\OgreRTShaderSystem.lib;..\..\engine\OgreMain.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalDependencies>assimp-vc143-mt.lib;OgreBites.lib;OgreOverlay.lib;OgreRTShaderSystem.lib;OgreMain.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <ClCompile>

@@ -1,0 +1,123 @@
+
+material 12150_Christmas_Tree_V2_L2.objChristmas_Tree
+{
+	technique
+	{
+		pass 
+		{
+			specular 0.09 0.09 0.09 1 10
+
+			texture_unit
+			{
+				texture tree.jpg
+			}
+		}
+
+	}
+
+}
+
+material 12150_Christmas_Tree_V2_L2.objball_metall
+{
+	technique
+	{
+		pass 
+		{
+			ambient 0.6588 0.6196 0.4824 1
+			diffuse 0.6588 0.6196 0.4824 1
+			specular 0.6839 0.662 0.5741 1 80
+		}
+
+	}
+
+}
+
+material 12150_Christmas_Tree_V2_L2.objblue
+{
+	technique
+	{
+		pass 
+		{
+			ambient 0.0706 0 1 1
+			diffuse 0.0706 0 1 1
+			specular 0.6863 0.349 1 1 50
+		}
+
+	}
+
+}
+
+material 12150_Christmas_Tree_V2_L2.objcloth
+{
+	technique
+	{
+		pass 
+		{
+			ambient 0.2706 0.0706 0.0706 1
+			diffuse 0.2706 0.0706 0.0706 1
+			specular 0.0078 0.0078 0.0078 1 10
+		}
+
+	}
+
+}
+
+material 12150_Christmas_Tree_V2_L2.objloop
+{
+	technique
+	{
+		pass 
+		{
+			ambient 0.3412 0.298 0.2157 1
+			diffuse 0.3412 0.298 0.2157 1
+			specular 0.63 0.63 0.63 1 20
+		}
+
+	}
+
+}
+
+material 12150_Christmas_Tree_V2_L2.objpink
+{
+	technique
+	{
+		pass 
+		{
+			ambient 1 0.502 0.8 1
+			diffuse 1 0.502 0.8 1
+			specular 0.0784 0.8549 0.949 1 50
+		}
+
+	}
+
+}
+
+material 12150_Christmas_Tree_V2_L2.objred
+{
+	technique
+	{
+		pass 
+		{
+			ambient 0.749 0 0 1
+			diffuse 0.749 0 0 1
+			specular 1 1 0.349 1 50
+		}
+
+	}
+
+}
+
+material 12150_Christmas_Tree_V2_L2.objyellow
+{
+	technique
+	{
+		pass 
+		{
+			ambient 1 0.7176 0 1
+			diffuse 1 0.7176 0 1
+			specular 1 0.5059 0.5765 1 50
+		}
+
+	}
+
+}
