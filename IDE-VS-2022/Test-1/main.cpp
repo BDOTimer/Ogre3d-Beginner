@@ -1,5 +1,5 @@
 ///----------------------------------------------------------------------------|
-/// 
+/// Royal_X, внимание! ogre.cfg тут по старинке!
 ///----------------------------------------------------------------------------:
 #pragma warning(push, 0)
 #pragma warning(disable: 4275 4251 4305)
@@ -9,21 +9,6 @@
 #include "OgreRTShaderSystem.h"
 #include <iostream>
 #pragma warning(pop)
-
-/*
-#include <cstdlib>
-struct  _1start
-{       _1start()
-        {
-        #ifdef _WIN32
-            _putenv_s("OGRE_CONFIG_DIR",
-                       "D:\\!!!pro-cyberX\\myTests\\Ogre3d-Beginner\\bin");
-        #else
-            setenv("OGRE_CONFIG_DIR", "/myapp/config", 1);
-        #endif
-        }
-}_1start$;
-*/
 
 
 using namespace Ogre;

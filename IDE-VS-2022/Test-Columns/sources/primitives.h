@@ -1,25 +1,13 @@
 ﻿///----------------------------------------------------------------------------|
-/// Test2
+/// "primitives.h"
 ///----------------------------------------------------------------------------:
-#pragma warning(push, 0)
-#pragma warning(disable: 4275 4251 4305)
-#include <exception>
-#include <iostream>
+#ifndef PRIMITIVES_H
+#define PRIMITIVES_H
+#include "config-game.h"
 
-#include "Ogre.h"
-#include "OgreApplicationContext.h"
-#include "OgreInput.h"
-#include "OgreRTShaderSystem.h"
-#include "OgreCameraMan.h"
-
-///-------------------------------------------|
-/// Свой путь к "ogre.h"                      |
-///-------------------------------------------:
-#include "OgreConfigPaths.h"
-#include "OgreOverlaySystem.h"
-#pragma warning(pop)
-
-
+///---------|
+/// Models. |
+///---------:
 namespace mdl
 {   
     using namespace Ogre;
@@ -211,164 +199,6 @@ namespace mdl
             spotLight->setVisible(false);
         }
     };
-
-
-    ///------------------------------------------------------------------------|
-    /// InspectorRoot.
-    ///---------------------------------------------------------- InspectorRoot:
-    struct  InspectorRoot
-            :   Base
-            ,   OgreBites::ApplicationContext
-            ,   OgreBites::InputListener
-    {       InspectorRoot( ): OgreBites::ApplicationContext("OgreTutorialApp")
-            {}
-        
-        Ogre::Root*           root;
-        Ogre::SceneManager* scnMgr;
-
-        Camera              camera;
-        Ninja                ninja;
-        Sphere              sphere;
-        Lights              lights;
-        
-        Ogre::RTShader::ShaderGenerator* shadergen;
-
-    protected:
-
-        ///-------------------------------------------|
-        /// Свой путь к "ogre.h"                      |
-        ///-------------------------------------------:
-        void createRoot() override
-        {
-            std::cout << "RUN: createRoot() override\n\n";
-
-#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
-            mRoot = OGRE_NEW Ogre::Root("");
-#else
-            Ogre::String pluginsPath;
-#   ifndef OGRE_BITES_STATIC_PLUGINS
-            pluginsPath = mFSLayer->getConfigFilePath("plugins.cfg");
-
-        if (!Ogre::FileSystemLayer::fileExists(pluginsPath))
-        {
-            pluginsPath = Ogre::FileSystemLayer::resolveBundlePath(
-                OGRE_CONFIG_DIR "/plugins.cfg"
-            );
-        }
-#   endif
-            ///---------------------------------------|
-            /// Наш првильный путь: "ogre.h"          |
-            ///---------------------------------------:
-            Ogre::String ogreCfgPath{"ogre.cfg"};
-            mRoot = OGRE_NEW Ogre::Root(
-                pluginsPath,
-            /// mFSLayer->getWritablePath("ogre.cfg"), /// Было.
-                ogreCfgPath,
-                mFSLayer->getWritablePath("ogre.log")
-            );
-#endif
-
-#ifdef OGRE_BITES_STATIC_PLUGINS
-            mStaticPluginLoader.load();
-#endif
-            mOverlaySystem = OGRE_NEW Ogre::OverlaySystem();
-        }
-
-
-        void setup() override
-        {   
-            OgreBites::ApplicationContext::setup();
-            addInputListener(this);
-
-            Base::pInspectorRoot = this;
-            Base::ctx             = this;
-
-            root   = getRoot();
-            scnMgr = root->createSceneManager();
-            scnMgr->setAmbientLight(ColourValue(0, 0, 0));
-            scnMgr->setShadowTechnique(
-                ShadowTechnique::SHADOWTYPE_STENCIL_ADDITIVE);
-
-            shadergen
-          = RTShader::ShaderGenerator::getSingletonPtr();
-            shadergen->addSceneManager(scnMgr);
-
-            camera.setup(scnMgr);
-            ninja .setup(scnMgr);
-            sphere.setup(scnMgr);
-            lights.setup(scnMgr);
-
-            Plane plane(Vector3::UNIT_Y, 0);
-
-            MeshManager::getSingleton().createPlane(
-                "ground", RGN_DEFAULT,
-                plane,
-                1500, 1500, 20, 20,
-                true,
-                1, 5, 5,
-                Vector3::UNIT_Z
-            );
-
-            Entity* groundEntity = scnMgr->createEntity("ground");
-            scnMgr  ->getRootSceneNode    ()
-                    ->createChildSceneNode()
-                    ->attachObject(groundEntity);
-
-            groundEntity->setCastShadows(false);
-            groundEntity->setMaterialName("Examples/Rockwall");
-        }
-
-        bool keyPressed(const KeyboardEvent& evt)
-        {   if (evt.keysym.sym == SDLK_ESCAPE)
-            {   getRoot()->queueEndRendering();
-            }
-            return true;
-        }
-    };
 }
 
-
-///----------------------------------------------------------------------------|
-/// TutorialApplication.
-///-------------------------------------------------------- TutorialApplication:
-struct  TutorialApplication
-{        TutorialApplication()
-        {   setup();
-        }
-
-    virtual ~TutorialApplication() {}
-
-    mdl::InspectorRoot inspectorRoot;
-
-    void setup()
-    {   inspectorRoot.initApp();
-        inspectorRoot.getRoot()->startRendering();
-        inspectorRoot.closeApp();
-    }
-};
-
-///----------------------------------------------------------------------------|
-/// Старт.
-///----------------------------------------------------------------------------:
-int main(int argc, char **argv)
-{
-    std::cout << "Hi, I'm Test2!\n\n";
-
-    try
-    {
-        ///------------------------------------------------|
-        /// Отключаем логи в MeshManager.                  |
-        ///------------------------------------------------:
-        Ogre::LogManager logMgr;
-        logMgr.createLog("", false, false, false);  // Пустой лог
-
-        TutorialApplication app;
-    }
-    catch (const std::exception& e)
-    {
-        std::cerr << "ERRORFATAL: " << e.what() << '\n';
-        return 1;
-    }
-
-    std::cout << "\nTest2 FINISHED!\n\n"; return 0;
-}
+#endif // PRIMITIVES_H
