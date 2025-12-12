@@ -11,6 +11,21 @@
 #pragma warning(pop)
 
 
+#include <cstdlib>
+struct  _1start
+{       _1start()
+        {
+        #ifdef _WIN32
+            _putenv_s("OGRE_CONFIG_DIR",
+                       "D:\\!!!pro-cyberX\\myTests\\Ogre3d-Beginner\\bin");
+        #else
+            setenv("OGRE_CONFIG_DIR", "/myapp/config", 1);
+        #endif
+        }
+}_1start$;
+
+
+
 using namespace Ogre;
 using namespace OgreBites;
 
@@ -25,9 +40,10 @@ public:
     void setup();
     bool keyPressed(const KeyboardEvent& evt);
 
-    void locateResources() override {
+    void locateResourcesX() ///override
+    {
         // Не создавать директорию в Documents
-        //ApplicationContext::locateResources();
+        // ApplicationContext::locateResources();
     }
 };
 
@@ -40,9 +56,6 @@ BasicTutorial1::BasicTutorial1()
 
 void BasicTutorial1::setup()
 {
-
-
-
     ApplicationContext::setup();
     addInputListener(this);
 
@@ -111,6 +124,8 @@ bool BasicTutorial1::keyPressed(const KeyboardEvent& evt)
 
 int main(int argc, char **argv)
 {
+
+
     std::cout << "Hi, I'm Columns!\n\n";
     
     ///------------------------------------------------|
