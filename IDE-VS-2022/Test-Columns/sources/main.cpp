@@ -30,7 +30,8 @@ int main(int argc, char **argv)
 {
     std::system("chcp 65001>nul");
 
-    std::cout << "Привет, Я Test-Columns!\n\n";
+    std::cout << "Привет, Я Test-Columns!\n\n"
+              << ConfigGame::get()  << "\n\n";
 
     try
     {
