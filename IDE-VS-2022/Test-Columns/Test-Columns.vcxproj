@@ -29,6 +29,7 @@
     <ClInclude Include="sources\inspector.h" />
     <ClInclude Include="sources\primitives.h" />
     <ClInclude Include="sources\ui.h" />
+    <ClInclude Include="sources\well.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

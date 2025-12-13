@@ -3,7 +3,7 @@
 ///----------------------------------------------------------------------------:
 #ifndef WELL_H
 #define WELL_H
-#include "config-game.h"
+#include "figure.h"
 
 
 struct  Well

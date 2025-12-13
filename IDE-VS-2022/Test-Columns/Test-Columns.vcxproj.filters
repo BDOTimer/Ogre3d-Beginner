@@ -27,6 +27,9 @@
     <ClInclude Include="sources\box\debug.h">
       <Filter>sources\box</Filter>
     </ClInclude>
+    <ClInclude Include="sources\well.h">
+      <Filter>sources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="sources">

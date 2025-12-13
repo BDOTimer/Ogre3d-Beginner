@@ -3,7 +3,7 @@
 ///----------------------------------------------------------------------------:
 #ifndef INSPECTOR_H
 #define INSPECTOR_H
-#include "figure.h"
+#include "well.h"
 #include "ui.h"
 
 ///---------|
