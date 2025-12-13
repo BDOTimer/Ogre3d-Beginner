@@ -32,7 +32,6 @@ int main(int argc, char **argv)
 
     std::cout << "Привет, Я Test-Columns!\n\n"
               << ConfigGame::get()  << "\n\n";
-
     try
     {
         ///------------------------------------------------|

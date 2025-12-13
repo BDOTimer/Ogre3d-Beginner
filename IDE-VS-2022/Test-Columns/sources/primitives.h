@@ -40,8 +40,8 @@ namespace mdl
             cam->setNearClipDistance  (5);
 
             camNode = scnMgr->getRootSceneNode()->createChildSceneNode();
-            camNode->setPosition   (0, 300, 600);
-            camNode->lookAt(Vector3(0, 100, 0), Node::TransformSpace::TS_WORLD);
+            camNode->setPosition   (0, 300, 900);
+            camNode->lookAt(Vector3(0, 300, 0), Node::TransformSpace::TS_WORLD);
             camNode->attachObject  (cam);
 
             vp = ctx->getRenderWindow()->addViewport(cam);
@@ -248,8 +248,8 @@ namespace mdl
             node->setOrientation(Ogre::Quaternion(
                 Ogre::Degree(-90), Ogre::Vector3::UNIT_X));
 
-            node->setPosition    (-200, 0, 0);
-            node->setScale    (2.5, 2.5, 2.5);
+            node->setPosition(-700, 0, -700);
+            node->setScale   (5, 2, 5);
         }
     };
 }

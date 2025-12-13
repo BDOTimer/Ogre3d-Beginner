@@ -30,13 +30,14 @@ namespace mdl
         Lights lights;
         UI         ui;
         Tree     tree;
+        Figure figure;
         
         Ogre::RTShader::ShaderGenerator* shadergen;
 
     protected:
 
         ///-------------------------------------------|
-        /// Свой путь к "ogre.h"                      |
+        /// Свой путь к "ogre.h" ---> (box.cpp)       |
         ///-------------------------------------------:
         void createRoot() override;
 
@@ -62,16 +63,17 @@ namespace mdl
 
             camera.setup(scnMgr);
             ninja .setup(scnMgr);
-            sphere.setup(scnMgr);
+        /// sphere.setup(scnMgr);
             lights.setup(scnMgr);
             tree  .setup(scnMgr);
+            figure.setup(scnMgr);
 
             Plane plane(Vector3::UNIT_Y, 0);
 
             MeshManager::getSingleton().createPlane(
                 "ground", RGN_DEFAULT,
                 plane,
-                1500, 1500, 20, 20,
+                2500, 2500, 20, 20,
                 true,
                 1, 5, 5,
                 Vector3::UNIT_Z
@@ -90,7 +92,31 @@ namespace mdl
         {   if (evt.keysym.sym == SDLK_ESCAPE)
             {   getRoot()->queueEndRendering();
             }
+            else if (evt.keysym.sym == SDLK_SPACE)
+            {   changeFigure();
+            }
             return true;
+        }
+
+        void changeFigure    ()
+        {///figure.clear     ();
+            figure.reGenerate();
+        }
+
+        float accumulatedTime{0};  // Накопленное время
+        float intervalTime   {4};  // Интервал (1 секунда)
+
+        void frameRendered(const Ogre::FrameEvent& evt) override
+        {
+            accumulatedTime += evt.timeSinceLastFrame;
+       
+            if(accumulatedTime >= intervalTime)
+            {
+            /// changeFigure();
+                accumulatedTime -= intervalTime;
+            }
+
+            figure.update(evt.timeSinceLastFrame);
         }
     };
 }

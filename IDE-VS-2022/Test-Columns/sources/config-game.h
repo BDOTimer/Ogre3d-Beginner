@@ -14,8 +14,6 @@ struct  ConfigGame
     unsigned H{15}; /// Выстота(кол-во ячеек) корзины(Well).
     unsigned N{ 4}; /// Количество элементов(Gems) в фигуре(Column).
 
-    unsigned amountGems{7}; /// Количество вариантов Gems.
-
     float sizeCell{20}; /// Размер ячейки корзины.
     float sizeGems{20}; /// Если это шар, то тогда это Диаметр...
 
@@ -24,6 +22,17 @@ struct  ConfigGame
 
     const Ogre::Vector3 positionWell{0.0f, 0.0f,   0.0f};
     const Ogre::Vector3 positionUser{0.0f, 0.0f, 500.0f};
+
+    ///-----------------------------------|
+    /// Варианты для элементов.           |
+    ///-----------------------------------:
+    std::array<Ogre::ColourValue, 5> colors
+    {   Ogre::ColourValue{1.0 , 0.5f , 0.0},
+        Ogre::ColourValue{1.0 , 0.0f , 0.5},
+        Ogre::ColourValue{0.0 , 1.0f , 0.0},
+        Ogre::ColourValue{0.0 , 0.5f , 1.0},
+        Ogre::ColourValue{0.0 , 0.0f , 1.0}
+    };
         
     static ConfigGame& get()
     {   static ConfigGame cfg; return cfg;

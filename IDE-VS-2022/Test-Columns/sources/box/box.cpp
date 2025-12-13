@@ -18,12 +18,12 @@
 ///---------:
 namespace mdl
 {  
-            ///-------------------------------------------|
+        ///-------------------------------------------|
         /// Свой путь к "ogre.h"                      |
         ///-------------------------------------------:
         void InspectorRoot::createRoot()
         {
-            std::cout << "RUN: createRoot() override\n\n";
+        /// std::cout << "RUN: createRoot() override\n\n";
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
             mRoot = OGRE_NEW Ogre::Root("");
