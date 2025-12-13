@@ -88,6 +88,9 @@ namespace mdl
             groundEntity->setMaterialName("Examples/Rockwall");
         }
 
+        ///-------------------------------------------|
+        /// Обработка клавиш.                         |
+        ///-------------------------------------------:
         bool keyPressed(const KeyboardEvent& evt)
         {   if (evt.keysym.sym == SDLK_ESCAPE)
             {   getRoot()->queueEndRendering();
@@ -105,9 +108,13 @@ namespace mdl
         {   figure.reGenerate();
         }
 
+
         float accumulatedTime{0};  // Накопленное время
         float intervalTime   {4};  // Интервал (1 секунда)
 
+        ///-------------------------------------------|
+        /// Тут крутятся фреймы.                      |
+        ///-------------------------------------------:
         void frameRendered(const Ogre::FrameEvent& evt) override
         {
             accumulatedTime += evt.timeSinceLastFrame;

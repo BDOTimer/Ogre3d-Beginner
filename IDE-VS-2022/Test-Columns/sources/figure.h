@@ -115,6 +115,9 @@ namespace mdl
         float groundLevel {0};
         bool  isFalling{true};
 
+
+    private:
+
         void update(float deltaTime)
         {   ///------------------------|
             /// Движение вниз.         |
@@ -122,10 +125,6 @@ namespace mdl
             if(isFalling)
             {   node->translate(0, -speedMove * deltaTime, 0);
             }
-        
-            // Или с указанием пространства
-            // mNode->translate(Ogre::Vector3(0, 0, -mMoveSpeed * deltaTime), 
-            //                  Ogre::Node::TS_LOCAL);
 
             Ogre::Vector3 position = node->getPosition();
 
@@ -139,6 +138,9 @@ namespace mdl
             }
         }
 
+        ///-------------------------------------------|
+        /// Обработка клавиш.                         |
+        ///-------------------------------------------:
         void keyPressed(const KeyboardEvent& evt)
         {   
             if (evt.keysym.sym == SDLK_SPACE)
@@ -146,8 +148,6 @@ namespace mdl
             }
         }
         
-
-    private:
         void createMatetilal()
         {   
             for(unsigned i{}; i < mat.size(); ++i)
@@ -181,6 +181,8 @@ namespace mdl
 
             gems.back().node->setPosition(a);
         }
+
+        friend struct InspectorRoot;
     };
 }
 
