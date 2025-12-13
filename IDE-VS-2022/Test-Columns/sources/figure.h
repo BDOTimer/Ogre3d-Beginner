@@ -138,6 +138,13 @@ namespace mdl
                 onGroundCollision();
             }
         }
+
+        void keyPressed(const KeyboardEvent& evt)
+        {   
+            if (evt.keysym.sym == SDLK_SPACE)
+            {   reShuffleGems();
+            }
+        }
         
 
     private:
@@ -161,6 +168,22 @@ namespace mdl
         void onGroundCollision()
         {    reGenerate();
              isFalling = true;
+        }
+
+        void reShuffleGems()
+        {
+            std::vector<Ogre::Vector3> pos;
+
+            for(const auto& e : gems)
+            {   pos.emplace_back(e.node->getPosition());
+            }   pos.emplace_back(Ogre::Vector3());
+
+            pos.back() = pos.front();
+
+            size_t i{1};
+            for(const auto& e : gems)
+            {   e.node->setPosition(pos[i++]);
+            }
         }
     };
 }

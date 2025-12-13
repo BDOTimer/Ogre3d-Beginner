@@ -93,14 +93,16 @@ namespace mdl
             {   getRoot()->queueEndRendering();
             }
             else if (evt.keysym.sym == SDLK_SPACE)
-            {   changeFigure();
+            {   /// ...
             }
+            
+            figure.keyPressed(evt);
+
             return true;
         }
 
         void changeFigure    ()
-        {///figure.clear     ();
-            figure.reGenerate();
+        {   figure.reGenerate();
         }
 
         float accumulatedTime{0};  // Накопленное время
