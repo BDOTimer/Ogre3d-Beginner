@@ -12,13 +12,13 @@
 namespace mdl
 {  
     ///------------------------------------------------------------------------|
-    /// InspectorRoot.
+    /// InspectorRoot.("Test-Columns-2025")
     ///---------------------------------------------------------- InspectorRoot:
     struct  InspectorRoot
             :   Base
             ,   OgreBites::ApplicationContext
             ,   OgreBites::InputListener
-    {       InspectorRoot( ): OgreBites::ApplicationContext("Test-Columns-2025")
+    {       InspectorRoot( ): OgreBites::ApplicationContext("")
             {}
         
         Ogre::Root*           root;
