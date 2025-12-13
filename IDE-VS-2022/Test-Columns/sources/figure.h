@@ -172,18 +172,14 @@ namespace mdl
 
         void reShuffleGems()
         {
-            std::vector<Ogre::Vector3> pos;
+            Ogre::Vector3 a{gems.front().node->getPosition()};
 
-            for(const auto& e : gems)
-            {   pos.emplace_back(e.node->getPosition());
-            }   pos.emplace_back(Ogre::Vector3());
-
-            pos.back() = pos.front();
-
-            size_t i{1};
-            for(const auto& e : gems)
-            {   e.node->setPosition(pos[i++]);
+            for(size_t i{}, N{gems.size() - 1}; i < N; ++i)
+            {   gems[i  ].node->setPosition(
+                gems[i+1].node->getPosition());
             }
+
+            gems.back().node->setPosition(a);
         }
     };
 }
