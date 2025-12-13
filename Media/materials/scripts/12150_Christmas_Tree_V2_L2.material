@@ -1,6 +1,7 @@
 
 material 12150_Christmas_Tree_V2_L2.objChristmas_Tree
 {
+    receive_shadows on
 	technique
 	{
 		pass 
@@ -19,6 +20,7 @@ material 12150_Christmas_Tree_V2_L2.objChristmas_Tree
 
 material 12150_Christmas_Tree_V2_L2.objball_metall
 {
+    receive_shadows on
 	technique
 	{
 		pass 
@@ -34,6 +36,7 @@ material 12150_Christmas_Tree_V2_L2.objball_metall
 
 material 12150_Christmas_Tree_V2_L2.objblue
 {
+    receive_shadows on
 	technique
 	{
 		pass 
@@ -49,6 +52,7 @@ material 12150_Christmas_Tree_V2_L2.objblue
 
 material 12150_Christmas_Tree_V2_L2.objcloth
 {
+    receive_shadows on
 	technique
 	{
 		pass 
@@ -64,6 +68,7 @@ material 12150_Christmas_Tree_V2_L2.objcloth
 
 material 12150_Christmas_Tree_V2_L2.objloop
 {
+    receive_shadows on
 	technique
 	{
 		pass 
@@ -79,6 +84,7 @@ material 12150_Christmas_Tree_V2_L2.objloop
 
 material 12150_Christmas_Tree_V2_L2.objpink
 {
+    receive_shadows on
 	technique
 	{
 		pass 
@@ -94,6 +100,7 @@ material 12150_Christmas_Tree_V2_L2.objpink
 
 material 12150_Christmas_Tree_V2_L2.objred
 {
+    receive_shadows on
 	technique
 	{
 		pass 
@@ -109,6 +116,7 @@ material 12150_Christmas_Tree_V2_L2.objred
 
 material 12150_Christmas_Tree_V2_L2.objyellow
 {
+    receive_shadows on
 	technique
 	{
 		pass 
@@ -121,3 +129,4 @@ material 12150_Christmas_Tree_V2_L2.objyellow
 	}
 
 }
+

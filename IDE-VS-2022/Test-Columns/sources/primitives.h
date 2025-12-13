@@ -243,7 +243,11 @@ namespace mdl
 
             node = scnMgr->getRootSceneNode()->createChildSceneNode();
             node->attachObject       (entity);
-            node->pitch(Ogre::Degree   (-90));
+
+            //node->pitch(Ogre::Degree   (-90));
+            node->setOrientation(Ogre::Quaternion(
+                Ogre::Degree(-90), Ogre::Vector3::UNIT_X));
+
             node->setPosition    (-200, 0, 0);
             node->setScale    (2.5, 2.5, 2.5);
         }
