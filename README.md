@@ -2,6 +2,9 @@
 # Columns-2025
 ---
 
+### :sparkles: [:arrow_right: Правила игры...](doc/правила.md)
+---
+ 
 <img src="doc/3.jpg"/>
  
 ### :snowflake: Что тут:
