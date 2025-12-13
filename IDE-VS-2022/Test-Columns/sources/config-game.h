@@ -12,7 +12,7 @@ struct  ConfigGame
 
     const unsigned W{ 6}; /// Ширина  корзины(Well).
     const unsigned H{15}; /// Выстота корзины(Well).
-    const unsigned N{15}; /// Количество (Gems) в фигуре(Column).
+    const unsigned N{ 4}; /// Количество элементов(Gems) в фигуре(Column).
 
     const float sizeCell{20}; /// Размер ячейки корзины.
     const float sizeGems{20}; /// Если это шар, то тогда это Диаметр...
