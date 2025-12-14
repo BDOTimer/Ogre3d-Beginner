@@ -6,7 +6,159 @@
 #include "primitives.h"
 
 ///---------|
-/// Modules.|
+/// My lib  |
+///---------:
+namespace myl
+{   
+
+    ///------------------------------------------------------------------------|
+    /// Движение точки на заданную дистанцию...
+    ///---------------------------------------------------------- Step2Distance:
+    struct  Step2Distance
+    {
+        enum  EDIR
+        {     RIGHT,
+              LEFT ,
+              STOP
+        }eDir{STOP};
+
+        ///-------------------------------------------|
+        /// Начать движение.                          |
+        ///-------------------------------------------:
+        void start(float posStart, float distance)
+        {   
+            if(0.f == distance) return;
+
+            eDir = distance < 0 ? LEFT : RIGHT;
+            
+            this->position =           posStart;
+            this->posStart =           posStart;
+            this->distance =           distance;
+            this->distancA =  std::abs(distance);
+            dist           = 0;
+            isMoving = true;
+        }
+
+        bool sensor(const float delta)
+        {   
+            if(!isMoving) return false;
+
+            switch(eDir)
+            {   case RIGHT: position += delta; break;
+                case LEFT : position -= delta; break;
+                default   : ;
+            }
+
+            dist += delta;
+            
+            if(dist > distancA)
+            {
+                position = posStart + distance;
+                
+                isMoving = false;
+                eDir     = STOP ;
+            }
+
+            return isMoving;
+        }
+
+        float getPosition() const { return position; }
+
+        ///--------------|
+        /// Тест.        |
+        ///--------------:
+        static void test()
+        {   TestInfo inf("Step2Distance");
+
+            Step2Distance step2Distance;
+
+            inf.Case();
+            {
+                step2Distance.start(20, 70);
+                while(step2Distance.sensor(0.12345f));
+                l(TestInfo::showResult(90.f, step2Distance.getPosition()))
+            }
+
+            inf.Case();
+            {
+                step2Distance.start(90, -130);
+                while(step2Distance.sensor(0.12345f));
+                l(TestInfo::showResult(-40.f, step2Distance.getPosition()))
+            }
+
+            inf.Case();
+            {
+                step2Distance.start(-20, -130);
+                while(step2Distance.sensor(0.12345f));
+                l(TestInfo::showResult(-150.f, step2Distance.getPosition()))
+            }
+
+            inf.Case();
+            {
+                step2Distance.start(-200, 40);
+                while(step2Distance.sensor(0.12345f));
+                l(TestInfo::showResult(-160.f, step2Distance.getPosition()))
+            }
+        }
+
+    protected:
+        float posStart;
+        float position;
+        float distance;
+        float distancA;
+        
+        float dist;
+        bool  isMoving{false};
+    };
+
+    struct  Step2DistanceB : Step2Distance
+    {       Step2DistanceB(float distance)
+            {   Step2Distance::distancA = distance;
+                Step2Distance::distance = distance;
+            }
+
+        void start(float posStart, EDIR dir)
+        {   
+            if(isMoving) return;
+
+            eDir = dir;
+            
+            this->position = posStart;
+            this->posStart = posStart;
+            if(dir == LEFT) this->distance = -std::abs(this->distance);
+            dist     = 0;
+            isMoving = true;
+        }
+
+        ///--------------|
+        /// Тест.        |
+        ///--------------:
+        static void test()
+        {   TestInfo inf("Step2DistanceB");
+
+            Step2DistanceB step2Distance(30);
+
+            inf.Case();
+            {
+                step2Distance.start(20, Step2DistanceB::RIGHT);
+                while(step2Distance.sensor(0.12345f));
+
+                step2Distance.start(
+                    step2Distance.getPosition(), Step2DistanceB::LEFT );
+                while(step2Distance.sensor(0.12345f));
+
+                step2Distance.start(
+                    step2Distance.getPosition(), Step2DistanceB::LEFT );
+                while(step2Distance.sensor(0.12345f));
+
+                l(TestInfo::showResult(-10.f, step2Distance.getPosition()))
+            }
+        }
+    };
+}
+
+///---------|
+/// Modules |
 ///---------:
 namespace mdl
 {   
@@ -30,6 +182,8 @@ namespace mdl
         {   
             this->id = id;
 
+            const auto& SZCELL{ConfigGame::get().sizeCell};
+
             if(nullptr != entity) clear(scnMgr);
 
             const auto& descriptions{ConfigGame::get().descriptionGems};
@@ -44,7 +198,7 @@ namespace mdl
             }
             node->resetOrientation  ();
             node->attachObject(entity);
-            node->setPosition (0, 50 + (100 * float(n)), 0);
+            node->setPosition (0, SZCELL / 2 + (SZCELL * float(n)), 0);
             node->setScale    (descriptions[id].scale);
 
             if(id % 2) speed = -speed;
@@ -92,6 +246,7 @@ namespace mdl
     {       Figure() : 
                 gems(ConfigGame::get().descriptionGems.size())
             ,   mat (ConfigGame::get().descriptionGems.size())
+            ,   step2DistanceB(ConfigGame::get().sizeCell)
             {   
             }
 
@@ -104,6 +259,9 @@ namespace mdl
 
 
     private:
+
+        myl::Step2DistanceB step2DistanceB;
+
         ///-------------------------------------------|
         /// Стартовая инициализация.                  |
         ///-------------------------------------------:
@@ -164,31 +322,17 @@ namespace mdl
             for(auto& e : gems) e.update(deltaTime);
 
             /// TODO: доделать ...
-            if(isMoveLeft)
-            {   const float DELTA{-speedMoveLR * deltaTime};
-                
-                if(sensorEndMovement(DELTA))
-                {   isMoveLeft  =  isMoveRight = false;
-                }
-                else node->translate(DELTA, 0, 0);
-            }
-            if(isMoveRight)
-            {   const float DELTA{speedMoveLR * deltaTime};
-                
-                if(sensorEndMovement(DELTA))
-                {   isMoveLeft  =  isMoveRight = false;
-                }
-                else node->translate(DELTA, 0, 0);
+            if(step2DistanceB.sensor(deltaTime * speedMoving))
+            {   const auto& p{node->getPosition()};
+                node->setPosition(step2DistanceB.getPosition(), p.y, p.z);
             }
         }
 
         ///-------------------------------------------|
         /// Обработка клавиш.                         |
         ///-------------------------------------------:
-        float speedMoveLR{100.0f};
-        bool isMoveLeft  {false };
-        bool isMoveRight {false };
-        bool keyPressed  (const KeyboardEvent& evt)
+        float speedMoving{100.0f};
+        bool  keyPressed (const KeyboardEvent& evt)
         {   
             if (evt.keysym.sym == SDLK_SPACE)
             {   reShuffleGems();
@@ -203,18 +347,15 @@ namespace mdl
                 break;
                 
             case 122: /// OgreBites::SDLK_LEFT: 'Z'
-                
-                if(isMoveRight) isMoveLeft  =  isMoveRight = false;
-                else isMoveLeft  =  true;
-                return false;
+            {   const auto& p = node->getPosition();
+                step2DistanceB.start(p.x, myl::Step2Distance::LEFT);
                 break;
-                
+            }
             case 120: /// OgreBites::SDLK_RIGHT: 'X'
-                if(isMoveLeft) isMoveLeft  =  isMoveLeft = false;
-                else isMoveRight  =  true;
-                return false;
+            {   const auto& p = node->getPosition();
+                step2DistanceB.start(p.x, myl::Step2Distance::RIGHT);
                 break;
-                
+            } 
             default:
             /// l(evt.keysym.sym)
                 return true; // Другие клавиши не обрабатываем
@@ -271,21 +412,6 @@ namespace mdl
         bool sensorCollisions()
         {
 
-        }
-
-        ///-------------------------------------------|
-        /// Сенсор окончания движения по ячейке.      |
-        ///-------------------------------------------: TODO: testing.
-        bool sensorEndMovement(const float delta)
-        {
-            const Ogre::Vector3& pos{ node->getPosition() };
-
-            const unsigned SIZECELL = unsigned(cfg.get().sizeCell);
-
-            unsigned a = unsigned( pos.x         / SIZECELL);
-            unsigned b = unsigned((pos.x + delta)/ SIZECELL);
-
-            return a != b;
         }
 
         friend struct Well;

@@ -60,5 +60,43 @@ struct  Ass
 #define WARNING(a, mess) Ass::warn (a, __FILE__, __LINE__, mess);
 
 
+///----------------------------------------------------------------------------|
+/// Элемент ДЕКОРАЦИИ для статического метода test().
+///------------------------------------------------------------------- TestInfo:
+struct  TestInfo
+{       TestInfo(const char* b) : s(b)
+        {   std::cout << std::format(a, "start", s, " ---------------------:");
+        }
+       ~TestInfo()
+        {   std::cout << std::format(a, "end", s, " -----------------------.");
+        }
+
+    template<typename T, typename TT>
+    static std::string showResult(T g, TT h)
+    {   
+        std::stringstream ss;
+
+        bool b = float(g) == float(h);
+        ss  << '\n'
+            << "  EXPECTED  : " << g << '\n'
+            << "  CALCULATED: " << h << '\n'
+            << "  result    : " <<(b ? "GOOD!" : "FAIL...") << '\n';
+
+        return ss.str();
+    }
+
+    void Case()
+    {   const auto&  w{std::format("| Case: {:2}   |\n", ++cnt)};
+        const char*  u{"|------------"};
+        std::cout << u << "|\n" << w << u << ":\n";
+    }
+
+private:
+    int     cnt{};
+    const char* s;
+    static constexpr const char* a{ "{} TESTCLASS {}::test(){}\n\n" };
+};
+
+
 #endif // DEBUG_H
 

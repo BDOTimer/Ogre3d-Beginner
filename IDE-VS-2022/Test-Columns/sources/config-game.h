@@ -5,8 +5,10 @@
 #define CONFIG_GAME_H
 #include "box/debug.h"
 
+
 ///----------------------------------------------------------------------------|
-/// Описание для набора Gems.
+/// Описание для набора Gems(жемчужин).
+/// В конфиге описан набор(descriptionGems) из 5 штук.
 ///------------------------------------------------------------- DescriptionGem:
 struct DescriptionGem
 {   unsigned             id;
@@ -14,7 +16,6 @@ struct DescriptionGem
     Ogre::ColourValue color;
     Ogre::Vector3     scale;
 };
-
 
 
 ///----------------------------------------------------------------------------|
@@ -25,12 +26,12 @@ struct  ConfigGame
         {   
         }
 
-    unsigned W{ 6}; /// Ширина (кол-во ячеек) корзины(Well).
-    unsigned H{15}; /// Выстота(кол-во ячеек) корзины(Well).
+    unsigned W{ 7}; /// Ширина (кол-во ячеек) корзины(Well).
+    unsigned H{12}; /// Выстота(кол-во ячеек) корзины(Well).
     unsigned N{ 4}; /// Количество элементов(Gems) в фигуре(Column).
 
-    float sizeCell{20}; /// Размер ячейки корзины.
-    float sizeGems{20}; /// Если это шар, то тогда это Диаметр...
+    float sizeCell{100}; /// Размер ячейки корзины.
+    float sizeGems{ 20}; /// Если это шар, то тогда это Диаметр...
 
     float getWellW() const { return sizeCell * W; }
     float getWellH() const { return sizeCell * H; }
@@ -39,7 +40,7 @@ struct  ConfigGame
     const Ogre::Vector3 positionUser{0.0f, 0.0f, 500.0f};
 
     ///-----------------------------------|
-    /// Варианты для элементов.           |
+    /// Какие бывают жемчужины?           |
     ///-----------------------------------:
     using   DS = DescriptionGem;
     #define S Ogre::Vector3{0.5f, 0.5f, 0.5f}
@@ -54,6 +55,7 @@ struct  ConfigGame
     };
     #undef S
     #undef C
+    ///-----------------------------------.
 
     ///-----------------------------------|
     /// Анимация(на логику не влияет).    |

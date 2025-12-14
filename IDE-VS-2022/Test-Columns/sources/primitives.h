@@ -41,8 +41,8 @@ namespace mdl
             cam->setNearClipDistance  (5);
 
             camNode = scnMgr->getRootSceneNode()->createChildSceneNode();
-            camNode->setPosition   (0, 300, 900);
-            camNode->lookAt(Vector3(0, 300, 0), Node::TransformSpace::TS_WORLD);
+            camNode->setPosition   (0, 800, 1900);
+            camNode->lookAt(Vector3(0, 650, 0), Node::TransformSpace::TS_WORLD);
             camNode->attachObject  (cam);
 
             vp = ctx->getRenderWindow()->addViewport(cam);
@@ -77,8 +77,8 @@ namespace mdl
 
             node = scnMgr->getRootSceneNode()->createChildSceneNode();
             node->attachObject   (entity);
-            node->yaw(Ogre::Degree (180));
-            node->setPosition (200, 0, 0);
+            node->yaw(Ogre::Degree (160));
+            node->setPosition (400, 0, 100);
             node->setScale(1.5, 1.5, 1.5);
         }
     };
@@ -103,13 +103,11 @@ namespace mdl
 
         std::array<MaterialPtr, 5> mat;
 
-
         void setup(Ogre::SceneManager* scnMgr)
         {   for(unsigned i{}; i < color.size(); ++i)
             {   setup(scnMgr, i);
             }
         }
-
 
         void setup(Ogre::SceneManager* scnMgr, const size_t n)
         {   
@@ -215,7 +213,7 @@ namespace mdl
         void setup(Ogre::SceneManager* scnMgr, Ogre::String filename)
         {   
             mesh = Ogre::MeshManager::getSingleton().load(
-                "model.obj",            // имя файла
+                "model.obj",
                 Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
                 Ogre::HardwareBuffer::HBU_STATIC,
                 Ogre::HardwareBuffer::HBU_STATIC
@@ -245,7 +243,7 @@ namespace mdl
             node = scnMgr->getRootSceneNode()->createChildSceneNode();
             node->attachObject       (entity);
 
-            //node->pitch(Ogre::Degree   (-90));
+            //node->pitch(Ogre::Degree( -90));
             node->setOrientation(Ogre::Quaternion(
                 Ogre::Degree(-90), Ogre::Vector3::UNIT_X));
 

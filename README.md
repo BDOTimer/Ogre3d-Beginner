@@ -5,7 +5,7 @@
 ### :sparkles: [:arrow_right: Правила игры...](doc/правила.md)
 ---
  
-<img src="doc/3.jpg"/>
+<img src="doc/1.jpg"/>
  
 ### :snowflake: Что тут:
 - Солушен VS-2022 с проектами Ogre3d ---> ВСЁ ВКЛЮЧЕНО!

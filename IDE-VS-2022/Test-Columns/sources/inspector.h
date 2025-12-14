@@ -18,19 +18,20 @@ namespace mdl
             :   Base
             ,   OgreBites::ApplicationContext
             ,   OgreBites::InputListener
-    {       InspectorRoot( ): OgreBites::ApplicationContext("")
+    {       InspectorRoot( ): OgreBites::ApplicationContext("Test-Columns-2025")
             {}
         
         Ogre::Root*           root;
         Ogre::SceneManager* scnMgr;
 
-        Camera camera;
-        Ninja   ninja;
-        Sphere sphere;
-        Lights lights;
-        UI         ui;
-        Tree     tree;
-        Well     well;
+        Camera       camera;
+        Ninja         ninja;
+        Sphere       sphere;
+        Lights       lights;
+        UI               ui;
+        Tree           tree;
+        Well           well;
+        Well3Wall well3Wall;
         
         Ogre::RTShader::ShaderGenerator* shadergen;
 
@@ -57,16 +58,16 @@ namespace mdl
 
         /// root->loadPlugin("OgreAssimp");
 
-            shadergen
-          = RTShader::ShaderGenerator::getSingletonPtr();
-            shadergen->addSceneManager(scnMgr);
+            shadergen = RTShader::ShaderGenerator::getSingletonPtr();
+            shadergen-> addSceneManager(scnMgr);
 
-            camera.setup(scnMgr);
-            ninja .setup(scnMgr);
-        /// sphere.setup(scnMgr);
-            lights.setup(scnMgr);
-            tree  .setup(scnMgr);
-            well  .setup(scnMgr);
+            camera   .setup(scnMgr);
+            ninja    .setup(scnMgr);
+        /// sphere   .setup(scnMgr);
+            lights   .setup(scnMgr);
+            tree     .setup(scnMgr);
+            well     .setup(scnMgr);
+            well3Wall.setup(scnMgr);
 
             Plane plane(Vector3::UNIT_Y, 0);
 
@@ -101,7 +102,6 @@ namespace mdl
             
             return well.keyPressed(evt);
         }
-
 
         float accumulatedTime{0};  // Накопленное время
         float intervalTime   {4};  // Интервал (1 секунда)
