@@ -20,6 +20,9 @@ namespace mdl
         SceneNode*     node  {nullptr};
         size_t         id;
         
+        ///-------------------------------------------|
+        /// Стартовая инициализация.                  |
+        ///-------------------------------------------:
         void setup(Ogre::SceneManager* scnMgr,
                    const size_t        n     ,
                    SceneNode*          parent,
@@ -47,6 +50,9 @@ namespace mdl
             if(id % 2) speed = -speed;
         }
 
+        ///-------------------------------------------|
+        /// Удаление жемчужины из фигуры.             |
+        ///-------------------------------------------:
         void clear(Ogre::SceneManager* scnMgr)
         {   /// TODO ...
             /// node->detachAllObjects();
@@ -63,6 +69,9 @@ namespace mdl
             }
         }
 
+        ///-------------------------------------------|
+        /// Анимация жемчужины.                       |
+        ///-------------------------------------------:
         float speed{50};
         void update(float deltaTime)
         {   
@@ -95,15 +104,18 @@ namespace mdl
 
 
     private:
+        ///-------------------------------------------|
+        /// Стартовая инициализация.                  |
+        ///-------------------------------------------:
         void setup(Ogre::SceneManager* scnMgr, SceneNode* well)
         {   this->scnMgr = scnMgr;
 
             ///------------------------|
-            /// TODO: взять у Well!    |
+            /// Крепим к корзине.      |
             ///------------------------:
             node = well->createChildSceneNode();
 
-            createMatetilal();
+            createMaterial();
             reGenerate     ();
         }
 
@@ -127,6 +139,9 @@ namespace mdl
         float groundLevel {0};
         bool  isFalling{true};
 
+        ///-------------------------------------------|
+        /// Вызывается для каждого фрейма(кадра).     |
+        ///-------------------------------------------:
         void update(float deltaTime)
         {   ///------------------------|
             /// Движение вниз.         |
@@ -148,13 +163,22 @@ namespace mdl
 
             for(auto& e : gems) e.update(deltaTime);
 
-
-
+            /// TODO: доделать ...
             if(isMoveLeft)
-            {   node->translate(-speedMoveLR * deltaTime, 0, 0);
+            {   const float DELTA{-speedMoveLR * deltaTime};
+                
+                if(sensorEndMovement(DELTA))
+                {   isMoveLeft  =  isMoveRight = false;
+                }
+                else node->translate(DELTA, 0, 0);
             }
             if(isMoveRight)
-            {   node->translate(speedMoveLR * deltaTime, 0, 0);
+            {   const float DELTA{speedMoveLR * deltaTime};
+                
+                if(sensorEndMovement(DELTA))
+                {   isMoveLeft  =  isMoveRight = false;
+                }
+                else node->translate(DELTA, 0, 0);
             }
         }
 
@@ -198,7 +222,10 @@ namespace mdl
             return false;
         }
         
-        void createMatetilal()
+        ///-------------------------------------------|
+        /// Матрериалы создаются один раз.            |
+        ///-------------------------------------------:
+        void createMaterial()
         {   
             for(unsigned i{}; i < mat.size(); ++i)
             {
@@ -215,11 +242,17 @@ namespace mdl
             }
         }
 
+        ///-------------------------------------------|
+        /// Обработка столкновения фигуры с землей.   |
+        ///-------------------------------------------:
         void onGroundCollision()
         {    reGenerate();
              isFalling = true;
         }
 
+        ///-------------------------------------------|
+        /// Циклический сдвиг по колоне вверх на 1.   |
+        ///-------------------------------------------:
         void reShuffleGems()
         {
             Ogre::Vector3 a{gems.front().node->getPosition()};
@@ -230,6 +263,29 @@ namespace mdl
             }
 
             gems.back().node->setPosition(a);
+        }
+
+        ///-------------------------------------------|
+        /// Сенсор столновения.                       |
+        ///-------------------------------------------:
+        bool sensorCollisions()
+        {
+
+        }
+
+        ///-------------------------------------------|
+        /// Сенсор окончания движения по ячейке.      |
+        ///-------------------------------------------: TODO: testing.
+        bool sensorEndMovement(const float delta)
+        {
+            const Ogre::Vector3& pos{ node->getPosition() };
+
+            const unsigned SIZECELL = unsigned(cfg.get().sizeCell);
+
+            unsigned a = unsigned( pos.x         / SIZECELL);
+            unsigned b = unsigned((pos.x + delta)/ SIZECELL);
+
+            return a != b;
         }
 
         friend struct Well;
