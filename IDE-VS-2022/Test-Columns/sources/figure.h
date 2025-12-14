@@ -93,6 +93,8 @@ namespace mdl
         SceneNode*               node; /// Нод фигуры!
         float        speedMove{50.0f}; /// единиц в секунду.
 
+
+    private:
         void setup(Ogre::SceneManager* scnMgr, SceneNode* well)
         {   this->scnMgr = scnMgr;
 
@@ -124,9 +126,6 @@ namespace mdl
 
         float groundLevel {0};
         bool  isFalling{true};
-
-
-    private:
 
         void update(float deltaTime)
         {   ///------------------------|
