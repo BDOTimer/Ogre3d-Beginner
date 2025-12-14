@@ -9,7 +9,8 @@
 ///---------------------------------------------------------------- Application:
 struct  Application
 {       Application()
-        {   setup  ();
+        {   
+            setup  ();
         }
 
     virtual ~Application() {}
@@ -29,6 +30,8 @@ struct  Application
 int main(int argc, char **argv)
 {
     std::system("chcp 65001>nul");
+
+    srand((unsigned int)time(NULL));
 
     std::cout << "Привет, Я Test-Columns!\n\n"
               << ConfigGame::get()  << "\n\n";

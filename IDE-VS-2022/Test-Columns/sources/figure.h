@@ -6,48 +6,45 @@
 #include "primitives.h"
 
 ///---------|
-/// Models. |
+/// Modules.|
 ///---------:
 namespace mdl
 {   
 
     ///------------------------------------------------------------------------|
-    /// Gems
-    ///------------------------------------------------------------------- Gems:
-    struct  Gems : Base
+    /// Gem
+    ///-------------------------------------------------------------------- Gem:
+    struct  Gem : Base
     {       
         Ogre::Entity*  entity{nullptr};
         SceneNode*     node  {nullptr};
+        size_t         id;
         
         void setup(Ogre::SceneManager* scnMgr,
-                   const size_t        n,
-                   SceneNode*          parent)
+                   const size_t        n     ,
+                   SceneNode*          parent,
+                   const size_t        id)
         {   
-            std::string sn   {std::to_string(n)};
-            std::string name {"Sphere"}; name  += sn;
+            this->id = id;
 
             if(nullptr != entity) clear(scnMgr);
 
-            static std::array<const char*, 2> nameMesh
-            {   "sphere.mesh",
-                "cube.mesh"
-            };
+            const auto& descriptions{ConfigGame::get().descriptionGems};
 
-            const unsigned rnd = rand() % 2;
-
-            entity = scnMgr->createEntity(name, nameMesh[rnd]);
+            entity = scnMgr->createEntity(
+                std::format("Sphere{}", n),
+                descriptions[id].nameMesh
+            );
 
             if(nullptr == node)
             {   node   =  parent->createChildSceneNode();
             }
+            node->resetOrientation  ();
             node->attachObject(entity);
-            node->setPosition(0, 50 + (100 * float(n)), 0);
+            node->setPosition (0, 50 + (100 * float(n)), 0);
+            node->setScale    (descriptions[id].scale);
 
-            switch(rnd)
-            {   case  0: node->setScale(0.5f, 0.5f, 0.5f); break;
-                case  1: node->setScale(0.9f, 0.9f, 0.9f);break;
-                default: ;
-            }
+            if(id % 2) speed = -speed;
         }
 
         void clear(Ogre::SceneManager* scnMgr)
@@ -57,12 +54,23 @@ namespace mdl
             if(entity->isAttached())
             {
                 Ogre::SceneNode* parentNode = entity->getParentSceneNode();
-                if(parentNode)
+                if( parentNode)
                 {   parentNode->detachObject(entity);
                     scnMgr->destroyEntity   (entity->getName());
                 }
 
             /// if(node) scnMgr->destroySceneNode(node);
+            }
+        }
+
+        float speed{50};
+        void update(float deltaTime)
+        {   
+            if(ConfigGame::get().isGemRotating)
+            switch(id)
+            {   case   3: node->yaw  (Ogre::Degree(speed * deltaTime)); break;
+                case   4: node->pitch(Ogre::Degree(speed * deltaTime)); break;
+                default:;
             }
         }
     };
@@ -73,25 +81,25 @@ namespace mdl
     ///----------------------------------------------------------------- Figure:
     struct  Figure   : Base
     {       Figure() : 
-                gems(ConfigGame::get().colors.size())
-            ,   mat (ConfigGame::get().colors.size())
+                gems(ConfigGame::get().descriptionGems.size())
+            ,   mat (ConfigGame::get().descriptionGems.size())
             {   
             }
 
         Ogre::SceneManager*      scnMgr;
         const ConfigGame&        cfg{ConfigGame::get()};
-        std::vector<Gems>        gems;
+        std::vector<Gem>         gems;
         std::vector<MaterialPtr> mat ;
         SceneNode*               node; /// Нод фигуры!
         float        speedMove{50.0f}; /// единиц в секунду.
 
-        void setup(Ogre::SceneManager* scnMgr)
+        void setup(Ogre::SceneManager* scnMgr, SceneNode* well)
         {   this->scnMgr = scnMgr;
 
             ///------------------------|
             /// TODO: взять у Well!    |
             ///------------------------:
-            node = scnMgr->getRootSceneNode()->createChildSceneNode();
+            node = well->createChildSceneNode();
 
             createMatetilal();
             reGenerate     ();
@@ -102,9 +110,11 @@ namespace mdl
             node->setPosition(0, cfg.get().getWellH(), 0);
 
             for(unsigned i{}; i < gems.size( ); ++i)
-            {   gems[i].setup(scnMgr, i, node);
-                const int rnd = rand() % mat.size();
-                gems[i].entity->setMaterialName(mat[size_t(rnd)]->getName());
+            {   
+                const size_t rnd = rand() % mat.size();
+                
+                gems[i].setup(scnMgr, i, node, rnd);
+                gems[i].entity->setMaterialName(mat[rnd]->getName());
             }
         }
 
@@ -136,16 +146,57 @@ namespace mdl
 
                 onGroundCollision();
             }
+
+            for(auto& e : gems) e.update(deltaTime);
+
+
+
+            if(isMoveLeft)
+            {   node->translate(-speedMoveLR * deltaTime, 0, 0);
+            }
+            if(isMoveRight)
+            {   node->translate(speedMoveLR * deltaTime, 0, 0);
+            }
         }
 
         ///-------------------------------------------|
         /// Обработка клавиш.                         |
         ///-------------------------------------------:
-        void keyPressed(const KeyboardEvent& evt)
+        float speedMoveLR{100.0f};
+        bool isMoveLeft  {false };
+        bool isMoveRight {false };
+        bool keyPressed  (const KeyboardEvent& evt)
         {   
             if (evt.keysym.sym == SDLK_SPACE)
             {   reShuffleGems();
             }
+
+            switch(evt.keysym.sym)
+            {
+            case OgreBites::SDLK_UP:
+                break;
+                
+            case OgreBites::SDLK_DOWN:
+                break;
+                
+            case 122: /// OgreBites::SDLK_LEFT: 'Z'
+                
+                if(isMoveRight) isMoveLeft  =  isMoveRight = false;
+                else isMoveLeft  =  true;
+                return false;
+                break;
+                
+            case 120: /// OgreBites::SDLK_RIGHT: 'X'
+                if(isMoveLeft) isMoveLeft  =  isMoveLeft = false;
+                else isMoveRight  =  true;
+                return false;
+                break;
+                
+            default:
+            /// l(evt.keysym.sym)
+                return true; // Другие клавиши не обрабатываем
+            }
+            return false;
         }
         
         void createMatetilal()
@@ -158,7 +209,7 @@ namespace mdl
                 );
 
                 Ogre::Pass* const p = mat[i]->getTechnique(0)->getPass(0);
-                        p->setDiffuse (cfg.colors[i]);
+                        p->setDiffuse (cfg.descriptionGems[i].color);
                         p->setAmbient (ColourValue(0.3f, 0.15f, 0.0));
                         p->setSpecular(ColourValue(1.0 , 1.0  , 1.0));
                         p->setShininess(64.0);
@@ -182,7 +233,7 @@ namespace mdl
             gems.back().node->setPosition(a);
         }
 
-        friend struct InspectorRoot;
+        friend struct Well;
     };
 }
 

@@ -30,7 +30,7 @@ namespace mdl
         Lights lights;
         UI         ui;
         Tree     tree;
-        Figure figure;
+        Well     well;
         
         Ogre::RTShader::ShaderGenerator* shadergen;
 
@@ -66,7 +66,7 @@ namespace mdl
         /// sphere.setup(scnMgr);
             lights.setup(scnMgr);
             tree  .setup(scnMgr);
-            figure.setup(scnMgr);
+            well  .setup(scnMgr);
 
             Plane plane(Vector3::UNIT_Y, 0);
 
@@ -84,7 +84,7 @@ namespace mdl
                     ->createChildSceneNode()
                     ->attachObject(groundEntity);
 
-            groundEntity->setCastShadows(false);
+            groundEntity->setCastShadows (false);
             groundEntity->setMaterialName("Examples/Rockwall");
         }
 
@@ -99,13 +99,7 @@ namespace mdl
             {   /// ...
             }
             
-            figure.keyPressed(evt);
-
-            return true;
-        }
-
-        void changeFigure    ()
-        {   figure.reGenerate();
+            return well.keyPressed(evt);
         }
 
 
@@ -117,6 +111,8 @@ namespace mdl
         ///-------------------------------------------:
         void frameRendered(const Ogre::FrameEvent& evt) override
         {
+            Base::deltaTime = evt.timeSinceLastFrame;
+
             accumulatedTime += evt.timeSinceLastFrame;
        
             if(accumulatedTime >= intervalTime)
@@ -125,7 +121,7 @@ namespace mdl
                 accumulatedTime -= intervalTime;
             }
 
-            figure.update(evt.timeSinceLastFrame);
+            well.update(evt.timeSinceLastFrame);
         }
     };
 }

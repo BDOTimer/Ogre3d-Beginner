@@ -19,6 +19,7 @@ namespace mdl
     struct  Base
     {   inline static InspectorRoot     * pInspectorRoot{ nullptr };
         inline static ApplicationContext* ctx            { nullptr };
+        inline static float               deltaTime;
     };
 
     ///------------------------------------------------------------------------|
