@@ -24,6 +24,48 @@ namespace mdl
         inline static float               deltaTime;
     };
 
+
+    ///------------------------------------------------------------------------|
+    /// ExtendedCameraMan(управляем дистанцией).
+    ///------------------------------------------------------- ExtendedCameraMan:
+    struct  xExtendedCameraMan : public OgreBites::CameraMan
+    {       xExtendedCameraMan(Ogre::SceneNode* cam) : OgreBites::CameraMan(cam)
+            {   mOrbitDistance = 100.0f;
+            }
+
+        void setOrbitDistance(float distance)
+        {   mOrbitDistance = distance;
+            updateOrbitCamera();
+        }
+
+        void changeOrbitDistance(float delta)
+        {   mOrbitDistance += delta;
+            mOrbitDistance = Ogre::Math::Clamp(mOrbitDistance, 10.0f, 500.0f);
+            updateOrbitCamera();
+        }
+
+        void setOrbitTarget(const Ogre::Vector3& target)
+        {   mOrbitTarget = target;
+            updateOrbitCamera();
+        }
+
+    private:
+        float mOrbitDistance;
+        Ogre::Vector3 mOrbitTarget;
+
+        void updateOrbitCamera()
+        {   // Получаем текущее направление от камеры к цели
+            Ogre::Vector3 currentPos = mCamera->getPosition();
+            Ogre::Vector3 direction = currentPos - mOrbitTarget;
+            direction.normalise();
+
+            // Новая позиция на нужном расстоянии
+            Ogre::Vector3 newPos = mOrbitTarget + direction * mOrbitDistance;
+            mCamera->setPosition(newPos);
+        ///mCamera->lookAt(mOrbitTarget);
+        }
+    };
+
     ///------------------------------------------------------------------------|
     /// Camera.
     ///----------------------------------------------------------------- Camera:
@@ -38,7 +80,7 @@ namespace mdl
 
         Ogre::Camera* get() const { return cam; }
 
-        void setup()
+        void setup(SceneNode* nodeUse)
         {   
             cam = scnMgr->createCamera("myCam");
             cam->setNearClipDistance  (5);
@@ -47,7 +89,7 @@ namespace mdl
             camGoal->setPosition(0, 700, 0);
 
 
-            camNode = scnMgr->getRootSceneNode()->createChildSceneNode();
+            camNode = nodeUse->createChildSceneNode();
             camNode->setPosition   (0, 800, 1900);
             camNode->lookAt(Vector3(0, 650, 0), Node::TransformSpace::TS_WORLD);
             camNode->attachObject  (cam);
@@ -64,7 +106,7 @@ namespace mdl
             man = std::make_unique<OgreBites::CameraMan>(camNode);
 
             man->setTarget(camGoal);
-            man->setYawPitchDist(Ogre::Degree(45), Ogre::Degree(-30), 2000.0f);
+            man->setYawPitchDist(Ogre::Degree(0), Ogre::Degree(-30), 2000.0f);
 
             man->setStyle(OgreBites::CS_ORBIT); // или  CS_FREELOOK
             man->setTopSpeed(100);
@@ -198,7 +240,7 @@ namespace mdl
     {       
         Ogre::Entity*  entity;
 
-        void setup()
+        void setup(SceneNode*  nodeUse)
         {   
             using namespace Ogre;
 
@@ -213,7 +255,7 @@ namespace mdl
             directionalLight->setSpecularColour(colourValue);
 
             SceneNode* directionalLightNode
-                = scnMgr->getRootSceneNode()->createChildSceneNode();
+                = nodeUse->createChildSceneNode();
             directionalLightNode->attachObject(directionalLight);
             directionalLightNode->setDirection(Vector3(0, -1, -1));
 
@@ -227,7 +269,7 @@ namespace mdl
             pointLight->setSpecularColour(0.3f, 0.3f, 0.3f);
 
             SceneNode* pointLightNode
-          = scnMgr->getRootSceneNode()->createChildSceneNode();
+                = nodeUse->createChildSceneNode();
             pointLightNode->attachObject(pointLight);
             pointLightNode->setPosition(Vector3(0, 300, 600));
 
@@ -242,7 +284,7 @@ namespace mdl
             spotLight->setType(Light::LT_SPOTLIGHT);
 
             SceneNode* spotLightNode
-                = scnMgr->getRootSceneNode()->createChildSceneNode();
+                = nodeUse->createChildSceneNode();
             spotLightNode->attachObject(spotLight);
             spotLightNode->setDirection(0, 0, 1);
             spotLightNode->setPosition(Vector3(0, 300, 600));
@@ -301,8 +343,8 @@ namespace mdl
             node->setOrientation(Ogre::Quaternion(
                 Ogre::Degree(-90), Ogre::Vector3::UNIT_X));
 
-            node->setPosition(-700, 0, -700);
-            node->setScale   (7, 7, 4);
+            node->setPosition(-600, 0, -400);
+            node->setScale   (7, 7, 7);
         }
     };
 }

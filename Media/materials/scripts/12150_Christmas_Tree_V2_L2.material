@@ -4,9 +4,21 @@ material 12150_Christmas_Tree_V2_L2.objChristmas_Tree
     receive_shadows on
 	technique
 	{
+        receive_shadows on
 		pass 
 		{
-			specular 0.09 0.09 0.09 1 10
+			lighting on
+            scene_blend alpha_blend
+            depth_write off
+            
+            cull_hardware none
+            cull_software none
+            
+            ambient 0.2 0.2 0.3 0.2
+            diffuse 0.5 0.5 0.8 0.3  // синеватое стекло
+            specular 1.0 1.0 1.0 1.0 50
+            
+            shininess 28
 
 			texture_unit
 			{

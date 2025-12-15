@@ -25,6 +25,7 @@ namespace mdl
         Ogre::Root*           root;
         Ogre::SceneManager* scnMgr;
         SceneNode*        nodeBase;
+        SceneNode*        nodeUse ;
 
         Camera       camera;
         Ninja         ninja;
@@ -61,6 +62,7 @@ namespace mdl
                 ShadowTechnique::SHADOWTYPE_STENCIL_ADDITIVE);
 
             nodeBase = scnMgr->getRootSceneNode()->createChildSceneNode();
+            nodeUse  = scnMgr->getRootSceneNode()->createChildSceneNode();
 
             Base::scnMgr   = scnMgr;
             Base::nodeBase = nodeBase;
@@ -70,10 +72,10 @@ namespace mdl
             shadergen = RTShader::ShaderGenerator::getSingletonPtr();
             shadergen-> addSceneManager(scnMgr);
 
-            camera   .setup();
+            camera   .setup(nodeUse);
+            lights   .setup(camera.camNode);
             ninja    .setup();
         /// sphere   .setup();
-            lights   .setup();
             tree     .setup();
             well     .setup();
             ground   .setup();
