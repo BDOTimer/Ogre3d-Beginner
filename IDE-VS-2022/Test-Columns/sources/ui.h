@@ -11,7 +11,7 @@
 ///---------:
 namespace mdl
 {   
-    struct  UI
+    struct  UI : Base ///<--- в Base можно взять указатели манагера сцены...
     {       UI()
             {   std::cout << "Объект UI создан! Автор: Royal_X\n";
             }

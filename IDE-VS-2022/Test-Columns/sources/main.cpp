@@ -27,15 +27,29 @@ struct  Application
 };
 
 
+void test01()
+{   
+    int   b = -210;
+    float a =  0.f -100.f -110.f;
+    if(   b/3 != int(a/3)) l("error")
+
+    l(b/3)
+    l(int(a/3))
+}
+
+
 ///----------------------------------------------------------------------------|
 /// Тесты.
 ///---------------------------------------------------------------------- tests:
 bool tests()
 {   
+    /// 
     return false;
     
     /// myl::Step2Distance ::test();
     /// myl::Step2DistanceB::test();
+    
+    /// test01();
 
     return true;
 }

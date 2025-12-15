@@ -31,13 +31,15 @@ namespace myl
         {   
             if(0.f == distance) return;
 
+            ASSERT(posStart == int(posStart))
+
             eDir = distance < 0 ? LEFT : RIGHT;
             
             this->position =           posStart;
             this->posStart =           posStart;
             this->distance =           distance;
             this->distancA =  std::abs(distance);
-            dist           = 0;
+            dist           =  0;
             isMoving = true;
         }
 
@@ -59,6 +61,17 @@ namespace myl
                 
                 isMoving = false;
                 eDir     = STOP ;
+
+                if(position != int(position))///////////////////////////////////
+                {   
+                    l(posStart)
+                    l(distance)
+                    l(position)
+                    l(int(position))
+                    
+                }
+
+            /// ASSERT(position == int(position)) ///<--------------------: TODO
             }
 
             return isMoving;
@@ -138,22 +151,22 @@ namespace myl
         static void test()
         {   TestInfo inf("Step2DistanceB");
 
-            Step2DistanceB step2Distance(30);
+            Step2DistanceB step2Distance(100);
 
             inf.Case();
             {
-                step2Distance.start(20, Step2DistanceB::RIGHT);
+                step2Distance.start(0, Step2DistanceB::RIGHT);
                 while(step2Distance.sensor(0.12345f));
 
                 step2Distance.start(
-                    step2Distance.getPosition(), Step2DistanceB::LEFT );
+                    step2Distance.getPosition(), Step2DistanceB::RIGHT );
                 while(step2Distance.sensor(0.12345f));
 
                 step2Distance.start(
-                    step2Distance.getPosition(), Step2DistanceB::LEFT );
+                    step2Distance.getPosition(), Step2DistanceB::RIGHT );
                 while(step2Distance.sensor(0.12345f));
 
-                l(TestInfo::showResult(-10.f, step2Distance.getPosition()))
+                l(TestInfo::showResult(300.f, step2Distance.getPosition()))
             }
         }
     };
