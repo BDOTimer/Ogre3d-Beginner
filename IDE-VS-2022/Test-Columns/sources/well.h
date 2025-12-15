@@ -14,7 +14,7 @@ namespace mdl
     ///------------------------------------------------------------------------|
     /// Три стенки корзины.
     ///-------------------------------------------------------------- Well3Wall:
-    struct Well3Wall
+    struct Well3Wall : Base
     {
         Ogre::SceneNode* wallNode;
         Ogre::Entity*    walls[3];
@@ -24,9 +24,9 @@ namespace mdl
         const char* nameMat{"Glass/WellWallsSimple"};
     /// const char* nameMat{"Examples/Rockwall"};
     
-        void setup(Ogre::SceneManager* scnMgr)
+        void setup(SceneNode*  node)
         {
-            wallNode = scnMgr->getRootSceneNode()->createChildSceneNode("3Walls");
+            wallNode = node->createChildSceneNode("3Walls");
 
             Ogre::Plane leftPlane (Ogre::Vector3::UNIT_X, 0);
             Ogre::Plane rightPlane(Ogre::Vector3::NEGATIVE_UNIT_X, 0);
@@ -102,19 +102,20 @@ namespace mdl
             {   
             }
         
-        SceneNode*  node{nullptr};
+        SceneNode*  node;
+        Well3Wall   well3Wall;
         Figure      figure;
 
-
     private:
-        void setup(Ogre::SceneManager* scnMgr)
+        void setup()
         {   
             ///------------------------|
             /// Нод корзины!           |
             ///------------------------:
-            node = scnMgr->getRootSceneNode()->createChildSceneNode();
-
+            node = nodeBase->createChildSceneNode();
             figure.setup(scnMgr, node);
+
+            well3Wall.setup(node);
         }
 
         void changeFigure    ()

@@ -12,7 +12,7 @@
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\engine\OgreMain\include;..\..\engine\\OgreMain\include\build;..\..\engine\OgreMain\src\zip;..\..\engine\OgreMain\Components\Bites\include;..\..\engine\OgreMain\Components\Overlay\include;..\..\engine\1\imgui-1.91.9b;..\..\engine\OgreMain\Components\RTShaderSystem\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\engine\OgreMain\Components\Bites\include;..\..\engine\OgreMain\include;..\..\engine\\OgreMain\include\build;..\..\engine\OgreMain\src\zip;..\..\engine\OgreMain\Components\Bites\include;..\..\engine\OgreMain\Components\Overlay\include;..\..\engine\1\imgui-1.91.9b;..\..\engine\OgreMain\Components\RTShaderSystem\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat />
       <MultiProcessorCompilation>true</MultiProcessorCompilation>

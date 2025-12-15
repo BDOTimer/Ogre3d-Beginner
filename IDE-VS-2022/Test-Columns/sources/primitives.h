@@ -19,6 +19,8 @@ namespace mdl
     struct  Base
     {   inline static InspectorRoot     * pInspectorRoot{ nullptr };
         inline static ApplicationContext* ctx            { nullptr };
+        inline static Ogre::SceneManager* scnMgr         { nullptr };
+        inline static Ogre::SceneNode   * nodeBase       { nullptr };
         inline static float               deltaTime;
     };
 
@@ -28,6 +30,7 @@ namespace mdl
     struct  Camera : Base
     {   
         Ogre::SceneNode* camNode;
+        Ogre::SceneNode* camGoal;
         Ogre::Camera*        cam;
         Ogre::Viewport*       vp;
 
@@ -35,10 +38,14 @@ namespace mdl
 
         Ogre::Camera* get() const { return cam; }
 
-        void setup(Ogre::SceneManager* scnMgr)
+        void setup()
         {   
             cam = scnMgr->createCamera("myCam");
             cam->setNearClipDistance  (5);
+
+            camGoal = scnMgr->getRootSceneNode()->createChildSceneNode();
+            camGoal->setPosition(0, 700, 0);
+
 
             camNode = scnMgr->getRootSceneNode()->createChildSceneNode();
             camNode->setPosition   (0, 800, 1900);
@@ -46,7 +53,7 @@ namespace mdl
             camNode->attachObject  (cam);
 
             vp = ctx->getRenderWindow()->addViewport(cam);
-            vp->setBackgroundColour(ColourValue(0, 0, 0.1f));
+            vp->setBackgroundColour(ColourValue(0, 0, 0.02f));
 
             cam->setAspectRatio(Real(vp->getActualWidth ()) / 
                                 Real(vp->getActualHeight()));
@@ -55,12 +62,59 @@ namespace mdl
             /// Manager.         |
             ///------------------:
             man = std::make_unique<OgreBites::CameraMan>(camNode);
-            man->setStyle(OgreBites::CS_FREELOOK); // или CS_ORBIT
-            man->setTopSpeed(400);
+
+            man->setTarget(camGoal);
+            man->setYawPitchDist(Ogre::Degree(45), Ogre::Degree(-30), 2000.0f);
+
+            man->setStyle(OgreBites::CS_ORBIT); // или  CS_FREELOOK
+            man->setTopSpeed(100);
+            man->setFixedYaw(true);
             ctx->addInputListener(man.get());
         }
     };
 
+    ///------------------------------------------------------------------------|
+    /// Текст.
+    ///--------------------------------------------------------------- TextTest:
+    struct  TextTest : Base
+    {
+        void setup()
+        {   
+            
+        }
+    };
+
+    ///------------------------------------------------------------------------|
+    /// Грунт.
+    ///----------------------------------------------------------------- Ground:
+    struct  Ground : Base
+    {       
+        Ogre::Entity*  entity;
+        SceneNode*     node  ;
+
+        void setup()
+        {   
+            const char* name{"ground"};
+            
+            Plane plane(Vector3::UNIT_Y, 0);
+
+            MeshManager::getSingleton().createPlane(
+                name, RGN_DEFAULT,
+                plane,
+                2500, 2500, 20, 20,
+                true,
+                1, 5, 5,
+                Vector3::UNIT_Z
+            );
+
+            Entity* groundEntity = scnMgr->createEntity(name);
+            node = nodeBase->createChildSceneNode();
+            node->attachObject(groundEntity);
+
+            groundEntity->setCastShadows (false);
+            groundEntity->setMaterialName("Examples/Rockwall");
+        }
+    };
 
     ///------------------------------------------------------------------------|
     /// Нидзя.
@@ -70,12 +124,12 @@ namespace mdl
         Ogre::Entity*  entity;
         SceneNode*     node  ;
 
-        void setup(Ogre::SceneManager* scnMgr)
+        void setup()
         {   
             entity = scnMgr->createEntity("ninja.mesh");
             entity ->setCastShadows(true);
 
-            node = scnMgr->getRootSceneNode()->createChildSceneNode();
+            node = nodeBase->createChildSceneNode();
             node->attachObject   (entity);
             node->yaw(Ogre::Degree (160));
             node->setPosition (400, 0, 100);
@@ -103,13 +157,13 @@ namespace mdl
 
         std::array<MaterialPtr, 5> mat;
 
-        void setup(Ogre::SceneManager* scnMgr)
+        void setup()
         {   for(unsigned i{}; i < color.size(); ++i)
-            {   setup(scnMgr, i);
+            {   setup(i);
             }
         }
 
-        void setup(Ogre::SceneManager* scnMgr, const size_t n)
+        void setup(const size_t n)
         {   
             std::string sn{std::to_string(n)};
             
@@ -117,7 +171,7 @@ namespace mdl
             std::string nameM{"matSph"}; nameM += sn;
 
             entity = scnMgr->createEntity(name, "sphere.mesh");
-            node = scnMgr->getRootSceneNode()->createChildSceneNode();
+            node = nodeBase->createChildSceneNode();
             node->attachObject(entity);
             node->setPosition(0, 50 + (100 * float(n)), 0);
             node->setScale(0.5f, 0.5f, 0.5f);
@@ -144,7 +198,7 @@ namespace mdl
     {       
         Ogre::Entity*  entity;
 
-        void setup(Ogre::SceneManager* scnMgr)
+        void setup()
         {   
             using namespace Ogre;
 
@@ -210,7 +264,7 @@ namespace mdl
 
         const char* name1{"myModel"};
 
-        void setup(Ogre::SceneManager* scnMgr, Ogre::String filename)
+        void setup(Ogre::String filename)
         {   
             mesh = Ogre::MeshManager::getSingleton().load(
                 "model.obj",
@@ -220,7 +274,7 @@ namespace mdl
             );
 
             entity = scnMgr->createEntity("myModel", "model.obj");
-            node   = scnMgr->getRootSceneNode()->createChildSceneNode();
+            node   = nodeBase->createChildSceneNode();
             node->attachObject(entity);
             node->setPosition (0, 0, 0);
             node->setScale    (0.1f, 0.1f, 0.1f);
@@ -235,12 +289,12 @@ namespace mdl
         Ogre::Entity*  entity;
         SceneNode*     node  ;
 
-        void setup(Ogre::SceneManager* scnMgr)
+        void setup()
         {   
             entity = scnMgr->createEntity("12150_Christmas_Tree_V2_L2.mesh");
             entity ->setCastShadows(true);
 
-            node = scnMgr->getRootSceneNode()->createChildSceneNode();
+            node = nodeBase->createChildSceneNode();
             node->attachObject       (entity);
 
             //node->pitch(Ogre::Degree( -90));
@@ -248,7 +302,7 @@ namespace mdl
                 Ogre::Degree(-90), Ogre::Vector3::UNIT_X));
 
             node->setPosition(-700, 0, -700);
-            node->setScale   (5, 2, 5);
+            node->setScale   (7, 7, 4);
         }
     };
 }

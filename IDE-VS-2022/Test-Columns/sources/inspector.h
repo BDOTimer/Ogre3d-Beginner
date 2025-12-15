@@ -6,6 +6,7 @@
 #include "well.h"
 #include "ui.h"
 
+
 ///---------|
 /// Models. |
 ///---------:
@@ -18,11 +19,12 @@ namespace mdl
             :   Base
             ,   OgreBites::ApplicationContext
             ,   OgreBites::InputListener
-    {       InspectorRoot( ): OgreBites::ApplicationContext("Test-Columns-2025")
+    {       InspectorRoot( ): OgreBites::ApplicationContext("")
             {}
         
         Ogre::Root*           root;
         Ogre::SceneManager* scnMgr;
+        SceneNode*        nodeBase;
 
         Camera       camera;
         Ninja         ninja;
@@ -31,9 +33,10 @@ namespace mdl
         UI               ui;
         Tree           tree;
         Well           well;
-        Well3Wall well3Wall;
+        Ground       ground;
         
         Ogre::RTShader::ShaderGenerator* shadergen;
+
 
     protected:
 
@@ -45,6 +48,7 @@ namespace mdl
         void setup() override
         {   
             OgreBites::ApplicationContext::setup();
+
             addInputListener(this);
 
             Base::pInspectorRoot = this;
@@ -56,37 +60,44 @@ namespace mdl
             scnMgr->setShadowTechnique(
                 ShadowTechnique::SHADOWTYPE_STENCIL_ADDITIVE);
 
+            nodeBase = scnMgr->getRootSceneNode()->createChildSceneNode();
+
+            Base::scnMgr   = scnMgr;
+            Base::nodeBase = nodeBase;
+
         /// root->loadPlugin("OgreAssimp");
 
             shadergen = RTShader::ShaderGenerator::getSingletonPtr();
             shadergen-> addSceneManager(scnMgr);
 
-            camera   .setup(scnMgr);
-            ninja    .setup(scnMgr);
-        /// sphere   .setup(scnMgr);
-            lights   .setup(scnMgr);
-            tree     .setup(scnMgr);
-            well     .setup(scnMgr);
-            well3Wall.setup(scnMgr);
+            camera   .setup();
+            ninja    .setup();
+        /// sphere   .setup();
+            lights   .setup();
+            tree     .setup();
+            well     .setup();
+            ground   .setup();
 
-            Plane plane(Vector3::UNIT_Y, 0);
+            // Добавьте ВСЕ папки с ресурсами перед инициализацией
+            ResourceGroupManager& rgm = ResourceGroupManager::getSingleton();
 
-            MeshManager::getSingleton().createPlane(
-                "ground", RGN_DEFAULT,
-                plane,
-                2500, 2500, 20, 20,
-                true,
-                1, 5, 5,
-                Vector3::UNIT_Z
-            );
+            // Добавляем основную папку media
+            rgm.addResourceLocation("media", "FileSystem", "General");
 
-            Entity* groundEntity = scnMgr->createEntity("ground");
-            scnMgr  ->getRootSceneNode    ()
-                    ->createChildSceneNode()
-                    ->attachObject(groundEntity);
+            // Добавляем папку со шрифтами отдельно (важно!)
+            rgm.addResourceLocation("media/fonts", "FileSystem", "General");
 
-            groundEntity->setCastShadows (false);
-            groundEntity->setMaterialName("Examples/Rockwall");
+            // Явно загружаем .fontdef файл
+            rgm.initialiseResourceGroup("General");
+
+            // ИЛИ инициализируем все
+            //rgm.initialiseAllResourceGroups();
+
+            Ogre::RenderWindow* mWindow = getRenderWindow();
+            OgreBites::TrayManager* trayMgr
+                = new OgreBites::TrayManager("UI", mWindow);
+            trayMgr->createLabel(OgreBites::TL_TOP, "title",
+                "Объект UI создан! Автор: ...");
         }
 
         ///-------------------------------------------|
@@ -96,8 +107,9 @@ namespace mdl
         {   if (evt.keysym.sym == SDLK_ESCAPE)
             {   getRoot()->queueEndRendering();
             }
-            else if (evt.keysym.sym == SDLK_SPACE)
-            {   /// ...
+            else if (isRotWold && evt.keysym.sym == SDLK_SPACE)
+            {   isRotWold = false;
+                return      true;
             }
             
             return well.keyPressed(evt);
@@ -105,6 +117,7 @@ namespace mdl
 
         float accumulatedTime{0};  // Накопленное время
         float intervalTime   {4};  // Интервал (1 секунда)
+        bool  isRotWold   {true};
 
         ///-------------------------------------------|
         /// Тут крутятся фреймы.                      |
@@ -122,7 +135,10 @@ namespace mdl
             }
 
             well.update(evt.timeSinceLastFrame);
+
+            if(isRotWold) nodeBase->yaw  (Ogre::Degree(30 * deltaTime));
         }
+
     };
 }
 

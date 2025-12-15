@@ -175,8 +175,7 @@ namespace mdl
         ///-------------------------------------------|
         /// Стартовая инициализация.                  |
         ///-------------------------------------------:
-        void setup(Ogre::SceneManager* scnMgr,
-                   const size_t        n     ,
+        void setup(const size_t        n     ,
                    SceneNode*          parent,
                    const size_t        id)
         {   
@@ -285,7 +284,7 @@ namespace mdl
             {   
                 const size_t rnd = rand() % mat.size();
                 
-                gems[i].setup(scnMgr, i, node, rnd);
+                gems[i].setup(i, node, rnd);
                 gems[i].entity->setMaterialName(mat[rnd]->getName());
             }
         }

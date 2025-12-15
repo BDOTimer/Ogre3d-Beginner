@@ -10,12 +10,17 @@
 #include <iostream>
 #include <format>
 
+#include <OgreImGuiInputListener.h>
 #include "OgreApplicationContext.h"
 #include "OgreRTShaderSystem.h"
 #include "OgreAssimpLoader.h"
 #include "OgreCameraMan.h"
 #include "OgreInput.h"
 #include "Ogre.h"
+
+#include "OgreApplicationContext.h"
+#include "OgreTrays.h"
+
 
 #pragma warning(pop)
 
