@@ -7,7 +7,7 @@
 #include "config-game.h"
 
 ///---------|
-/// Models. |
+/// Modules.|
 ///---------:
 namespace mdl
 {   
