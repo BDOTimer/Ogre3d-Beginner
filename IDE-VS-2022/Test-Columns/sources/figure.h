@@ -254,12 +254,21 @@ namespace mdl
         std::vector<Gem>         gems;
         std::vector<MaterialPtr> mat ;
         SceneNode*               node; /// Нод фигуры!
-        float        speedMove{50.0f}; /// единиц в секунду.
-
-
+        
     private:
 
         myl::Step2DistanceB step2DistanceB;
+
+        struct 
+        {   float  get() const   { return speedMoveCurr ; }
+            void start(){ speedMoveCurr = speedMoveStart; }
+            void    up(){ speedMoveCurr = speedMoveFast ; }
+
+        private:
+            float speedMoveStart{100.0f}; /// единиц в секунду.
+            float speedMoveFast {300.0f};
+            float speedMoveCurr {speedMoveStart};
+        }speedFigFall;
 
         ///-------------------------------------------|
         /// Стартовая инициализация.                  |
@@ -273,7 +282,7 @@ namespace mdl
             node = well->createChildSceneNode();
 
             createMaterial();
-            reGenerate     ();
+            reGenerate    ();
         }
 
         void reGenerate()
@@ -287,6 +296,8 @@ namespace mdl
                 gems[i].setup(i, node, rnd);
                 gems[i].entity->setMaterialName(mat[rnd]->getName());
             }
+
+            speedFigFall.start();
         }
 
         void Xclear()
@@ -304,7 +315,7 @@ namespace mdl
             /// Движение вниз.         |
             ///------------------------:
             if(isFalling)
-            {   node->translate(0, -speedMove * deltaTime, 0);
+            {   node->translate(0, -speedFigFall.get() * deltaTime, 0);
             }
 
             Ogre::Vector3 position = node->getPosition();
@@ -343,14 +354,15 @@ namespace mdl
                 break;
                 
             case OgreBites::SDLK_DOWN:
+                speedFigFall.up();
                 break;
                 
-            case 122: /// OgreBites::SDLK_LEFT: 'Z'
+            case OgreBites::SDLK_LEFT: /// 122: 'Z'
             {   const auto& p = node->getPosition();
                 step2DistanceB.start(p.x, myl::Step2Distance::LEFT);
                 break;
             }
-            case 120: /// OgreBites::SDLK_RIGHT: 'X'
+            case OgreBites::SDLK_RIGHT: /// 120: 'X'
             {   const auto& p = node->getPosition();
                 step2DistanceB.start(p.x, myl::Step2Distance::RIGHT);
                 break;
