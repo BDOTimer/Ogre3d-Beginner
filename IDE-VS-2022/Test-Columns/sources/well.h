@@ -94,6 +94,64 @@ namespace mdl
         }
     };
 
+
+    ///------------------------------------------------------------------------|
+    /// Корзина - ЛОГИКА.
+    ///-------------------------------------------------------------- WellLogic:
+    struct  WellLogic : Base
+    {       WellLogic()
+            {   
+            }
+
+    private:
+        SceneNode*  node;
+        const ConfigGame& cfg{ConfigGame::get()};
+
+        void setup(SceneNode*  nodeWell)
+        {   node = nodeWell->createChildSceneNode();
+        }
+
+        void add(Figure& figure)
+        {   std::vector<Gem>& gems = figure.gems;
+
+            l(cfg.W)
+
+            const int SIZECELL{(int)cfg.sizeCell};
+            const int OFFSET  {(int)cfg.W / 2};
+
+            const Ogre::Vector3& posFig{figure.node->getPosition()};
+
+            l("==================")
+            l(posFig)
+
+            for(auto& gem : gems)
+            {   
+                const Ogre::Vector3& posGem{gem.node->getPosition()};
+
+                l(posGem)
+
+                const Ogre::Vector3i posGemI
+                {   int(posFig.x + posGem.x) / SIZECELL + OFFSET,
+                    int(posFig.y + posGem.y) / SIZECELL,
+                    int(posFig.z + posGem.z) / SIZECELL
+                };
+
+                add(gem, posGemI);
+            }
+        }
+
+        void add(Gem& gem, const Ogre::Vector3i& posGemI)
+        {   
+            l(gem.id )
+            l(posGemI)
+        }
+
+        std::vector<std::vector<Gem>> m;
+
+        friend struct Well;
+    };
+
+
     ///------------------------------------------------------------------------|
     /// Корзина.
     ///------------------------------------------------------------------- Well:
@@ -106,6 +164,11 @@ namespace mdl
         Well3Wall   well3Wall;
         Figure      figure;
 
+        ///----------------------------|
+        /// Содержимое корзины!        |
+        ///----------------------------:
+        WellLogic  logic;
+
     private:
         void setup()
         {   
@@ -116,6 +179,12 @@ namespace mdl
             figure.setup(scnMgr, node);
 
             well3Wall.setup(node);
+            logic    .setup(node);
+
+            ///------------------------|
+            /// Делегируем.            |
+            ///------------------------:
+            figure.delegate4Well = [this](Figure* figure){ logic.add(*figure);};
         }
 
         void changeFigure    ()

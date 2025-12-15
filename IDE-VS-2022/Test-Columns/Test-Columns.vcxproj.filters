@@ -30,6 +30,9 @@
     <ClInclude Include="sources\well.h">
       <Filter>sources</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Resourses</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="sources">
@@ -38,5 +41,13 @@
     <Filter Include="sources\box">
       <UniqueIdentifier>{b5b43500-78bf-4521-99d8-21cc8b8d753a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resourses">
+      <UniqueIdentifier>{dda990f6-ada6-4555-98da-448ff984d89c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Test-Columns.rc">
+      <Filter>Resourses</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

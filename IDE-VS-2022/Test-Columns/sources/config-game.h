@@ -23,7 +23,7 @@ struct DescriptionGem
 ///----------------------------------------------------------------- ConfigGame:
 struct  ConfigGame
 {       ConfigGame()
-        {   
+        {   W += (W+1)%2;
         }
 
     unsigned W{ 7}; /// Ширина (кол-во ячеек) корзины(Well).

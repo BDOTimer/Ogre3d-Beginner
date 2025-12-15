@@ -103,5 +103,12 @@ private:
 };
 
 
+template<typename T>
+std::ostream& operator<<(std::ostream& o, Ogre::Vector<3, T> v)
+{   o << std::fopen("[ x::{}, y::{}, z::{} ]\n", v.x, v.y, v.z);
+    return o;
+}
+
+
 #endif // DEBUG_H
 

@@ -22,6 +22,8 @@ namespace myl
               STOP
         }eDir{STOP};
 
+        bool isUserMoving() const { return isMoving; }
+
         ///-------------------------------------------|
         /// Начать движение.                          |
         ///-------------------------------------------:
@@ -325,8 +327,6 @@ namespace mdl
                 
                 node->setPosition(position.x, groundLevel, position.z);
                 isFalling   = false;
-
-                onGroundCollision();
             }
 
             for(auto& e : gems) e.update(deltaTime);
@@ -335,6 +335,10 @@ namespace mdl
             if(step2DistanceB.sensor(deltaTime * speedMoving))
             {   const auto& p{node->getPosition()};
                 node->setPosition(step2DistanceB.getPosition(), p.y, p.z);
+            }
+            else if(!isFalling && !step2DistanceB.isUserMoving())
+            {   
+                onGroundCollision();
             }
         }
 
@@ -398,7 +402,8 @@ namespace mdl
         /// Обработка столкновения фигуры с землей.   |
         ///-------------------------------------------:
         void onGroundCollision()
-        {    reGenerate();
+        {    sendFigure2Well();
+             reGenerate();
              isFalling = true;
         }
 
@@ -423,6 +428,18 @@ namespace mdl
         bool sensorCollisions()
         {
 
+        }
+
+        ///-------------------------------------------|
+        /// Делегат от логики корзины.                |
+        ///-------------------------------------------:
+        std::function<void(Figure*)> delegate4Well;
+
+        ///-------------------------------------------|
+        /// Отправка фигуры в корзину.                |
+        ///-------------------------------------------:
+        void sendFigure2Well()
+        {   delegate4Well(this);
         }
 
         friend struct Well;

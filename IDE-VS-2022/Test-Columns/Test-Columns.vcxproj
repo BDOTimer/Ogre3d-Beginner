@@ -23,6 +23,7 @@
     <ClCompile Include="sources\main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="resource.h" />
     <ClInclude Include="sources\box\debug.h" />
     <ClInclude Include="sources\config-game.h" />
     <ClInclude Include="sources\figure.h" />
@@ -30,6 +31,9 @@
     <ClInclude Include="sources\primitives.h" />
     <ClInclude Include="sources\ui.h" />
     <ClInclude Include="sources\well.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Test-Columns.rc" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
