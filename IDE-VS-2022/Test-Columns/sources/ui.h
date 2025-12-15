@@ -5,21 +5,188 @@
 #ifndef UI_H
 #define UI_H
 #include "config-game.h"
-
+ 
 ///---------|
-/// Modules.|
+/// Models. |
 ///---------:
 namespace mdl
 {   
-    struct  UI : Base ///<--- в Base можно взять указатели манагера сцены...
+    using namespace Ogre;
+    using namespace OgreBites;
+
+    ///------------------------------------------------------------------------|
+    /// Автор: Royal_X
+    ///------------------------------------------------------- ClickableTextBox:
+    class ClickableTextBox
+    {
+    private:
+        TrayManager* mTrayMgr;
+        TextBox*     mTextBox;
+ 
+        std::string mTextShort;
+        std::string mTextLong;
+        std::string mCaption;
+ 
+        int mX;
+        int mY;
+        int mWidth       = 300;
+        int mShortHeight =  60;
+        int mLongHeight  = 100;
+ 
+        bool mIsLongText = false;
+
+        void createTextBox()
+        {
+            static int id = 0;
+            std::string name = "ClickableTextBox_" + std::to_string(id++);
+            mTextBox = mTrayMgr->createTextBox(
+                TrayLocation::TL_TOPLEFT,
+                name,
+                mCaption,
+                float(mWidth),
+                float(mIsLongText ? mLongHeight : mShortHeight)
+            );
+            mTextBox->setText(mIsLongText ? mTextLong : mTextShort);
+        }
+
+        void destroyTextbox()
+        {   if (mTrayMgr && mTextBox)
+            {   mTrayMgr->destroyWidget(mTextBox);
+                mTextBox = nullptr;
+            }
+        }
+
+        void toggleText()
+        {   if (mTextBox == nullptr) return;
+            mIsLongText = !mIsLongText;
+            destroyTextbox();
+            createTextBox();
+        }
+
+    public:
+        ClickableTextBox(TrayManager* trayManager)
+            : mTrayMgr(trayManager)
+            , mTextShort("")
+            , mTextLong("")
+            , mCaption("")
+            , mX(0)
+            , mY(0)
+        {
+            createTextBox();
+        }
+
+        ClickableTextBox(TrayManager* trayManager, 
+            const std::string& textShort, 
+            const std::string& textLong,
+            const std::string& caption,
+            int x, int y)
+            : mTrayMgr(trayManager)
+            , mTextShort(textShort)
+            , mTextLong(textLong)
+            , mCaption(caption)
+            , mX(x)
+            , mY(y)
+        {
+            createTextBox();
+        }
+        ~ClickableTextBox()
+        { 
+        }
+
+        void setup(int x, int y)
+        {
+            mX = x;
+            mY = y;
+        }
+
+        void setText(const std::string& textShort, const std::string& textLong)
+        {
+            mTextShort = textShort;
+            mTextLong  = textLong;
+            if (mTextBox)
+                mTextBox->setText(mIsLongText ? mTextLong : mTextShort);
+        }
+
+        void setCaption(const std::string& caption)
+        {
+            mCaption = caption;
+            if (mTextBox)
+                mTextBox->setCaption(mCaption);
+        }
+
+        bool keyPressed(const KeyboardEvent& evt)
+        {   switch(evt.keysym.sym)
+            {   case OgreBites::SDLK_F1:
+                {   toggleText();
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        bool mousePressed(const OgreBites::MouseButtonEvent& evt)
+        {
+            if (evt.button != OgreBites::BUTTON_LEFT)
+                return false;
+ 
+            if (mTextBox && mTextBox->isVisible())
+            {
+                int currentWidth = mWidth;
+                int currentHeight = mIsLongText ? mLongHeight : mShortHeight;
+
+                if (evt.x >= mX &&
+                    evt.x <= mX + currentWidth &&
+                    evt.y >= mY &&
+                    evt.y <= mY + currentHeight)
+                {
+                    toggleText();
+                    return true;
+                }
+            }
+            return false;
+        }
+    };
+
+    ///------------------------------------------------------------------------|
+    /// UI
+    ///--------------------------------------------------------------------- UI:
+    struct  UI : Base
     {       UI()
             {   std::cout << "Объект UI создан! Автор: Royal_X\n";
             }
-        
-        
+
+        OgreBites::TrayManager* trayMgr;
+        ClickableTextBox*           ctb;
+
+        bool keyPressed(const KeyboardEvent& evt)
+        {   return ctb->keyPressed(evt);
+        }
+
+        bool mousePressed(const OgreBites::MouseButtonEvent& evt)
+        {   return ctb->mousePressed(evt);
+        }
+
+        void setup()
+        {   
+            OverlaySystem*  overlaySystem = ctx->getOverlaySystem();
+
+            scnMgr->addRenderQueueListener(overlaySystem);
+ 
+            Ogre::RenderWindow* mWindow = ctx->getRenderWindow();
+            trayMgr = new OgreBites::TrayManager("UI", mWindow);
+            ctx->addInputListener(trayMgr);
+            trayMgr->hideCursor();
+ 
+            ctb = new ClickableTextBox(trayMgr);
+            ctb->setup(0, 0);
+            ctb->setText(
+                "Short text", 
+                "КУРСОР: LEFT, RIGHT, DOWN.\n"
+                "ПРОБЕЛ: Сдвинуть жемчуг.\n");
+            ctb->setCaption("F1::Help");
+        }
     };
 }
-
-
+ 
+ 
 #endif // UI_H
-

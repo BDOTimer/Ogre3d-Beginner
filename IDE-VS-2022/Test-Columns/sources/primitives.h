@@ -17,10 +17,11 @@ namespace mdl
     ///------------------------------------------------------------------- Base:
     struct  InspectorRoot;
     struct  Base
-    {   inline static InspectorRoot     * pInspectorRoot{ nullptr };
-        inline static ApplicationContext* ctx            { nullptr };
-        inline static Ogre::SceneManager* scnMgr         { nullptr };
-        inline static Ogre::SceneNode   * nodeBase       { nullptr };
+    {   inline static InspectorRoot     * pInspectorRoot  { nullptr };
+        inline static ApplicationContext* ctx              { nullptr };
+        inline static OgreBites::InputListener*  pIListener{ nullptr };
+        inline static Ogre::SceneManager* scnMgr           { nullptr };
+        inline static Ogre::SceneNode   * nodeBase         { nullptr };
         inline static float               deltaTime;
     };
 

@@ -35,7 +35,7 @@ namespace mdl
         Tree           tree;
         Well           well;
         Ground       ground;
-        
+
         Ogre::RTShader::ShaderGenerator* shadergen;
 
 
@@ -54,6 +54,7 @@ namespace mdl
 
             Base::pInspectorRoot = this;
             Base::ctx             = this;
+            Base::pIListener     = this;
 
             root   = getRoot();
             scnMgr = root->createSceneManager();
@@ -84,6 +85,7 @@ namespace mdl
             tree     .setup();
             well     .setup();
             ground   .setup();
+            ui       .setup();
 
             // Добавьте ВСЕ папки с ресурсами перед инициализацией
             ResourceGroupManager& rgm = ResourceGroupManager::getSingleton();
@@ -100,11 +102,6 @@ namespace mdl
             // ИЛИ инициализируем все
             //rgm.initialiseAllResourceGroups();
 
-            Ogre::RenderWindow* mWindow = getRenderWindow();
-            OgreBites::TrayManager* trayMgr
-                = new OgreBites::TrayManager("UI", mWindow);
-            trayMgr->createLabel(OgreBites::TL_TOP, "title",
-                "Объект UI создан! Автор: ...");
         }
 
         ///-------------------------------------------|
@@ -118,8 +115,14 @@ namespace mdl
             {   isRotWold = false;
                 return      true;
             }
+
+            ui.keyPressed(evt);
             
             return well.keyPressed(evt);
+        }
+
+        bool mousePressed(const OgreBites::MouseButtonEvent& evt)
+        {   return ui.mousePressed(evt);
         }
 
         float accumulatedTime{0};  // Накопленное время
