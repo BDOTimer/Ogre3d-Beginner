@@ -37,9 +37,9 @@ namespace mdl
         DisplayString mTextLong;
         DisplayString mCaption;
  
-        int mWidthS      = 100;
+        int mWidthS      = 150;
         int mWidthL      = 350;
-        int mShortHeight =  60;
+        int mShortHeight =  80;
         int mLongHeight  = 130;
  
         bool mIsLongText = false;
