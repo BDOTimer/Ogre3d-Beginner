@@ -1,4 +1,4 @@
-///----------------------------------------------------------------------------|
+﻿///----------------------------------------------------------------------------|
 /// "ui.h"
 /// Автор: Royal_X
 ///----------------------------------------------------------------------------:
@@ -6,7 +6,8 @@
 #define UI_H
 #include "config-game.h"
 
-void OgreBites::setTextBoxFont(OgreBites::TextBox* tb, const Ogre::String& fontName)
+void OgreBites::setTextBoxFont(OgreBites::TextBox* tb, 
+                                const Ogre::String& fontName)
 {
     if (!tb) return;
 
@@ -37,9 +38,9 @@ namespace mdl
         DisplayString mTextLong;
         DisplayString mCaption;
  
-        int mWidthS      = 150;
+        int mWidthS      =  80;
         int mWidthL      = 350;
-        int mShortHeight =  80;
+        int mShortHeight =  34;
         int mLongHeight  = 130;
  
         bool mIsLongText = false;
@@ -56,7 +57,7 @@ namespace mdl
                 float(mIsLongText ? mLongHeight : mShortHeight)
             );
             mTextBox->setText(mIsLongText ? mTextLong : mTextShort);
-            setTextBoxFont(mTextBox, "ArialFont");
+            setTextBoxFont (mTextBox, "ArialFont");
         }
 
         void destroyTextbox()
