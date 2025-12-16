@@ -37,7 +37,7 @@ namespace mdl
 
         Ogre::RTShader::ShaderGenerator* shadergen;
 
-        ConfigGame cfg{ConfigGame::get()};
+        ConfigGame& cfg{ConfigGame::get()};
 
     protected:
 
@@ -105,6 +105,12 @@ namespace mdl
                 case OgreBites::SDLK_F6:
                     isSpeedRotWold = isSpeedRotWold ? 0 : -speedRotWold;
                     break;
+                case OgreBites::SDLK_PAUSE:
+                case 112: // 'P'--->112
+                    isPause = !isPause;
+                    break;
+                default: l(evt.keysym.sym)
+                    ;
             }
 
             bool    b{false};
@@ -121,6 +127,7 @@ namespace mdl
         float intervalTime   { 1};  // Интервал (1 секунда)
         int   isSpeedRotWold { 0};  // Нет вращения Мира.
         int     speedRotWold {30};  // Нет вращения Мира.
+        bool  isPause     {false};
 
         ///-------------------------------------------|
         /// Тут крутятся фреймы.                      |
@@ -136,6 +143,8 @@ namespace mdl
             /// changeFigure();
                 accumulatedTime -= intervalTime;
             }
+
+            if(isPause) return;
 
             well.update(evt.timeSinceLastFrame);
 

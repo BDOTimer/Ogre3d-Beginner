@@ -38,10 +38,10 @@ namespace mdl
         DisplayString mTextLong;
         DisplayString mCaption;
  
-        int mWidthS      =  80;
+        int mWidthS      = 110;
         int mWidthL      = 350;
         int mShortHeight =  34;
-        int mLongHeight  = 130;
+        int mLongHeight  = 150;
  
         bool mIsLongText = false;
 
@@ -183,7 +183,9 @@ namespace mdl
                 "Short text", 
                 "CURSOR : LEFT, RIGHT, DOWN\n"
                 "SPACE  : Сдвинуть жемчуг\n"
-                "F5, F6 : Вращение сцены\n");
+                "F5, F6 : Вращение сцены\n"
+                "'P'    : Пауза\n"
+            );
             ctb->setCaption("F1::Help");
         }
     };
