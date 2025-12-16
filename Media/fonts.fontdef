@@ -1,4 +1,4 @@
-ArialFont
+JetBrainsMonoFont
 {
     type truetype
     source JetBrainsMono-Medium.ttf //arial.ttf
