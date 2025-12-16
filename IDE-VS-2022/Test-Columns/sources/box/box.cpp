@@ -56,4 +56,38 @@ namespace mdl
 #endif
             mOverlaySystem = OGRE_NEW Ogre::OverlaySystem();
         }
+
+        ///-------------------------------------------|
+        /// Установка иконки на окно.                 |
+        ///-------------------------------------------:
+        void InspectorRoot::setWindowIcon(Ogre::RenderWindow* window)
+        {
+#ifdef _WIN32
+            HWND  hwnd   ; window->getCustomAttribute("WINDOW", &hwnd);
+            HICON hIcon{};
+
+            if (hwnd)
+            {   /*
+                hIcon = (HICON)LoadImage(
+                    NULL,
+                    L"icon.ico",
+                    IMAGE_ICON,
+                    0, 0,
+                    LR_LOADFROMFILE | LR_DEFAULTSIZE
+                );
+                */
+                if (!hIcon)
+                {   // Из ресурсов (если есть .rc файл)
+                    hIcon = LoadIcon(GetModuleHandle(NULL),
+                                     MAKEINTRESOURCE(101));
+                }
+            
+                if (hIcon)
+                {   // WM_SETICON - сообщение Windows API
+                    SendMessage(hwnd, WM_SETICON, ICON_SMALL, (LPARAM)hIcon);
+                    SendMessage(hwnd, WM_SETICON, ICON_BIG  , (LPARAM)hIcon);
+                }
+            }
+#endif
+        }
 }

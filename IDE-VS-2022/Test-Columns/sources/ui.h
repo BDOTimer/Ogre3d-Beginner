@@ -11,8 +11,8 @@
 ///---------:
 namespace mdl
 {   
-    using namespace Ogre;
-    using namespace OgreBites;
+    //using namespace Ogre;
+    //using namespace OgreBites;
 
     ///------------------------------------------------------------------------|
     /// Автор: Royal_X
@@ -154,9 +154,9 @@ namespace mdl
     {       UI()
             {   std::cout << "Объект UI создан! Автор: Royal_X\n";
             }
-
-        OgreBites::TrayManager* trayMgr;
-        ClickableTextBox*           ctb;
+    
+        std::unique_ptr<OgreBites::TrayManager> trayMgr;
+        std::unique_ptr<ClickableTextBox>           ctb;
 
         bool keyPressed(const KeyboardEvent& evt)
         {   return ctb->keyPressed(evt);
@@ -173,11 +173,13 @@ namespace mdl
             scnMgr->addRenderQueueListener(overlaySystem);
  
             Ogre::RenderWindow* mWindow = ctx->getRenderWindow();
-            trayMgr = new OgreBites::TrayManager("UI", mWindow);
-            ctx->addInputListener(trayMgr);
+
+            trayMgr = std::make_unique<OgreBites::TrayManager>("UI", mWindow);
+
+            ctx->addInputListener(trayMgr.get());
             trayMgr->hideCursor();
  
-            ctb = new ClickableTextBox(trayMgr);
+            ctb = std::make_unique<ClickableTextBox>(trayMgr.get());
             ctb->setup(0, 0);
             ctb->setText(
                 "Short text", 
