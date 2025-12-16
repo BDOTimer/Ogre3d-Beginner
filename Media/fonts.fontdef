@@ -5,4 +5,5 @@ ArialFont
     size 16
     resolution 96
     code_points 32-127
+    code_points 1024-1279
 }
