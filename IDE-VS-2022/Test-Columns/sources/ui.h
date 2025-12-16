@@ -185,6 +185,7 @@ namespace mdl
                 "SPACE  : Сдвинуть жемчуг\n"
                 "F5, F6 : Вращение сцены\n"
                 "'P'    : Пауза\n"
+                "ESCAPE : Выход из игры\n"
             );
             ctb->setCaption("F1::Help");
         }
