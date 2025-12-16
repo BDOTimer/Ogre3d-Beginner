@@ -123,16 +123,16 @@ material Glass/WellWallsSimple
     {
         pass
         {
-            //lighting on
-            //scene_blend alpha_blend
+            lighting on
+            scene_blend alpha_blend
             depth_write off
             
             cull_hardware none
             cull_software none
             
-            //ambient 0.2 0.2 0.3 0.2
+            ambient 0.2 0.2 0.3 0.2
             diffuse 0.5 0.5 0.8 0.3  // синеватое стекло
-            //specular 1.0 1.0 1.0 1.0 50
+            specular 1.0 1.0 1.0 1.0 50
             
             shininess 128
             
