@@ -33,6 +33,9 @@
     <ClInclude Include="resource.h">
       <Filter>Resourses</Filter>
     </ClInclude>
+    <ClInclude Include="sources\effects.h">
+      <Filter>sources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="sources">

@@ -10,7 +10,6 @@
 /// Свой путь к "ogre.h"                      |
 ///-------------------------------------------:
 #include "OgreConfigPaths.h"
-#include "OgreOverlaySystem.h"
 #pragma warning(pop)
 
 ///---------|

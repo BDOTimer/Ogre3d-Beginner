@@ -26,6 +26,7 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="sources\box\debug.h" />
     <ClInclude Include="sources\config-game.h" />
+    <ClInclude Include="sources\effects.h" />
     <ClInclude Include="sources\figure.h" />
     <ClInclude Include="sources\inspector.h" />
     <ClInclude Include="sources\primitives.h" />

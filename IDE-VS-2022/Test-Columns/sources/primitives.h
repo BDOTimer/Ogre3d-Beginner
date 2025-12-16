@@ -4,27 +4,13 @@
 #ifndef PRIMITIVES_H
 #define PRIMITIVES_H
 #include "config-game.h"
+#include "effects.h"
 
 ///---------|
 /// Models. |
 ///---------:
 namespace mdl
 {   
-    using namespace Ogre;
-    using namespace OgreBites;
-    ///------------------------------------------------------------------------|
-    /// Base.
-    ///------------------------------------------------------------------- Base:
-    struct  InspectorRoot;
-    struct  Base
-    {   inline static InspectorRoot     * pInspectorRoot  { nullptr };
-        inline static ApplicationContext* ctx              { nullptr };
-        inline static OgreBites::InputListener*  pIListener{ nullptr };
-        inline static Ogre::SceneManager* scnMgr           { nullptr };
-        inline static Ogre::SceneNode   * nodeBase         { nullptr };
-        inline static float               deltaTime;
-    };
-
 
     ///------------------------------------------------------------------------|
     /// ExtendedCameraMan(управляем дистанцией).

@@ -75,5 +75,27 @@ inline std::ostream& operator<<(std::ostream& o, const ConfigGame& c)
     return o;
 }
 
+
+///---------|
+/// Models. |
+///---------:
+namespace mdl
+{   
+    using namespace Ogre;
+    using namespace OgreBites;
+    ///------------------------------------------------------------------------|
+    /// Base.
+    ///------------------------------------------------------------------- Base:
+    struct  InspectorRoot;
+    struct  Base
+    {   inline static InspectorRoot     * pInspectorRoot   { nullptr };
+        inline static ApplicationContext* ctx              { nullptr };
+        inline static OgreBites::InputListener*  pIListener{ nullptr };
+        inline static Ogre::SceneManager* scnMgr           { nullptr };
+        inline static Ogre::SceneNode   * nodeBase         { nullptr };
+        inline static float               deltaTime;
+    };
+}
+
 #endif // CONFIG_GAME_H
 
