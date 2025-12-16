@@ -112,23 +112,24 @@ namespace mdl
         }
 
         void add(Figure& figure)
-        {   std::vector<Gem>& gems = figure.gems;
-
-            l(cfg.W)
+        {   
+            /// return;
+            
+            std::vector<Gem>& gems = figure.gems;
 
             const int SIZECELL{(int)cfg.sizeCell};
             const int OFFSET  {(int)cfg.W / 2};
 
             const Ogre::Vector3& posFig{figure.node->getPosition()};
 
-            ///l("==================")
-            ///l(posFig)
+            l("==================")
+            l(posFig)
 
             for(auto& gem : gems)
             {   
                 const Ogre::Vector3& posGem{gem.node->getPosition()};
 
-                ///l(posGem)
+                l(posGem)
 
                 const Ogre::Vector3i posGemI
                 {   int(posFig.x + posGem.x) / SIZECELL + OFFSET,
@@ -136,7 +137,7 @@ namespace mdl
                     int(posFig.z + posGem.z) / SIZECELL
                 };
 
-                ///add(gem, posGemI);
+                add(gem, posGemI);
             }
         }
 

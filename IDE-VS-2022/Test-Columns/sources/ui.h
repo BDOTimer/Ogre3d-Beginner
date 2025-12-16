@@ -29,9 +29,10 @@ namespace mdl
  
         int mX;
         int mY;
-        int mWidth       = 300;
+        int mWidthS      = 100;
+        int mWidthL      = 350;
         int mShortHeight =  60;
-        int mLongHeight  = 100;
+        int mLongHeight  = 130;
  
         bool mIsLongText = false;
 
@@ -43,7 +44,7 @@ namespace mdl
                 TrayLocation::TL_TOPLEFT,
                 name,
                 mCaption,
-                float(mWidth),
+                float(mIsLongText ? mWidthL     : mWidthS),
                 float(mIsLongText ? mLongHeight : mShortHeight)
             );
             mTextBox->setText(mIsLongText ? mTextLong : mTextShort);
@@ -131,7 +132,7 @@ namespace mdl
  
             if (mTextBox && mTextBox->isVisible())
             {
-                int currentWidth = mWidth;
+                int currentWidth  = mIsLongText ? mWidthL     : mWidthS;
                 int currentHeight = mIsLongText ? mLongHeight : mShortHeight;
 
                 if (evt.x >= mX &&
@@ -183,8 +184,9 @@ namespace mdl
             ctb->setup(0, 0);
             ctb->setText(
                 "Short text", 
-                "КУРСОР: LEFT, RIGHT, DOWN.\n"
-                "ПРОБЕЛ: Сдвинуть жемчуг.\n");
+                "CURSOR : LEFT, RIGHT, DOWN\n"
+                "SPACE  : Сдвинуть жемчуг\n"
+                "F5, F6 : Вращение сцены\n");
             ctb->setCaption("F1::Help");
         }
     };

@@ -126,6 +126,9 @@ namespace myl
         bool  isMoving{false};
     };
 
+    ///------------------------------------------------------------------------|
+    /// Модификация Step2Distance для удобства юзания.
+    ///--------------------------------------------------------- Step2DistanceB:
     struct  Step2DistanceB : Step2Distance
     {       Step2DistanceB(float distance)
             {   Step2Distance::distancA = distance;

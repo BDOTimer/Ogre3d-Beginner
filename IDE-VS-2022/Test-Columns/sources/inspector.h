@@ -29,7 +29,6 @@ namespace mdl
 
         Camera       camera;
         Ninja         ninja;
-        Sphere       sphere;
         Lights       lights;
         UI               ui;
         Tree           tree;
@@ -38,6 +37,7 @@ namespace mdl
 
         Ogre::RTShader::ShaderGenerator* shadergen;
 
+        ConfigGame cfg{ConfigGame::get()};
 
     protected:
 
@@ -68,6 +68,8 @@ namespace mdl
             Base::scnMgr   = scnMgr;
             Base::nodeBase = nodeBase;
 
+            addResourcePath();
+
             ////////////////////////////////////////////////////////////////////
             Ogre::RenderWindow* window = getRenderWindow();
             setWindowIcon      (window);
@@ -81,53 +83,44 @@ namespace mdl
             camera   .setup(nodeUse);
             lights   .setup(camera.camNode);
             ninja    .setup();
-        /// sphere   .setup();
             tree     .setup();
             well     .setup();
             ground   .setup();
             ui       .setup();
-
-            // Добавьте ВСЕ папки с ресурсами перед инициализацией
-            ResourceGroupManager& rgm = ResourceGroupManager::getSingleton();
-
-            // Добавляем основную папку media
-            rgm.addResourceLocation("media", "FileSystem", "General");
-
-            // Добавляем папку со шрифтами отдельно (важно!)
-            rgm.addResourceLocation("media/fonts", "FileSystem", "General");
-
-            // Явно загружаем .fontdef файл
-            rgm.initialiseResourceGroup("General");
-
-            // ИЛИ инициализируем все
-            //rgm.initialiseAllResourceGroups();
-
         }
 
         ///-------------------------------------------|
         /// Обработка клавиш.                         |
         ///-------------------------------------------:
         bool keyPressed(const KeyboardEvent& evt)
-        {   if (evt.keysym.sym == SDLK_ESCAPE)
-            {   getRoot()->queueEndRendering();
-            }
-            else if (isRotWold && evt.keysym.sym == SDLK_SPACE)
-            {   isRotWold = false;
-                return      true;
+        {   
+            switch(evt.keysym.sym)
+            {
+                case OgreBites::SDLK_ESCAPE:
+                    getRoot()->queueEndRendering();
+                    return true;
+                case OgreBites::SDLK_F5:
+                    isSpeedRotWold = isSpeedRotWold ? 0 :  speedRotWold;
+                    break;
+                case OgreBites::SDLK_F6:
+                    isSpeedRotWold = isSpeedRotWold ? 0 : -speedRotWold;
+                    break;
             }
 
-            ui.keyPressed(evt);
-            
-            return well.keyPressed(evt);
+            bool    b{false};
+                    b |= ui.keyPressed  (evt);
+                    b |= well.keyPressed(evt);
+            return  b;
         }
 
         bool mousePressed(const OgreBites::MouseButtonEvent& evt)
         {   return ui.mousePressed(evt);
         }
 
-        float accumulatedTime{0};  // Накопленное время
-        float intervalTime   {4};  // Интервал (1 секунда)
-        bool  isRotWold   {true};
+        float accumulatedTime{ 0};  // Накопленное время
+        float intervalTime   { 1};  // Интервал (1 секунда)
+        int   isSpeedRotWold { 0};  // Нет вращения Мира.
+        int     speedRotWold {30};  // Нет вращения Мира.
 
         ///-------------------------------------------|
         /// Тут крутятся фреймы.                      |
@@ -146,13 +139,34 @@ namespace mdl
 
             well.update(evt.timeSinceLastFrame);
 
-            if(isRotWold) nodeBase->yaw  (Ogre::Degree(30 * deltaTime));
+            if(isSpeedRotWold)
+            {   nodeBase->yaw  (Ogre::Degree(deltaTime * isSpeedRotWold));
+            }
         }
 
         ///-------------------------------------------|
         /// Установка иконки на окно.                 |
         ///-------------------------------------------:
         void setWindowIcon(Ogre::RenderWindow* window);
+
+        ///-------------------------------------------|
+        /// Программно добавлем пути к ресурсам.      |
+        ///-------------------------------------------:
+        void addResourcePath()
+        {
+        // Добавьте ВСЕ папки с ресурсами перед инициализацией
+            ResourceGroupManager& rgm = ResourceGroupManager::getSingleton();
+
+            // Добавляем основную папку media
+            rgm.addResourceLocation("media", "FileSystem", "General");
+            rgm.addResourceLocation("media/fonts", "FileSystem", "General");
+
+            // Явно загружаем .fontdef файл
+            rgm.initialiseResourceGroup("General");
+
+            // ИЛИ инициализируем все
+            //rgm.initialiseAllResourceGroups();
+        }
     };
 }
 
