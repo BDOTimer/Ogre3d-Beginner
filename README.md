@@ -3,6 +3,7 @@
 ---
 
 ### :sparkles: [:arrow_right: Правила игры...](doc/правила.md)
+### :sparkles: [:arrow_right: Код игры..](/IDE-VS-2022/Test-Columns/sources/)
 ---
  
 <img src="doc/2.jpg"/>
