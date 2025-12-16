@@ -57,7 +57,7 @@ namespace mdl
                 float(mIsLongText ? mLongHeight : mShortHeight)
             );
             mTextBox->setText(mIsLongText ? mTextLong : mTextShort);
-            setTextBoxFont (mTextBox, "ArialFont");
+            setTextBoxFont (mTextBox, "JetBrainsMonoFont");
         }
 
         void destroyTextbox()
