@@ -2,8 +2,9 @@
 # Columns-2025
 ---
 
-### :sparkles: [:arrow_right: Правила игры...](doc/правила.md)
-### :sparkles: [:arrow_right: Код игры..](/IDE-VS-2022/Test-Columns/sources/)
+### :sparkles: [:arrow_right: Правила игры ...](doc/правила.md)
+### :sparkles: [:arrow_right: Код ...](/IDE-VS-2022/Test-Columns/sources/)
+### :hammer: [:arrow_right: Номер билда ...](Counted-building.txt)
 ---
  
 <img src="doc/2.jpg"/>

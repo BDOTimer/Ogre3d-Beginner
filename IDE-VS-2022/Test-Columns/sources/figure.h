@@ -31,8 +31,6 @@ namespace myl
         {   
             if(0.f == distance) return;
 
-            ASSERT(posStart == int(posStart))
-
             eDir = distance < 0 ? LEFT : RIGHT;
             
             this->position =           posStart;
@@ -61,17 +59,6 @@ namespace myl
                 
                 isMoving = false;
                 eDir     = STOP ;
-
-                if(position != int(position))///////////////////////////////////
-                {   
-                    l(posStart)
-                    l(distance)
-                    l(position)
-                    l(int(position))
-                    
-                }
-
-            /// ASSERT(position == int(position)) ///<--------------------: TODO
             }
 
             return isMoving;
@@ -138,6 +125,10 @@ namespace myl
         void start(float posStart, EDIR dir)
         {   
             if(isMoving) return;
+
+            posStart = std::ceilf(posStart);
+
+            ASSERT(posStart == int(posStart)) ///<-----------------------: TODO.
 
             eDir = dir;
             
@@ -246,7 +237,7 @@ namespace mdl
         float speed{50};
         void update(float deltaTime)
         {   
-            if(ConfigGame::get().isGemRotating)
+            if(ConfigGame::get().isGemAnimate)
             switch(id)
             {   case   3: node->yaw  (Ogre::Degree(speed * deltaTime)); break;
                 case   4: node->pitch(Ogre::Degree(speed * deltaTime)); break;
@@ -336,10 +327,10 @@ namespace mdl
             {   node->translate(0, -speedFigFall.get() * deltaTime, 0);
             }
 
-            Ogre::Vector3 position = node->getPosition();
-
-            if( position.y <= groundLevel)
-            {   position.y  = groundLevel; // Не даем уйти ниже земли
+            if( Ogre::Vector3
+                position    = node->getPosition();
+                position.y <= groundLevel)
+            {   position.y  = groundLevel; // Не даем уйти ниже земли.
                 
                 node->setPosition(position.x, groundLevel, position.z);
                 isFalling   = false;

@@ -17,12 +17,12 @@ namespace mdl
     struct Well3Wall : Base
     {
         Ogre::SceneNode* wallNode;
-        Ogre::Entity*    walls[3];
+        Ogre::Entity*    walls[4];
 
-    /// const char* nameMat{"glass/WellWalls"};
-    /// const char* nameMat{"glass/WellWallsAdvanced"};
-        const char* nameMat{"Glass/WellWallsSimple"};
-    /// const char* nameMat{"Examples/Rockwall"};
+        const char* nameMat1{"Ogre/Skin1"};
+        const char* nameMat2{"drbunsen_glasses"};
+        const char* nameMat {"Glass/WellWallsSimple"};
+    /// const char* nameMat {"Examples/Rockwall"};
     
         void setup(SceneNode*  node)
         {
@@ -31,11 +31,13 @@ namespace mdl
             Ogre::Plane leftPlane (Ogre::Vector3::UNIT_X, 0);
             Ogre::Plane rightPlane(Ogre::Vector3::NEGATIVE_UNIT_X, 0);
             Ogre::Plane backPlane (Ogre::Vector3::UNIT_Z, 0);
+            Ogre::Plane downPlane (Ogre::Vector3::UNIT_Y, 0);
 
             const char* names[]
             {   "LeftWall" ,
                 "RightWall",
-                "BackWall"
+                "BackWall" ,
+                "DownWall"
             };
 
             const auto& cfg{ConfigGame::get()};
@@ -63,17 +65,27 @@ namespace mdl
                 Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
                 backPlane,
                 W, H, 1, 1, true, 1, 1.0f, 1.0f, Ogre::Vector3::UNIT_Y);
+
+            Ogre::MeshManager::getSingleton().createPlane(
+                names[3],
+                Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+                downPlane,
+                W, D+D, 1, 1, true, 1, 1.f, 1.f, Ogre::Vector3::UNIT_Z);
         
             // Создаем Entity для каждой стенки
             walls[0] = scnMgr->createEntity(names[0]);
             walls[1] = scnMgr->createEntity(names[1]);
             walls[2] = scnMgr->createEntity(names[2]);
+            walls[3] = scnMgr->createEntity(names[3]);
         
             for(int i = 0; i < 3; ++i)
             {
                 walls[i]->setMaterialName(nameMat);
                 walls[i]->setCastShadows (true);
             }
+
+            walls[3]->setMaterialName(nameMat1);
+            walls[3]->setCastShadows (true);
 
             const auto W2 = W/2;
             const auto H2 = H/2;
@@ -90,7 +102,10 @@ namespace mdl
             Ogre::SceneNode* backNode = wallNode->createChildSceneNode();
             backNode->attachObject(walls[2]);
             backNode->setPosition (0, H2, -D);
-            //backNode->pitch       (Ogre::Degree(90));
+
+            Ogre::SceneNode* downNode = wallNode->createChildSceneNode();
+            downNode->attachObject(walls[3]);
+            downNode->setPosition (0, 0, 0);
         }
     };
 
@@ -111,7 +126,7 @@ namespace mdl
         {   node = nodeWell->createChildSceneNode();
         }
 
-        void add(Figure& figure)
+        void add(Figure& figure)///-////////////////////////////////////////////
         {   
             /// return;
             
@@ -132,9 +147,9 @@ namespace mdl
                 l(posGem)
 
                 const Ogre::Vector3i posGemI
-                {   int(posFig.x + posGem.x) / SIZECELL + OFFSET,
-                    int(posFig.y + posGem.y) / SIZECELL,
-                    int(posFig.z + posGem.z) / SIZECELL
+                {   int(std::ceilf(posFig.x + posGem.x)) / SIZECELL + OFFSET,
+                    int(std::ceilf(posFig.y + posGem.y)) / SIZECELL,
+                    int(std::ceilf(posFig.z + posGem.z)) / SIZECELL
                 };
 
                 add(gem, posGemI);
@@ -181,6 +196,10 @@ namespace mdl
 
             well3Wall.setup(node);
             logic    .setup(node);
+
+            const auto& cfgPOS{ConfigGame::get().positionWell};
+
+            node->setPosition(cfgPOS);
 
             ///------------------------|
             /// Делегируем.            |

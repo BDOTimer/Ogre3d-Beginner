@@ -324,7 +324,7 @@ namespace mdl
             entity ->setCastShadows(true);
 
             node = nodeBase->createChildSceneNode();
-            node->attachObject       (entity);
+            node->attachObject(entity);
 
             //node->pitch(Ogre::Degree( -90));
             node->setOrientation(Ogre::Quaternion(
