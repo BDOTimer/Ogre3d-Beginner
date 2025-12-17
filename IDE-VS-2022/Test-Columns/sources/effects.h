@@ -37,18 +37,18 @@ namespace mdl
                 snowPS->setDefaultDimensions(15.0f, 15.0f);
         
                 
-                if (snowPS->getNumEmitters() > 0) 
+                if (ParticleEmitter* emitter = snowPS->getEmitter(0))
                 {
-        			snowPS->getEmitter(0)->setParameter("width", "2500");
-        			snowPS->getEmitter(0)->setParameter("height", "2500");
-                    snowPS->getEmitter(0)->setParameter("time_to_live", "8");
-        			snowPS->getEmitter(0)->setParameter("velocity", "200");
-        			snowPS->getEmitter(0)->setParameter("emission_rate", "50");
+                    emitter->setParameter("width", "2500");
+                    emitter->setParameter("height", "2500");
+                    emitter->setParameter("time_to_live", "8");
+                    emitter->setParameter("velocity", "200");
+                    emitter->setParameter("emission_rate", "50");
                 }
-        
-                if (snowPS->getNumAffectors() > 0)
+                
+                if (ParticleAffector* affector = snowPS->getAffector(0))
                 {
-                    snowPS->getAffector(0)->setParameter("randomness", "100");
+                    affector->setParameter("randomness", "100");
                 }
         
                 SceneNode* snowNode = scnMgr->getRootSceneNode()->createChildSceneNode("SnowNode");
