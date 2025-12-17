@@ -35,13 +35,6 @@ namespace mdl
         Well           well;
         Ground       ground;
         Effects	    effects;
-        Camera                  camera;
-        Lights                  lights;
-        Ninja                    ninja;
-        UI                          ui;
-        Tree                      tree;
-        Well                      well;
-        Ground                  ground;
         SimpleBlackCylinder2 cylinders;
 
         Ogre::RTShader::ShaderGenerator* shadergen;
