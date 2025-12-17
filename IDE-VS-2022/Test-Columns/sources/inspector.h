@@ -34,6 +34,7 @@ namespace mdl
         Tree                      tree;
         Well                      well;
         Ground                  ground;
+        Effects                effects;
         SimpleBlackCylinder2 cylinders;
 
         Ogre::RTShader::ShaderGenerator* shadergen;
@@ -88,6 +89,7 @@ namespace mdl
             well     .setup();
             ground   .setup();
             ui       .setup();
+            effects  .setup();
             cylinders.setup(ground.node);
         }
 
