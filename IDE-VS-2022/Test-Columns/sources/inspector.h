@@ -132,6 +132,7 @@ namespace mdl
         int   isSpeedRotWold { 0};  // Нет вращения Мира.
         int     speedRotWold {30};  // Нет вращения Мира.
         bool  isPause     {false};
+        float seconds         {0};
 
         ///-------------------------------------------|
         /// Тут крутятся фреймы.                      |
@@ -144,8 +145,13 @@ namespace mdl
        
             if(accumulatedTime >= intervalTime)
             {
-            /// changeFigure();
+            /// effects.tickSecond();
+                
                 accumulatedTime -= intervalTime;
+
+                seconds++;
+
+                effects.update(seconds);
             }
 
             if(isPause) return;
@@ -153,7 +159,7 @@ namespace mdl
             well.update(evt.timeSinceLastFrame);
 
             if(isSpeedRotWold)
-            {   nodeBase->yaw  (Ogre::Degree(deltaTime * isSpeedRotWold));
+            {   nodeBase->yaw(Ogre::Degree(deltaTime * isSpeedRotWold));
             }
         }
 
