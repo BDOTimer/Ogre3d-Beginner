@@ -62,7 +62,7 @@ namespace mdl
             }
         }
         
-        void removeSnowEffect()
+        void destroySnowEffect()
         {
             if (snowPS != nullptr) 
             {
