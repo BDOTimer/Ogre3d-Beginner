@@ -30,12 +30,11 @@ struct  Application
 
 void test01()
 {   
-    int   b = -210;
-    float a =  0.f -100.f -110.f;
-    if(   b/3 != int(a/3)) l("error")
-
-    l(b/3)
-    l(int(a/3))
+    while(true)
+    {   mdl::Sound::test();
+        Sleep(1000);
+    }
+    
 }
 
 
@@ -44,7 +43,7 @@ void test01()
 ///---------------------------------------------------------------------- tests:
 bool tests()
 {   
-    /// 
+    ///
     return false;
     
     /// myl::Step2Distance ::test();

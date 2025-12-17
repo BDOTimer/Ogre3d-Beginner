@@ -25,16 +25,16 @@ namespace mdl
         Ogre::Root*           root;
         Ogre::SceneManager* scnMgr;
         SceneNode*        nodeBase;
-        SceneNode*        nodeUser ;
+        SceneNode*        nodeUser;
 
-        Camera                  camera;
-        Lights                  lights;
-        Ninja                    ninja;
-        UI                          ui;
-        Tree                      tree;
-        Well                      well;
-        Ground                  ground;
-        SimpleBlackCylinder2 cylinders;
+        Camera            camera;
+        Lights            lights;
+        Ninja              ninja;
+        UI                    ui;
+        Tree                tree;
+        Well                well;
+        Ground            ground;
+        BlackCylinder2 cylinders;
 
         Ogre::RTShader::ShaderGenerator* shadergen;
 

@@ -362,7 +362,6 @@ namespace mdl
                 }
             }
 
-        // Методы доступа
         void setPosition(const Ogre::Vector3& pos)
         {   mNode->setPosition(pos);
         }
@@ -392,12 +391,12 @@ namespace mdl
                 float x = radius * cos(angle);
                 float z = radius * sin(angle);
 
-                manual.position(x, halfHeight, z);
+                manual.position(x,  halfHeight, z);
                 manual.position(x, -halfHeight, z);
 
                 if(i < segments)
                 {   int base = i * 2;
-                    manual.triangle(base, base + 1, base + 2);
+                    manual.triangle(base,     base + 1, base + 2);
                     manual.triangle(base + 1, base + 3, base + 2);
                 }
             }
@@ -409,13 +408,16 @@ namespace mdl
         }
     };
 
-    struct  SimpleBlackCylinder2   : Base
-    {       SimpleBlackCylinder2() = default;
-           ~SimpleBlackCylinder2()
+    ///------------------------------------------------------------------------|
+    /// Две ножки под корзину.
+    ///--------------------------------------------------------- BlackCylinder2:
+    struct  BlackCylinder2   : Base
+    {       BlackCylinder2() = default;
+           ~BlackCylinder2()
             {   
             }
 
-        std::array<SimpleBlackCylinder*, 2> m;
+        SimpleBlackCylinder* m[2];
 
         void setup(SceneNode* nodeParent)
         {   

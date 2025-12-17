@@ -394,16 +394,19 @@ namespace mdl
                 
             case OgreBites::SDLK_DOWN:
                 speedFigFall.up();
+                //Sound::test();
                 break;
                 
             case OgreBites::SDLK_LEFT: /// 122: 'Z'
             {   const auto& p = node->getPosition();
                 step2DistanceB.start(p.x, myl::Step2Distance::LEFT);
+                //Sound::test();
                 break;
             }
             case OgreBites::SDLK_RIGHT: /// 120: 'X'
             {   const auto& p = node->getPosition();
                 step2DistanceB.start(p.x, myl::Step2Distance::RIGHT);
+                //Sound::test();
                 break;
             } 
             default:
@@ -440,6 +443,8 @@ namespace mdl
         {    sendFigure2Well();
              reGenerate();
              isFalling = true;
+
+             Sound::test();
         }
 
         ///----------------------------------------|
