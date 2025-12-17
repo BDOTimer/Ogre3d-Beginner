@@ -6,8 +6,9 @@
 #define UI_H
 #include "config-game.h"
 
-/*  Mods for TextBox
-	  OgreTrays.h:
+/*  
+	Mods for TextBox
+	OgreTrays.h:
     Line 347: 
     inline friend void applyTextBoxMods(TextBox* tb);
 */ 
