@@ -343,8 +343,8 @@ namespace OgreBites
         Ogre::Real mDragOffset;
         unsigned int mStartingLine;
 
-        // Injected friend function to set font
-        inline friend void setTextBoxFont(TextBox* tb, const Ogre::String& fontName);
+        // Modification starts here
+        inline friend void applyTextBoxMods(TextBox* tb);
         // Modification ends here
     };
 

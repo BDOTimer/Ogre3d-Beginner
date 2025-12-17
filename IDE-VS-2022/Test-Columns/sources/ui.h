@@ -6,13 +6,20 @@
 #define UI_H
 #include "config-game.h"
 
-void OgreBites::setTextBoxFont(OgreBites::TextBox* tb, 
-                                const Ogre::String& fontName)
+/*  
+	Mods for TextBox
+	OgreTrays.h:
+    Line 347: 
+    inline friend void applyTextBoxMods(TextBox* tb);
+*/ 
+void OgreBites::applyTextBoxMods(OgreBites::TextBox* tb)
 {
     if (!tb) return;
 
     if (tb->mTextArea)
-        tb->mTextArea->setFontName(fontName);
+        tb->mTextArea->setFontName("JetBrainsMonoFont");
+    if (tb->mScrollTrack)
+		tb->mScrollTrack->setVisible(false);
 
     //if (tb->mCaptionTextArea) tb->mCaptionTextArea->setFontName(fontName);
 }
@@ -57,7 +64,7 @@ namespace mdl
                 float(mIsLongText ? mLongHeight : mShortHeight)
             );
             mTextBox->setText(mIsLongText ? mTextLong : mTextShort);
-            setTextBoxFont (mTextBox, "JetBrainsMonoFont");
+            applyTextBoxMods(mTextBox);
         }
 
         void destroyTextbox()
@@ -180,7 +187,7 @@ namespace mdl
  
             ctb = std::make_unique<ClickableTextBox>(trayMgr.get());
             ctb->setText(
-                "Short text", 
+                "", 
                 "CURSOR : LEFT, RIGHT, DOWN\n"
                 "SPACE  : Сдвинуть жемчуг\n"
                 "F5, F6 : Вращение сцены\n"
