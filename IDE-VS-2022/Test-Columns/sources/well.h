@@ -113,14 +113,30 @@ namespace mdl
     ///------------------------------------------------------------------------|
     /// Корзина - ЛОГИКА.
     ///-------------------------------------------------------------- WellLogic:
-    struct  WellLogic : Base
-    {       WellLogic()
+    struct  WellLogic   : Base
+    {       WellLogic() : 
+                W(ConfigGame::get().W)
+            ,   H(ConfigGame::get().H + ConfigGame::get().N)
+            ,   gm(H, std::vector<GemData*>(W, nullptr))
             {   
             }
 
     private:
         SceneNode*  node;
         const ConfigGame& cfg{ConfigGame::get()};
+
+        size_t W;
+        size_t H;
+
+        ///----------------------------------|
+        /// Владелец данных.                 |
+        ///----------------------------------:
+        std::list<GemData>          allocator;
+
+        ///----------------------------------|
+        /// Зеркало корзины.                 |
+        ///----------------------------------:
+        std::vector<std::vector<GemData*>> gm;
 
         void setup(SceneNode*  nodeWell)
         {   node = nodeWell->createChildSceneNode();
@@ -132,37 +148,99 @@ namespace mdl
             
             std::vector<Gem>& gems = figure.gems;
 
-            const int SIZECELL{(int)cfg.sizeCell};
-            const int OFFSET  {(int)cfg.W / 2};
+            const int   SIZECELL  {(int)cfg.sizeCell};
+            const int   OFFSET    {(int)cfg.W / 2};
+            const float D         {cfg.sizeCell * OFFSET};
+            const float SIZECELLd2{cfg.sizeCell / 2};
 
             const Ogre::Vector3& posFig{figure.node->getPosition()};
 
-            l("==================")
-            l(posFig)
+            /// l(posFig) ///-////////////////////////////////////////////////-?
 
             for(auto& gem : gems)
             {   
                 const Ogre::Vector3& posGem{gem.node->getPosition()};
 
-                l(posGem)
-
-                const Ogre::Vector3i posGemI
-                {   int(std::ceilf(posFig.x + posGem.x)) / SIZECELL + OFFSET,
-                    int(std::ceilf(posFig.y + posGem.y)) / SIZECELL,
-                    int(std::ceilf(posFig.z + posGem.z)) / SIZECELL
+                const Ogre::Vector3 posGemF
+                {   std::ceilf(posFig.x + posGem.x),
+                    std::ceilf(posFig.y + posGem.y),
+                    std::ceilf(posFig.z + posGem.z)
                 };
 
-                add(gem, posGemI);
+                const float X = posGemF.x + D + SIZECELLd2;
+
+                if(X < 0)
+                {   std::cout << "ERROR-[Физика]: Фигура за левым бортом!\n";
+                    return;
+                }
+
+                const Ogre::Vector3i posGemI
+                {   int(        X) / SIZECELL,
+                    int(posGemF.y) / SIZECELL,
+                    int(posGemF.z) / SIZECELL
+                };
+
+                if(posGemI[0] >= W)
+                {   std::cout << "ERROR-[Физика]: Фигура за правым бортом!\n";
+                    return;
+                }
+
+                add(gem, posGemI, posGemF);
             }
         }
 
-        void add(Gem& gem, const Ogre::Vector3i& posGemI)
-        {   
-            l(gem.id )
-            l(posGemI)
+        void add(Gem& gem, const Ogre::Vector3i& posGemI,
+                           const Ogre::Vector3 & posGemF)
+        {               
+            unsigned x = *(posGemI.ptr() + 0);
+            unsigned y = *(posGemI.ptr() + 1);
+
+            auto& cell = gm[y][x];
+
+            ///------------------------------|
+            /// Ячейка занята.               |
+            ///------------------------------:
+            if(nullptr != cell)
+            {   std::cout << "ERROR-[Физика]: Ячейка занята! ---> ";
+                l_(posGemI) l(posGemF)
+                return;
+            }
+
+            allocator.emplace_back(GemData());
+            allocator.back() = gem;
+            allocator.back().igm = --allocator.end();
+
+            cell = &allocator.back();
+
+            gem.reset();
+            
+            /// Debug:
+            ///------------------------------|
+            /// Что лежит в этой ячейке.     |
+            ///------------------------------:
+            /// l(cell->igm->id)
+            /// l(cell->id)
+
+            ///------------------------------|
+            /// Отвязать камень от фигуры.   |
+            ///------------------------------:
+            cell->deLink();
+
+            ///------------------------------|
+            /// Присоединить камень к well.  |
+            ///------------------------------:
+            node->addChild(cell->node);
+
+            cell->node->setPosition(posGemF);
         }
 
-        std::vector<std::vector<Gem>> m;
+        void update(float deltaTime)
+        {   for    (auto& r : gm)
+            {   for(auto& e : r)
+                {   if(nullptr != e) e->update(deltaTime);
+                }
+            }
+        }
 
         friend struct Well;
     };
@@ -220,6 +298,7 @@ namespace mdl
 
         void update(float deltaTime)
         {   figure.update(deltaTime);
+            logic .update(deltaTime);
         }
     
         friend struct InspectorRoot;

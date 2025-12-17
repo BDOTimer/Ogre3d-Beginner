@@ -67,7 +67,7 @@ namespace mdl
 
         Ogre::Camera* get() const { return cam; }
 
-        void setup(SceneNode* nodeUse)
+        void setup(SceneNode* nodeUser)
         {   
             cam = scnMgr->createCamera("myCam");
             cam->setNearClipDistance  (5);
@@ -76,7 +76,7 @@ namespace mdl
             camGoal->setPosition(0, 700, 0);
 
 
-            camNode = nodeUse->createChildSceneNode();
+            camNode = nodeUser->createChildSceneNode();
             camNode->setPosition   (0, 800, 1900);
             camNode->lookAt(Vector3(0, 650, 0), Node::TransformSpace::TS_WORLD);
             camNode->attachObject  (cam);
@@ -227,7 +227,7 @@ namespace mdl
     {       
         Ogre::Entity*  entity;
 
-        void setup(SceneNode*  nodeUse)
+        void setup(SceneNode*  nodeUser)
         {   
             using namespace Ogre;
 
@@ -242,7 +242,7 @@ namespace mdl
             directionalLight->setSpecularColour(colourValue);
 
             SceneNode* directionalLightNode
-                = nodeUse->createChildSceneNode();
+                = nodeUser->createChildSceneNode();
             directionalLightNode->attachObject(directionalLight);
             directionalLightNode->setDirection(Vector3(0, -1, -1));
 
@@ -256,7 +256,7 @@ namespace mdl
             pointLight->setSpecularColour(0.3f, 0.3f, 0.3f);
 
             SceneNode* pointLightNode
-                = nodeUse->createChildSceneNode();
+                = nodeUser->createChildSceneNode();
             pointLightNode->attachObject(pointLight);
             pointLightNode->setPosition(Vector3(0, 300, 600));
 
@@ -271,7 +271,7 @@ namespace mdl
             spotLight->setType(Light::LT_SPOTLIGHT);
 
             SceneNode* spotLightNode
-                = nodeUse->createChildSceneNode();
+                = nodeUser->createChildSceneNode();
             spotLightNode->attachObject(spotLight);
             spotLightNode->setDirection(0, 0, 1);
             spotLightNode->setPosition(Vector3(0, 300, 600));

@@ -25,7 +25,7 @@ namespace mdl
         Ogre::Root*           root;
         Ogre::SceneManager* scnMgr;
         SceneNode*        nodeBase;
-        SceneNode*        nodeUse ;
+        SceneNode*        nodeUser ;
 
         Camera       camera;
         Ninja         ninja;
@@ -37,7 +37,7 @@ namespace mdl
 
         Ogre::RTShader::ShaderGenerator* shadergen;
 
-        ConfigGame cfg{ConfigGame::get()};
+        ConfigGame& cfg{ConfigGame::get()};
 
     protected:
 
@@ -63,7 +63,7 @@ namespace mdl
                 ShadowTechnique::SHADOWTYPE_STENCIL_ADDITIVE);
 
             nodeBase = scnMgr->getRootSceneNode()->createChildSceneNode();
-            nodeUse  = scnMgr->getRootSceneNode()->createChildSceneNode();
+            nodeUser  = scnMgr->getRootSceneNode()->createChildSceneNode();
 
             Base::scnMgr   = scnMgr;
             Base::nodeBase = nodeBase;
@@ -80,7 +80,7 @@ namespace mdl
             shadergen = RTShader::ShaderGenerator::getSingletonPtr();
             shadergen-> addSceneManager(scnMgr);
 
-            camera   .setup(nodeUse);
+            camera   .setup(nodeUser);
             lights   .setup(camera.camNode);
             ninja    .setup();
             tree     .setup();
@@ -105,6 +105,12 @@ namespace mdl
                 case OgreBites::SDLK_F6:
                     isSpeedRotWold = isSpeedRotWold ? 0 : -speedRotWold;
                     break;
+                case OgreBites::SDLK_PAUSE:
+                case 112: // 'P'--->112
+                    isPause = !isPause;
+                    break;
+                default: // l(evt.keysym.sym)
+                    ;
             }
 
             bool    b{false};
@@ -121,6 +127,7 @@ namespace mdl
         float intervalTime   { 1};  // Интервал (1 секунда)
         int   isSpeedRotWold { 0};  // Нет вращения Мира.
         int     speedRotWold {30};  // Нет вращения Мира.
+        bool  isPause     {false};
 
         ///-------------------------------------------|
         /// Тут крутятся фреймы.                      |
@@ -136,6 +143,8 @@ namespace mdl
             /// changeFigure();
                 accumulatedTime -= intervalTime;
             }
+
+            if(isPause) return;
 
             well.update(evt.timeSinceLastFrame);
 
