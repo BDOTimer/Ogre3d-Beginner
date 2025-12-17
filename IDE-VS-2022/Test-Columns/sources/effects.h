@@ -74,6 +74,12 @@ namespace mdl
                     scnMgr->destroySceneNode(snowNode);
             }
         }
+
+        void setEmittingSnow(bool emitting)
+        {
+            if (snowPS != nullptr)
+                snowPS->setEmitting(emitting);
+        }
         
         private:
             ParticleSystem* snowPS = nullptr;
