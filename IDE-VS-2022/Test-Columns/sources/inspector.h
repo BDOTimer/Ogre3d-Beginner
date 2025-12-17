@@ -35,6 +35,14 @@ namespace mdl
         Well           well;
         Ground       ground;
         Effects	    effects;
+        Camera                  camera;
+        Lights                  lights;
+        Ninja                    ninja;
+        UI                          ui;
+        Tree                      tree;
+        Well                      well;
+        Ground                  ground;
+        SimpleBlackCylinder2 cylinders;
 
         Ogre::RTShader::ShaderGenerator* shadergen;
 
@@ -64,7 +72,7 @@ namespace mdl
                 ShadowTechnique::SHADOWTYPE_STENCIL_ADDITIVE);
 
             nodeBase = scnMgr->getRootSceneNode()->createChildSceneNode();
-            nodeUser  = scnMgr->getRootSceneNode()->createChildSceneNode();
+            nodeUser = scnMgr->getRootSceneNode()->createChildSceneNode();
 
             Base::scnMgr   = scnMgr;
             Base::nodeBase = nodeBase;
@@ -89,6 +97,7 @@ namespace mdl
             ground   .setup();
             ui       .setup();
             effects  .setup();
+            cylinders.setup(ground.node);
         }
 
         ///-------------------------------------------|

@@ -334,6 +334,98 @@ namespace mdl
             node->setScale   (7, 7, 7);
         }
     };
+
+    ///------------------------------------------------------------------------|
+    /// Цилиндр.
+    ///---------------------------------------------------- SimpleBlackCylinder:
+    struct  SimpleBlackCylinder : Base
+    {       SimpleBlackCylinder(
+                const std::string name
+            ,   SceneNode*  nodeParent
+            ,   float radius =  50.0f
+            ,   float height = 100.0f
+            ,   int segments = 16)
+            {   
+                createCylinderMesh(name + "_Mesh", radius, height, segments);
+
+                mEntity = scnMgr->createEntity(name, name + "_Mesh");
+                mEntity-> setMaterialName("Examples/Black");
+
+                mNode = nodeParent->createChildSceneNode(name + "_Node");
+                mNode-> attachObject(mEntity);
+            }
+           ~SimpleBlackCylinder()
+            {   if(mNode)
+                {   Ogre::SceneManager* sceneMgr = mNode->getCreator();
+                    sceneMgr->destroyEntity (mEntity);
+                    sceneMgr->destroySceneNode(mNode);
+                }
+            }
+
+        // Методы доступа
+        void setPosition(const Ogre::Vector3& pos)
+        {   mNode->setPosition(pos);
+        }
+        Ogre::SceneNode* getNode()
+        {   return mNode;
+        }
+
+    private:
+
+        Ogre::SceneNode* mNode;
+        Ogre::Entity*  mEntity;
+
+        void createCylinderMesh(const Ogre::String& meshName,
+                                float radius, float height, int segments)
+        {   
+            Ogre::ManualObject manual("TempCylinderCreator");
+
+            manual.begin(
+                "BaseWhiteNoLighting", Ogre::RenderOperation::OT_TRIANGLE_LIST);
+
+            float halfHeight = height / 2.0f;
+            float angleStep = (2 * Ogre::Math::PI) / segments;
+
+            // Боковая поверхность
+            for(int i = 0; i <= segments; ++i)
+            {   float angle = i * angleStep;
+                float x = radius * cos(angle);
+                float z = radius * sin(angle);
+
+                manual.position(x, halfHeight, z);
+                manual.position(x, -halfHeight, z);
+
+                if(i < segments)
+                {   int base = i * 2;
+                    manual.triangle(base, base + 1, base + 2);
+                    manual.triangle(base + 1, base + 3, base + 2);
+                }
+            }
+            manual.end();
+
+            manual.convertToMesh(
+                meshName,
+                Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+        }
+    };
+
+    struct  SimpleBlackCylinder2   : Base
+    {       SimpleBlackCylinder2() = default;
+           ~SimpleBlackCylinder2()
+            {   
+            }
+
+        std::array<SimpleBlackCylinder*, 2> m;
+
+        void setup(SceneNode* nodeParent)
+        {   
+            m[0] = new SimpleBlackCylinder("Cylinder1", nodeParent);
+            m[1] = new SimpleBlackCylinder("Cylinder2", nodeParent);
+
+            m[0]->setPosition(Ogre::Vector3(-300,50,0));
+            m[1]->setPosition(Ogre::Vector3( 300,50,0));
+        }
+    };
 }
 
 #endif // PRIMITIVES_H
