@@ -34,6 +34,7 @@ namespace mdl
         Tree           tree;
         Well           well;
         Ground       ground;
+        Effects	    effects;
 
         Ogre::RTShader::ShaderGenerator* shadergen;
 
@@ -87,6 +88,7 @@ namespace mdl
             well     .setup();
             ground   .setup();
             ui       .setup();
+            effects  .setup();
         }
 
         ///-------------------------------------------|
