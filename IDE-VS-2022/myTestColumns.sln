@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test-1", "Test-1\Test-1.vcx
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test-Columns", "Test-Columns\Test-Columns.vcxproj", "{5E3EE11A-A95B-47F6-A132-87FFB84196AD}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sound-sfml", "sound-sfml\sound-sfml.vcxproj", "{A2F8E30E-1105-4EFA-B7CD-3B1BF56FD916}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -29,6 +31,14 @@ Global
 		{5E3EE11A-A95B-47F6-A132-87FFB84196AD}.Release|x64.Build.0 = Release|x64
 		{5E3EE11A-A95B-47F6-A132-87FFB84196AD}.Release|x86.ActiveCfg = Release|Win32
 		{5E3EE11A-A95B-47F6-A132-87FFB84196AD}.Release|x86.Build.0 = Release|Win32
+		{A2F8E30E-1105-4EFA-B7CD-3B1BF56FD916}.Debug|x64.ActiveCfg = Debug|x64
+		{A2F8E30E-1105-4EFA-B7CD-3B1BF56FD916}.Debug|x64.Build.0 = Debug|x64
+		{A2F8E30E-1105-4EFA-B7CD-3B1BF56FD916}.Debug|x86.ActiveCfg = Debug|Win32
+		{A2F8E30E-1105-4EFA-B7CD-3B1BF56FD916}.Debug|x86.Build.0 = Debug|Win32
+		{A2F8E30E-1105-4EFA-B7CD-3B1BF56FD916}.Release|x64.ActiveCfg = Release|x64
+		{A2F8E30E-1105-4EFA-B7CD-3B1BF56FD916}.Release|x64.Build.0 = Release|x64
+		{A2F8E30E-1105-4EFA-B7CD-3B1BF56FD916}.Release|x86.ActiveCfg = Release|Win32
+		{A2F8E30E-1105-4EFA-B7CD-3B1BF56FD916}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

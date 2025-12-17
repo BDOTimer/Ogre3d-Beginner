@@ -5,6 +5,7 @@
 #ifndef CONFIG_GAME_H
 #define CONFIG_GAME_H
 #include "box/debug.h"
+#include "sound.h"
 
 
 ///----------------------------------------------------------------------------|
@@ -89,11 +90,11 @@ namespace mdl
     ///------------------------------------------------------------------- Base:
     struct  InspectorRoot;
     struct  Base
-    {   inline static InspectorRoot     * pInspectorRoot   { nullptr };
-        inline static ApplicationContext* ctx              { nullptr };
-        inline static OgreBites::InputListener*  pIListener{ nullptr };
-        inline static Ogre::SceneManager* scnMgr           { nullptr };
-        inline static Ogre::SceneNode   * nodeBase         { nullptr };
+    {   inline static InspectorRoot     * pInspectorRoot{ nullptr };
+        inline static ApplicationContext* ctx            { nullptr };
+        inline static InputListener     * pIListener    { nullptr };
+        inline static Ogre::SceneManager* scnMgr         { nullptr };
+        inline static Ogre::SceneNode   * nodeBase       { nullptr };
         inline static float               deltaTime;
     };
 }

@@ -160,9 +160,12 @@ namespace mdl
     {       UI()
             {   std::cout << "Объект UI создан!\n";
             }
+           ~UI()
+            {   trayMgr = nullptr;
+            }
     
-        std::unique_ptr<OgreBites::TrayManager> trayMgr;
-        std::unique_ptr<ClickableTextBox>           ctb;
+        OgreBites::TrayManager*        trayMgr;
+        std::unique_ptr<ClickableTextBox>  ctb;
 
         bool keyPressed(const KeyboardEvent& evt)
         {   return ctb->keyPressed(evt);
@@ -180,12 +183,12 @@ namespace mdl
  
             Ogre::RenderWindow* mWindow = ctx->getRenderWindow();
 
-            trayMgr = std::make_unique<OgreBites::TrayManager>("UI", mWindow);
+            trayMgr = new OgreBites::TrayManager("UI", mWindow);
 
-            ctx->addInputListener(trayMgr.get());
+            ctx->addInputListener(trayMgr);
             trayMgr->hideCursor();
  
-            ctb = std::make_unique<ClickableTextBox>(trayMgr.get());
+            ctb = std::make_unique<ClickableTextBox>(trayMgr);
             ctb->setText(
                 "", 
                 "CURSOR : LEFT, RIGHT, DOWN\n"
