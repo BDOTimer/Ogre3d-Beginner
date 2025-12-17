@@ -27,14 +27,14 @@ namespace mdl
         SceneNode*        nodeBase;
         SceneNode*        nodeUser ;
 
-        Camera       camera;
-        Ninja         ninja;
-        Lights       lights;
-        UI               ui;
-        Tree           tree;
-        Well           well;
-        Ground       ground;
-        Effects	    effects;
+        Camera                  camera;
+        Lights                  lights;
+        Ninja                    ninja;
+        UI                          ui;
+        Tree                      tree;
+        Well                      well;
+        Ground                  ground;
+        Effects                effects;
         SimpleBlackCylinder2 cylinders;
 
         Ogre::RTShader::ShaderGenerator* shadergen;
