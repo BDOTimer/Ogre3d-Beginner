@@ -7,7 +7,7 @@
 ### :hammer: [:arrow_right: Номер билда ...](Counted-building.txt)
 ---
  
-<img src="doc/2.jpg"/>
+<img src="doc/4.jpg"/>
  
 ### :snowflake: Что тут:
 - Солушен VS-2022 с проектами Ogre3d ---> ВСЁ ВКЛЮЧЕНО!

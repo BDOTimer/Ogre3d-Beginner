@@ -30,8 +30,10 @@
 #endif
 
 
-#define l(a) std::cout << #a << " = "   << (a) << '\n';
-#define LN   std::cout << std::string(10, '=') << '\n';
+#define l(a)  std::cout << #a << " = "   << (a) << '\n';
+#define l_(a) std::cout << #a << " = "   << (a) << ", ";
+#define l1(a) std::cout                  << (a);
+#define LN    std::cout << std::string(10, '=') << '\n';
 
 ///----------------------------------------------------------------------------|
 /// Начинка для ASSERT.
@@ -51,7 +53,7 @@ struct  Ass
     }
 
     static void warn(bool b, Strv filename, int line, Strv str)
-    {   if(b)
+    {   if(!b)
         {   std::cout << std::format(WARNING, cutStr(filename), line, str);
         }
     }
@@ -109,6 +111,8 @@ std::ostream& operator<<(std::ostream& o, Ogre::Vector<3, T> v)
 {   o << std::fopen("[ x::{}, y::{}, z::{} ]\n", v.x, v.y, v.z);
     return o;
 }
+
+constexpr const size_t NPOS{std::string::npos};
 
 
 #endif // DEBUG_H
