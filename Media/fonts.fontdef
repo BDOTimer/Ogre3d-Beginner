@@ -1,7 +1,7 @@
-ArialFont
+JetBrainsMonoFont
 {
     type truetype
-    source arial.ttf
+    source JetBrainsMono-Medium.ttf //arial.ttf
     size 16
     resolution 96
     code_points 32-127
