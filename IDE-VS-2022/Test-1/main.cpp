@@ -135,6 +135,6 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    return 0;
+    std::cout << "\nTest-Columns is FINISHED!\n\n"; return 0;
 }
 
