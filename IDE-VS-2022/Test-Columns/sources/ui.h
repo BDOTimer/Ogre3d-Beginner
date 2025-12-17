@@ -57,7 +57,7 @@ namespace mdl
                 float(mIsLongText ? mLongHeight : mShortHeight)
             );
             mTextBox->setText(mIsLongText ? mTextLong : mTextShort);
-            setTextBoxFont (mTextBox, "ArialFont");
+            setTextBoxFont (mTextBox, "JetBrainsMonoFont");
         }
 
         void destroyTextbox()
@@ -151,7 +151,7 @@ namespace mdl
     ///--------------------------------------------------------------------- UI:
     struct  UI : Base
     {       UI()
-            {   std::cout << "Объект UI создан! Автор: Royal_X\n";
+            {   std::cout << "Объект UI создан!\n";
             }
     
         std::unique_ptr<OgreBites::TrayManager> trayMgr;
