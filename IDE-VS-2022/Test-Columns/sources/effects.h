@@ -85,7 +85,6 @@ namespace mdl
             ParticleSystem* snowPS = nullptr;
  
     };
- 
 }
  
 #endif // EFFECTS_H
