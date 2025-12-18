@@ -369,6 +369,8 @@ namespace mdl
         const float groundLevel {0};
         bool        isFalling{true};
 
+        const myl::Indexer& idexer{myl::Indexer::get()};
+
         void doGravity()
         {   /// l(node->getPosition().y)
             step2Gravity.startGravity(node->getPosition());
@@ -439,15 +441,22 @@ namespace mdl
                 break;
                 
             case OgreBites::SDLK_LEFT: /// 122: 'Z'
-            {   const auto& p = node->getPosition();
-                step2DistanceB.start(p.x, myl::Step2Distance::LEFT);
-                //Sound::test();
+            {   
+                const auto& p = node->getPosition();
+                if(idexer.lookL(p))
+                {   step2DistanceB.start(p.x, myl::Step2Distance::LEFT);
+                    Sound::get().dart();
+                }
+                else Sound::get().wow1();
                 break;
             }
             case OgreBites::SDLK_RIGHT: /// 120: 'X'
             {   const auto& p = node->getPosition();
-                step2DistanceB.start(p.x, myl::Step2Distance::RIGHT);
-                //Sound::test();
+                if(idexer.lookR(p))
+                {   step2DistanceB.start(p.x, myl::Step2Distance::RIGHT);
+                    Sound::get().dart();
+                }
+                else Sound::get().wow1();
                 break;
             } 
             default:
@@ -485,7 +494,7 @@ namespace mdl
              reGenerate();
              isFalling = true;
 
-             Sound::test();
+             Sound::get().wu();
         }
 
         ///----------------------------------------|

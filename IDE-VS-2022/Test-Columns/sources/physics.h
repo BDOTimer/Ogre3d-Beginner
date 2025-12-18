@@ -36,6 +36,8 @@ namespace myl
             ,   D     (100)
             ,   DDD   (float(SZCELL) * D)
             ,   WW    (Wd2 + DDD)
+            ,   W     (cfg.W)
+            ,   H     (cfg.H + cfg.getArrH())
             {   
             }
 
@@ -45,6 +47,8 @@ namespace myl
         const int           D; //
         const float       DDD; 
         const float        WW; //
+        const int           W; /// Ширина  массива.
+        const int           H; /// Выстота массива.
         
         static const Indexer& get()
         {   static Indexer idexer; return idexer;
@@ -64,6 +68,41 @@ namespace myl
 
         int getIndexY(const float val) const ///-/////////////////////////////-?
         {   return int(val + 1000) / SZCELL - 10;
+        }
+
+        enum    EDIR
+        {       ENONE,
+                EMINX,
+                EMINY,
+                EMAXX,
+                EMAXY
+        };
+
+        bool isIntroWold(const Ogre::Vector3& vf) const
+        {   const Ogre::Vector3i&& vi{getIndex3(vf)};
+            return 0 <= vi[0] && vi[0] < W && 0 <= vi[1] && vi[1] < H;
+        }
+
+        bool lookL(const Ogre::Vector3& vf) const
+        {   const Ogre::Vector3i&& vi{getIndex3(vf)};
+            return 0 <= vi[0] - 1;
+        }
+
+        bool lookR(const Ogre::Vector3& vf) const
+        {   const Ogre::Vector3i&& vi
+            {   
+                getIndex3({
+                    vf.x + 50.f,
+                    vf.y,
+                    vf.z
+                })
+            };
+            return vi[0] + 1 < W;
+        }
+
+        bool lookD(const Ogre::Vector3& vf) const
+        {   const Ogre::Vector3i&& vi{getIndex3(vf)};
+            return 0 <= vi[1] - 1;
         }
 
         ///-------------------------------------|
