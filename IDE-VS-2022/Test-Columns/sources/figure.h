@@ -314,13 +314,13 @@ namespace mdl
         std::vector<MaterialPtr> mat ;
         SceneNode*               node; /// Нод фигуры!
 
-        const ConfigGame&        cfg{ConfigGame::get()};
-        const float              D2 {cfg.sizeCell  / 2};
-        
     private:
 
         myl::Step2DistanceB step2DistanceB;
         myl::Step2DistanceB step2Gravity  ;
+
+        const ConfigGame&         cfg{ConfigGame::get()};
+        const float               D2 {cfg.sizeCell  / 2};
 
         struct 
         {   float  get() const   { return speedMoveCurr ; }
@@ -442,7 +442,7 @@ namespace mdl
             case OgreBites::SDLK_LEFT: /// 122: 'Z'
             {   
                 const auto& p = node->getPosition();
-                if(idexer.lookL(p))
+                if(idexer.lookL(p) && idexer.fooLookWay(myl::Indexer::ELEFT))
                 {   step2DistanceB.start(p.x, myl::Step2Distance::LEFT);
                     Sound::get().dart();
                 }
@@ -451,7 +451,7 @@ namespace mdl
             }
             case OgreBites::SDLK_RIGHT: /// 120: 'X'
             {   const auto& p = node->getPosition();
-                if(idexer.lookR(p))
+                if(idexer.lookR(p) && idexer.fooLookWay(myl::Indexer::ERIGHT))
                 {   step2DistanceB.start(p.x, myl::Step2Distance::RIGHT);
                     Sound::get().dart();
                 }
