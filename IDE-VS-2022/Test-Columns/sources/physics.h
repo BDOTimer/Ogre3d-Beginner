@@ -50,7 +50,7 @@ namespace myl
         const int           W; /// Ширина  массива.
         const int           H; /// Выстота массива.
         
-        static const Indexer& get()
+        static Indexer& get()
         {   static Indexer idexer; return idexer;
         }
 
@@ -72,10 +72,10 @@ namespace myl
 
         enum    EDIR
         {       ENONE,
-                EMINX,
-                EMINY,
-                EMAXX,
-                EMAXY
+                ELEFT,
+                ERIGHT,
+                EDOWN,
+                EUP
         };
 
         bool isIntroWold(const Ogre::Vector3& vf) const
@@ -83,6 +83,9 @@ namespace myl
             return 0 <= vi[0] && vi[0] < W && 0 <= vi[1] && vi[1] < H;
         }
 
+        ///-------------------------------------|
+        /// Путь свободен?                      |
+        ///-------------------------------------:
         bool lookL(const Ogre::Vector3& vf) const
         {   const Ogre::Vector3i&& vi{getIndex3(vf)};
             return 0 <= vi[0] - 1;
@@ -104,6 +107,11 @@ namespace myl
         {   const Ogre::Vector3i&& vi{getIndex3(vf)};
             return 0 <= vi[1] - 1;
         }
+
+        ///-------------------------------------|
+        /// Путь свободен?                      |
+        ///-------------------------------------:
+        std::function<bool(Indexer::EDIR)> fooLookWay;
 
         ///-------------------------------------|
         /// Тест настроен для W = 7             |

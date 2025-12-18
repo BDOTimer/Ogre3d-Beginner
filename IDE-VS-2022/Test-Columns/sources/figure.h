@@ -380,11 +380,6 @@ namespace mdl
         {   isFalling = node->getPosition().y - D2 > groundLevel;
             return isFalling;
         }
-
-        ///------------------------|
-        /// Путь свободен?         |
-        ///------------------------:
-        std::is_function<bool(const Vector3& position)> fooLookWay;
         
         ///---------------------------------------|
         /// Вызывается для каждого фрейма(кадра). |
@@ -400,7 +395,11 @@ namespace mdl
             }
             else 
             {   if(sensorCollisionY())
-                {   doGravity();
+                {   
+                    if(myl::Indexer::get().fooLookWay(myl::Indexer::EDOWN))
+                    {   doGravity();
+                    }
+                    else isFalling = false;
                 }
             }
 

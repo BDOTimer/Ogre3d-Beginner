@@ -38,7 +38,7 @@ struct  ConfigGame
     float getWellW() const { return sizeCell * W; }
     float getWellH() const { return sizeCell * H; }
     int   getArrW () const { return W           ; } 
-    int   getArrH () const { return H + N + 1   ; } 
+    int   getArrH () const { return H + N + 3   ; } 
 
     const Ogre::Vector3 positionWell{0.0f,100.0f,   0.0f};
     const Ogre::Vector3 positionUser{0.0f,  0.0f, 500.0f};

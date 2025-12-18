@@ -114,9 +114,10 @@ namespace mdl
     /// Корзина - ЛОГИКА.
     ///-------------------------------------------------------------- WellLogic:
     struct  WellLogic   : Base
-    {       WellLogic() : 
-                W(ConfigGame::get().W)
-            ,   H(ConfigGame::get().H + ConfigGame::get().N)
+    {       WellLogic(Figure& f) : 
+                figure(f)
+            ,   W(ConfigGame::get().getArrW())
+            ,   H(ConfigGame::get().getArrH())
             ,   gm(H, std::vector<GemData*>(W, nullptr))
             {   
             }
@@ -124,11 +125,14 @@ namespace mdl
     private:
         SceneNode*  node;
         const ConfigGame& cfg{ConfigGame::get()};
+        Figure& figure;
 
         size_t W;
         size_t H;
 
         const myl::Indexer& indexer{myl::Indexer::get()};
+
+        bool isGameOver{false};
 
         ///----------------------------------|
         /// Владелец данных.                 |
@@ -140,19 +144,64 @@ namespace mdl
         ///----------------------------------:
         std::vector<std::vector<GemData*>> gm;
 
+        ///---------------------------------|
+        /// Путь свободен от gem?           |
+        /// Сначала проверить на стенки!    |
+        ///---------------------------------:
+        bool fooLookWay(myl::Indexer::EDIR dir)
+        {   
+            const Ogre::Vector3& posFig{figure.node->getPosition()};
+
+            for(auto& gem : figure.gems)
+            {   
+                const Ogre::Vector3& posGem{gem.node->getPosition()};
+                const Ogre::Vector3& posGemF
+                {   std::ceilf(posFig.x + posGem.x),
+                    std::ceilf(posFig.y + posGem.y),
+                    std::ceilf(posFig.z + posGem.z)
+                };
+
+                const Vector3i vi{ indexer.getIndex3(posGemF) };
+
+                switch(dir)
+                {   case myl::Indexer::ELEFT:
+                    {   if(nullptr != gm[vi[1]][vi[0]-1]) return false;
+                    }
+                    case myl::Indexer::ERIGHT:
+                    {   if(nullptr != gm[vi[1]][vi[0]+1]) return false;
+                    }
+                    case myl::Indexer::EDOWN:
+                    {   if(nullptr != gm[vi[1]-1][vi[0]]) return false;
+                    }
+                    case myl::Indexer::EUP:
+                    {   if(nullptr != gm[vi[1]+1][vi[0]]) return false;
+                    }
+                    default:;
+                }
+            }
+
+            return true;
+        };
+        
+
         void setup(SceneNode*  nodeWell)
-        {   node = nodeWell->createChildSceneNode();
+        {   
+            ///-----------------------------|
+            /// Настраиваем физику.         |
+            ///-----------------------------:
+            myl::Indexer::get().fooLookWay = [this](myl::Indexer::EDIR d)->bool
+            {   return this->fooLookWay(d);
+            };
+            node = nodeWell->createChildSceneNode();
         }
 
         void add(Figure& figure)///-////////////////////////////////////////////
         {   
             /// return;
-            
-            std::vector<Gem>& gems = figure.gems;
 
             const Ogre::Vector3& posFig{figure.node->getPosition()};
 
-            for(auto& gem : gems)
+            for(auto& gem : figure.gems)
             {   
                 const Ogre::Vector3& posGem{gem.node->getPosition()};
 
@@ -179,11 +228,11 @@ namespace mdl
                     return;
                 }
 
-                add(gem, posGemI, posGemF);
+                if(!add(gem, posGemI, posGemF)) break;
             }
         }
 
-        void add(Gem& gem, const Ogre::Vector3i& posGemI,
+        bool add(Gem& gem, const Ogre::Vector3i& posGemI,
                            const Ogre::Vector3 & posGemF)
         {               
             unsigned x = *(posGemI.ptr() + 0);
@@ -195,9 +244,13 @@ namespace mdl
             /// Ячейка занята.               |
             ///------------------------------:
             if(nullptr != cell)
-            {   std::cout << "ERROR-[Физика]: Ячейка занята! ---> ";
-                l_(posGemI) l(posGemF)
-                return;
+            {   std::cout << "ERROR-[Физика]: Ячейка занята! ---> "; l(posGemI)
+                std::cout << '\n' <<
+                    "|-----------------------------|\n"
+                    "|      Чувак, геймовер!       |\n"
+                    "|-----------------------------.\n\n";
+                fooGameOver();
+                return false;
             }
 
             allocator.emplace_back(GemData());
@@ -226,6 +279,8 @@ namespace mdl
             node->addChild(cell->node);
 
             cell->node->setPosition(posGemF);
+
+            return true;
         }
 
         void update(float deltaTime)
@@ -236,6 +291,11 @@ namespace mdl
             }
         }
 
+        ///---------------------------------|
+        /// Повесь сюда делегат!            |
+        ///---------------------------------:
+        std::function<void()> fooGameOver{[](){}};
+
         friend struct Well;
     };
 
@@ -244,13 +304,13 @@ namespace mdl
     /// Корзина.
     ///------------------------------------------------------------------- Well:
     struct  Well : Base
-    {       Well()
+    {       Well() : logic(figure)
             {   
             }
         
         SceneNode*  node;
-        Well3Wall   well3Wall;
         Figure      figure;
+        Well3Wall   well3Wall;
 
         ///----------------------------|
         /// Содержимое корзины!        |
@@ -281,6 +341,10 @@ namespace mdl
 
         void changeFigure    ()
         {   figure.reGenerate();
+        }
+
+        void setDelegate(std::function<void()> foo)
+        {   logic.fooGameOver = foo;
         }
 
         ///-------------------------------------------|
