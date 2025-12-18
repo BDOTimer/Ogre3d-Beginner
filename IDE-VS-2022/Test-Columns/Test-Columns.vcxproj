@@ -29,6 +29,7 @@
     <ClInclude Include="sources\effects.h" />
     <ClInclude Include="sources\figure.h" />
     <ClInclude Include="sources\inspector.h" />
+    <ClInclude Include="sources\physics.h" />
     <ClInclude Include="sources\primitives.h" />
     <ClInclude Include="sources\sound.h" />
     <ClInclude Include="sources\ui.h" />

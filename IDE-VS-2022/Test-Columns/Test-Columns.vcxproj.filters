@@ -39,6 +39,9 @@
     <ClInclude Include="sources\sound.h">
       <Filter>sources</Filter>
     </ClInclude>
+    <ClInclude Include="sources\physics.h">
+      <Filter>sources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="sources">
