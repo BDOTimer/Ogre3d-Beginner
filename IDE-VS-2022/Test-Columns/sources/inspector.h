@@ -91,6 +91,8 @@ namespace mdl
             ui       .setup();
             cylinders.setup(ground.node);
             effects  .setup();
+
+            well.setDelegate([this](){ this->fooGameOver(); });
         }
 
         ///-------------------------------------------|
@@ -132,6 +134,7 @@ namespace mdl
         int   isSpeedRotWold { 0};  // Нет вращения Мира.
         int     speedRotWold {30};  // Нет вращения Мира.
         bool  isPause     {false};
+        bool  isGameOver  {false};
         float seconds         {0};
 
         ///-------------------------------------------|
@@ -154,15 +157,18 @@ namespace mdl
                 effects.update(seconds);
             }
 
-            if(isPause) return;
+            myl::Fps::get().update(deltaTime);
 
-            well.update(evt.timeSinceLastFrame);
-
-            if(isSpeedRotWold)
-            {   nodeBase->yaw(Ogre::Degree(deltaTime * isSpeedRotWold));
+            if(isPause || isGameOver)
+            {
+            }
+            else
+            {   well.update(evt.timeSinceLastFrame);
             }
 
-            myl::Fps::get().update(deltaTime);
+            if(isSpeedRotWold)
+            {   nodeBase->yaw(Ogre::Degree(deltaTime * speedRotWold));
+            }
         }
 
         ///-------------------------------------------|
@@ -187,6 +193,11 @@ namespace mdl
 
             // ИЛИ инициализируем все
             //rgm.initialiseAllResourceGroups();
+        }
+
+        void fooGameOver()
+        {   isGameOver     = true;
+            isSpeedRotWold = true;
         }
     };
 }
