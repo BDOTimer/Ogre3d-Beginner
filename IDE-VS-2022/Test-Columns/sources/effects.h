@@ -30,20 +30,19 @@ namespace mdl
         {
             if (snowPS != nullptr) return;
         
-            try {
-        
-                snowPS = scnMgr->createParticleSystem("SnowParticleSystem", "Examples/Snow");
+            try
+            {   snowPS = scnMgr->createParticleSystem(
+                    "SnowParticleSystem", "Examples/Snow");
         
                 snowPS->setDefaultDimensions(15.0f, 15.0f);
         
-                
                 if (ParticleEmitter* emitter = snowPS->getEmitter(0))
                 {
                     emitter->setParameter("width", "2500");
                     emitter->setParameter("height", "2500");
                     emitter->setParameter("time_to_live", "8");
                     emitter->setParameter("velocity", "200");
-                    emitter->setParameter("emission_rate", "50");
+                    emitter->setParameter("emission_rate", "1");
                 }
                 
                 if (ParticleAffector* affector = snowPS->getAffector(0))
@@ -51,14 +50,16 @@ namespace mdl
                     affector->setParameter("randomness", "100");
                 }
         
-                SceneNode* snowNode = scnMgr->getRootSceneNode()->createChildSceneNode("SnowNode");
+                SceneNode* snowNode 
+                    = Base::nodeBase->createChildSceneNode("SnowNode");
                 snowNode->attachObject(snowPS);
                 snowNode->setPosition(0, 1500, 0);
         
             }
-            catch (Exception& e) {
-                
-                std::cerr << "Error creating snow effect: " << e.getFullDescription() << std::endl;
+            catch (Exception& e)
+            {   std::cerr
+                    << "Error creating snow effect: " 
+                    << e.getFullDescription() << std::endl;
             }
         }
         
@@ -68,23 +69,44 @@ namespace mdl
             {
                 SceneNode* snowNode = snowPS->getParentSceneNode();
                 if (snowNode) snowNode->detachObject(snowPS);
+
                 scnMgr->destroyParticleSystem(snowPS);
                 snowPS = nullptr;
                 if (snowNode && snowNode->getName() == "SnowNode")
-                    scnMgr->destroySceneNode(snowNode);
+                {   scnMgr->destroySceneNode(snowNode);
+                }
             }
         }
  
-        void setEmittingSnow(bool emitting)
-        {
-            if (snowPS != nullptr)
-                snowPS->setEmitting(emitting);
+        void setSnow(bool emitting)
+        {   if (snowPS != nullptr)
+            {   snowPS->setEmitting(emitting);
+            }
+        }
+
+        void setRate(float n)
+        {   if (ParticleEmitter* emitter = snowPS->getEmitter(0))
+            {   emitter->setEmissionRate(n);
+            }
+        }
+
+        /// TODO: плавность смены интенсивности ...
+        bool isSnow{false};
+        void update(float seconds)
+        {   
+            if(unsigned (seconds) % 30 == 0)
+            {   setSnow(isSnow = !isSnow);
+
+                if(isSnow)
+                {   setRate(float((rand()% 3) * 50 + 1));
+                }
+            }
         }
         
         private:
-            ParticleSystem* snowPS = nullptr;
- 
+            ParticleSystem* snowPS{nullptr};
     };
+ 
 }
  
 #endif // EFFECTS_H
