@@ -128,6 +128,8 @@ namespace mdl
         size_t W;
         size_t H;
 
+        const myl::Indexer& indexer{myl::Indexer::get()};
+
         ///----------------------------------|
         /// Владелец данных.                 |
         ///----------------------------------:
@@ -148,14 +150,7 @@ namespace mdl
             
             std::vector<Gem>& gems = figure.gems;
 
-            const int   SIZECELL  {(int)cfg.sizeCell};
-            const int   OFFSET    {(int)cfg.W / 2};
-            const float D         {cfg.sizeCell * OFFSET};
-            const float SIZECELLd2{cfg.sizeCell / 2};
-
             const Ogre::Vector3& posFig{figure.node->getPosition()};
-
-            /// l(posFig) ///-////////////////////////////////////////////////-?
 
             for(auto& gem : gems)
             {   
@@ -167,18 +162,17 @@ namespace mdl
                     std::ceilf(posFig.z + posGem.z)
                 };
 
-                const float X = posGemF.x + D + SIZECELLd2;
+                const Ogre::Vector3i&& posGemI
+                {   indexer.getIndex3(posGemF)
+                };
 
-                if(X < 0)
+                /// LN
+                /// l(posGemI)
+
+                if(posGemI[0] < 0)
                 {   std::cout << "ERROR-[Физика]: Фигура за левым бортом!\n";
                     return;
                 }
-
-                const Ogre::Vector3i posGemI
-                {   int(        X) / SIZECELL,
-                    int(posGemF.y) / SIZECELL,
-                    int(posGemF.z) / SIZECELL
-                };
 
                 if(posGemI[0] >= W)
                 {   std::cout << "ERROR-[Физика]: Фигура за правым бортом!\n";

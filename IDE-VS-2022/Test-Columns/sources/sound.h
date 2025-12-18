@@ -14,20 +14,24 @@ namespace mdl
 {
     ///------------------------------------------------------------------------|
     /// Play a sound
+    /// Sound::get().wu();
+    /// https://freesoundsite.com/sound-effect-generator/
     ///------------------------------------------------------------------------:
     struct Sound
     {
-        //const sf::SoundBuffer buffer{"resources/uw.mp3"};
+    /// const sf::SoundBuffer buffer{"resources/uw.mp3"};
 
-        sf::Music music{"sound/wu.mp3"};
+        sf::Music _wu   {"sound/wu.mp3"  };
+        sf::Music _wow1 {"sound/wow1.mp3"};
+        sf::Music _dart {"sound/dart.mp3"};
 
-        void playSound()
-        {   music.play();
+        static Sound& get()
+        {   static Sound a; return a;
         }
 
-        static void test()
-        {   static Sound a; a.playSound();
-        }
+        void wu  (){ _wu  .play(); }
+        void wow1(){ _wow1.play(); }
+        void dart(){ _dart.play(); }
     };
 }
 

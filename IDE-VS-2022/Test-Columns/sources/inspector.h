@@ -161,6 +161,8 @@ namespace mdl
             if(isSpeedRotWold)
             {   nodeBase->yaw(Ogre::Degree(deltaTime * isSpeedRotWold));
             }
+
+            myl::Fps::get().update(deltaTime);
         }
 
         ///-------------------------------------------|

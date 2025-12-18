@@ -30,11 +30,7 @@ struct  Application
 
 void test01()
 {   
-    while(true)
-    {   mdl::Sound::test();
-        Sleep(1000);
-    }
-    
+
 }
 
 
@@ -43,13 +39,15 @@ void test01()
 ///---------------------------------------------------------------------- tests:
 bool tests()
 {   
-    ///
+    /// 
     return false;
     
     /// myl::Step2Distance ::test();
     /// myl::Step2DistanceB::test();
     
     /// test01();
+
+    /// myl::testPhysics();
 
     return true;
 }
@@ -74,6 +72,7 @@ int main(int argc, char **argv)
         << std::format("|            {:32}  |\n", NAMEGAME)
         << "|----------------------------------------------|\n"
         << ConfigGame::get()  << "\n\n";
+
     try
     {
         ///------------------------------------------------|

@@ -4,6 +4,7 @@
 #ifndef FIGURE_H
 #define FIGURE_H
 #include "primitives.h"
+#include "physics.h"
 
 ///---------|
 /// My lib  |
@@ -120,6 +121,27 @@ namespace myl
             {   Step2Distance::distancA = distance;
                 Step2Distance::distance = distance;
             }
+
+        void startGravity(const Ogre::Vector3& posStart)
+        {   
+            const unsigned w = (unsigned)ConfigGame::get().sizeCell;
+
+            ///--------------|
+            /// Коррекция.   |
+            ///--------------:
+            const float Y{float(w) * (unsigned(posStart.y + 50.f) / w)};
+
+            ///--------------|
+            /// Дебаг.       |
+            ///--------------:
+            if(false)
+            {   LN
+                l(posStart.y)
+                l(Y)
+            }
+            
+            start(Y, Step2Distance::LEFT);
+        }
 
         void start(float posStart, EDIR dir)
         {   
@@ -283,18 +305,22 @@ namespace mdl
                 gems(ConfigGame::get().descriptionGems.size())
             ,   mat (ConfigGame::get().descriptionGems.size())
             ,   step2DistanceB(ConfigGame::get().sizeCell)
+            ,   step2Gravity  (ConfigGame::get().sizeCell)
             {   
             }
 
         Ogre::SceneManager*      scnMgr;
-        const ConfigGame&        cfg{ConfigGame::get()};
         std::vector<Gem>         gems;
         std::vector<MaterialPtr> mat ;
         SceneNode*               node; /// Нод фигуры!
+
+        const ConfigGame&        cfg{ConfigGame::get()};
+        const float              D2 {cfg.sizeCell  / 2};
         
     private:
 
         myl::Step2DistanceB step2DistanceB;
+        myl::Step2DistanceB step2Gravity  ;
 
         struct 
         {   float  get() const   { return speedMoveCurr ; }
@@ -337,34 +363,46 @@ namespace mdl
             speedFigFall.start();
         }
 
-        void Xclear()
-        {   for(auto& e : gems) e.clear(scnMgr);
+        ///---------------------------------------|
+        /// Физика.                               |
+        ///---------------------------------------:
+        const float groundLevel {0};
+        bool        isFalling{true};
+
+        const myl::Indexer& idexer{myl::Indexer::get()};
+
+        void doGravity()
+        {   /// l(node->getPosition().y)
+            step2Gravity.startGravity(node->getPosition());
         }
 
-        float groundLevel {0};
-        bool  isFalling{true};
+        bool sensorCollisionY()
+        {   isFalling = node->getPosition().y - D2 > groundLevel;
+            return isFalling;
+        }
 
+        ///------------------------|
+        /// Путь свободен?         |
+        ///------------------------:
+        std::is_function<bool(const Vector3& position)> fooLookWay;
+        
         ///---------------------------------------|
         /// Вызывается для каждого фрейма(кадра). |
         ///---------------------------------------:
         void update(float deltaTime)
-        {   ///------------------------|
-            /// Движение вниз.         |
+        {   
+            ///------------------------|
+            /// Гравитация.            |
             ///------------------------:
-            if(isFalling)
-            {   node->translate(0, -speedFigFall.get() * deltaTime, 0);
+            if(step2Gravity.sensor(speedFigFall.get() * deltaTime))
+            {   const auto& p{node->getPosition()};
+                node->setPosition(p.x, step2Gravity.getPosition(), p.z);
             }
-
-            if( Ogre::Vector3
-                position    = node->getPosition();
-                position.y <= groundLevel)
-            {   position.y  = groundLevel; // Не даем уйти ниже земли.
-                
-                node->setPosition(position.x, groundLevel, position.z);
-                isFalling   = false;
+            else 
+            {   if(sensorCollisionY())
+                {   doGravity();
+                }
             }
-
-            for(auto& e : gems) e.update(deltaTime);
 
             /// TODO: доделать ...
             if(step2DistanceB.sensor(deltaTime * speedMoving))
@@ -375,6 +413,11 @@ namespace mdl
             {   
                 onGroundCollision();
             }
+            
+            ///------------------------|
+            /// Анимация.              |
+            ///------------------------:
+            for(auto& e : gems) e.update(deltaTime);
         }
 
         ///---------------------------------------|
@@ -398,15 +441,22 @@ namespace mdl
                 break;
                 
             case OgreBites::SDLK_LEFT: /// 122: 'Z'
-            {   const auto& p = node->getPosition();
-                step2DistanceB.start(p.x, myl::Step2Distance::LEFT);
-                //Sound::test();
+            {   
+                const auto& p = node->getPosition();
+                if(idexer.lookL(p))
+                {   step2DistanceB.start(p.x, myl::Step2Distance::LEFT);
+                    Sound::get().dart();
+                }
+                else Sound::get().wow1();
                 break;
             }
             case OgreBites::SDLK_RIGHT: /// 120: 'X'
             {   const auto& p = node->getPosition();
-                step2DistanceB.start(p.x, myl::Step2Distance::RIGHT);
-                //Sound::test();
+                if(idexer.lookR(p))
+                {   step2DistanceB.start(p.x, myl::Step2Distance::RIGHT);
+                    Sound::get().dart();
+                }
+                else Sound::get().wow1();
                 break;
             } 
             default:
@@ -444,7 +494,7 @@ namespace mdl
              reGenerate();
              isFalling = true;
 
-             Sound::test();
+             Sound::get().wu();
         }
 
         ///----------------------------------------|
