@@ -196,13 +196,19 @@ namespace mdl
     /// Данные юзера, которые записываются в нод.
     ///----------------------------------------------------------- UserDataNode:
     struct GemData;
+
     using  igm_t = std::list<GemData>::iterator;
+    std::ostream& operator<<(std::ostream& o, const std::vector<igm_t>&);
+
+    using Gm_t = std::vector<std::vector<GemData*>>;
+    std::ostream& operator<<(std::ostream& o, const Gm_t&);
+
     struct GemData
     {   size_t             id{  NPOS}; /// Масть(тип) жемчужины.
         Ogre::SceneNode* node{nullptr}; /// Нод на котором висит жемчужена.
         Ogre::Entity*  entity{nullptr}; /// Геометрия + материал жемчужины.
         igm_t             igm;          /// Место аллокации этих данных.
-        float           speed{50};
+        float       speed{50};
 
         ///------------------------------|
         /// Отвязать камень от фигуры.   |
@@ -223,9 +229,9 @@ namespace mdl
             entity = nullptr;
         }
 
-        ///---------------------------------------|
-        /// Анимация жемчужины.                   |
-        ///---------------------------------------:
+        ///------------------------------|
+        /// Анимация жемчужины.          |
+        ///------------------------------:
         void update(float deltaTime)
         {   
             if(ConfigGame::get().isGemAnimate)
@@ -235,6 +241,47 @@ namespace mdl
                 default:;
             }
         }
+
+        ///------------------------------|
+        /// Сколько нужно для match?     |
+        ///------------------------------:
+        static constexpr const uint8_t AMOUNTMATCH{3};
+
+        enum ETYPEMATCH
+        {   LV, /// Линия по вертикали.
+            LG, /// Линия по горизонтали.
+            L1, /// Диагональ стрелкой на 1 часа.
+            L5  /// Диагональ стрелкой на 5 часов.
+        };
+
+        struct Match
+        {
+            void addLV(Match* P) { P->nType[LV]++; pp[0] = P; }
+            void addLG(Match* P) { P->nType[LG]++; pp[1] = P; }
+            void addL1(Match* P) { P->nType[L1]++; pp[2] = P; }
+            void addL5(Match* P) { P->nType[L5]++; pp[3] = P; }
+
+            Match* getLV() const { return pp[0]; }
+            Match* getLG() const { return pp[1]; }
+            Match* getL1() const { return pp[2]; }
+            Match* getL5() const { return pp[3]; }
+
+            void reset()
+            {   for(auto& p : pp   ) p = this;
+                for(auto& p : nType) p = 1   ;
+            }
+
+            bool isMatch() const
+            {   return  pp[0]->nType[0] >= AMOUNTMATCH ||
+                        pp[1]->nType[1] >= AMOUNTMATCH ||
+                        pp[2]->nType[2] >= AMOUNTMATCH ||
+                        pp[3]->nType[3] >= AMOUNTMATCH ;
+            }
+
+        private:
+            std::array<uint8_t, 4> nType;
+            std::array<Match* , 4> pp   ;
+        }match;
     };
 
     ///------------------------------------------------------------------------|
@@ -314,13 +361,13 @@ namespace mdl
         std::vector<MaterialPtr> mat ;
         SceneNode*               node; /// Нод фигуры!
 
-        const ConfigGame&        cfg{ConfigGame::get()};
-        const float              D2 {cfg.sizeCell  / 2};
-        
     private:
 
         myl::Step2DistanceB step2DistanceB;
         myl::Step2DistanceB step2Gravity  ;
+
+        const ConfigGame&         cfg{ConfigGame::get()};
+        const float               D2 {cfg.sizeCell  / 2};
 
         struct 
         {   float  get() const   { return speedMoveCurr ; }
@@ -411,6 +458,7 @@ namespace mdl
             else if(!isFalling && !step2DistanceB.isUserMoving())
             {   
                 onGroundCollision();
+                SNDSTOP(drop1);
             }
             
             ///------------------------|
@@ -425,37 +473,36 @@ namespace mdl
         float speedMoving{100.0f};
         bool  keyPressed (const KeyboardEvent& evt)
         {   
-            if (evt.keysym.sym == SDLK_SPACE)
-            {   reShuffleGems();
-            }
-
             switch(evt.keysym.sym)
             {
             case OgreBites::SDLK_UP:
+                reShuffleGems();
                 break;
                 
             case OgreBites::SDLK_DOWN:
                 speedFigFall.up();
-                //Sound::test();
+                //Sound::test();/////////////////////////////////////: TODO: ...
+                SNDPLAY(drop1);
                 break;
                 
             case OgreBites::SDLK_LEFT: /// 122: 'Z'
             {   
                 const auto& p = node->getPosition();
-                if(idexer.lookL(p))
+
+                if(idexer.lookL(p) && idexer.fooLookWay(myl::Indexer::ELEFT))
                 {   step2DistanceB.start(p.x, myl::Step2Distance::LEFT);
-                    Sound::get().dart();
+                    MUSPLAY(dart);
                 }
-                else Sound::get().wow1();
+                else MUSPLAY(wow1);
                 break;
             }
             case OgreBites::SDLK_RIGHT: /// 120: 'X'
             {   const auto& p = node->getPosition();
-                if(idexer.lookR(p))
+                if(idexer.lookR(p) && idexer.fooLookWay(myl::Indexer::ERIGHT))
                 {   step2DistanceB.start(p.x, myl::Step2Distance::RIGHT);
-                    Sound::get().dart();
+                    MUSPLAY(dart);
                 }
-                else Sound::get().wow1();
+                else MUSPLAY(wow1);
                 break;
             } 
             default:
@@ -492,8 +539,7 @@ namespace mdl
         {    sendFigure2Well();
              reGenerate();
              isFalling = true;
-
-             Sound::get().wu();
+             MUSPLAY(wu);
         }
 
         ///----------------------------------------|
@@ -516,7 +562,6 @@ namespace mdl
         ///---------------------------------------:
         bool sensorCollisions()
         {
-
         }
 
         ///---------------------------------------|

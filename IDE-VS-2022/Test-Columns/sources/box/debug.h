@@ -31,6 +31,7 @@
 
 
 #define l(a)  std::cout << #a << " = "   << (a) << '\n';
+#define ln(a) std::cout << #a << ":\n"   << (a);
 #define l_(a) std::cout << #a << " = "   << (a) << ", ";
 #define l1(a) std::cout                  << (a);
 #define LN    std::cout << std::string(10, '=') << '\n';

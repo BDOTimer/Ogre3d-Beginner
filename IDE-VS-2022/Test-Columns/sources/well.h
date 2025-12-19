@@ -114,21 +114,24 @@ namespace mdl
     /// Корзина - ЛОГИКА.
     ///-------------------------------------------------------------- WellLogic:
     struct  WellLogic   : Base
-    {       WellLogic(Figure& f) : 
-                figure(f)
-            ,   W(ConfigGame::get().getArrW())
-            ,   H(ConfigGame::get().getArrH())
+    {       WellLogic(Figure& f) :
+                figure       (f)
+            ,   cfg(ConfigGame::get())
+            ,   W  (    cfg.getArrW())
+            ,   H  (    cfg.getArrH())
             ,   gm(H, std::vector<GemData*>(W, nullptr))
             {   
             }
 
     private:
-        SceneNode*  node;
+        Figure&   figure;
+
         const ConfigGame& cfg{ConfigGame::get()};
-        Figure& figure;
 
         size_t W;
         size_t H;
+
+        SceneNode*  node;
 
         const myl::Indexer& indexer{myl::Indexer::get()};
 
@@ -148,7 +151,7 @@ namespace mdl
         /// Путь свободен от gem?           |
         /// Сначала проверить на стенки!    |
         ///---------------------------------:
-        bool fooLookWay(myl::Indexer::EDIR dir)
+        bool fooLookWay(const myl::Indexer::EDIR dir)
         {   
             const Ogre::Vector3& posFig{figure.node->getPosition()};
 
@@ -166,20 +169,23 @@ namespace mdl
                 switch(dir)
                 {   case myl::Indexer::ELEFT:
                     {   if(nullptr != gm[vi[1]][vi[0]-1]) return false;
+                        break;
                     }
                     case myl::Indexer::ERIGHT:
                     {   if(nullptr != gm[vi[1]][vi[0]+1]) return false;
+                        break;
                     }
                     case myl::Indexer::EDOWN:
                     {   if(nullptr != gm[vi[1]-1][vi[0]]) return false;
+                        break;
                     }
                     case myl::Indexer::EUP:
                     {   if(nullptr != gm[vi[1]+1][vi[0]]) return false;
+                        break;
                     }
                     default:;
                 }
             }
-
             return true;
         };
         
@@ -195,7 +201,7 @@ namespace mdl
             node = nodeWell->createChildSceneNode();
         }
 
-        void add(Figure& figure)///-////////////////////////////////////////////
+        bool add(Figure& figure)///-////////////////////////////////////////////
         {   
             /// return;
 
@@ -220,16 +226,25 @@ namespace mdl
 
                 if(posGemI[0] < 0)
                 {   std::cout << "ERROR-[Физика]: Фигура за левым бортом!\n";
-                    return;
+                    return false;
                 }
 
                 if(posGemI[0] >= W)
                 {   std::cout << "ERROR-[Физика]: Фигура за правым бортом!\n";
-                    return;
+                    return false;
                 }
 
                 if(!add(gem, posGemI, posGemF)) break;
             }
+
+            findMatchGems();
+
+            ///----------------|
+            /// Дебаг.         |
+            ///----------------:
+            /// l(allocator.size()) ln(gm)
+
+            return true;
         }
 
         bool add(Gem& gem, const Ogre::Vector3i& posGemI,
@@ -295,6 +310,100 @@ namespace mdl
         /// Повесь сюда делегат!            |
         ///---------------------------------:
         std::function<void()> fooGameOver{[](){}};
+
+        ///---------------------------------|
+        /// Ищем где совпало.               |
+        ///---------------------------------:
+        std::vector<igm_t> findMatchGems()
+        {   
+            std::vector<igm_t> matchGems; matchGems.reserve(128);
+
+            for       (auto& r : gm)
+            {   for   (auto& e : r )
+                {   if(nullptr != e)
+                    {   e->match.reset();
+                    }
+                }
+            }
+
+            for(    size_t h{}; h < H; ++h)
+            {   
+            
+                for(size_t w{}; w < W; ++w)
+                {   
+                    ///------------------------|
+                    /// В фокусе только 1 раз! |
+                    ///------------------------:
+                    const auto& a{gm[h][w]};
+
+                    if(nullptr == a)
+                    {   continue;
+                    }
+                    
+                    ///------------------------|
+                    /// Горизонталь.           |
+                    ///------------------------:
+                    if(size_t i = w + 1; i < W )
+                    {   const auto& b{gm[h][i]};
+                        
+                        if(nullptr != b && a->id == b->id)
+                        {   b->match.addLG(a->match.getLG());
+                        }
+                    }
+
+                    ///------------------------|
+                    /// Вертикаль.             |
+                    ///------------------------:
+                    if(size_t j = h + 1; j < H )
+                    {   const auto& b{gm[j][w]};
+                        
+                        if(nullptr != b && a->id == b->id)
+                        {   b->match.addLV(a->match.getLV());
+                        }
+                    }
+
+                    ///------------------------|
+                    /// Диагональ "Плюс".      |
+                    ///------------------------:
+                    if(size_t j = h + 1, i = w + 1; j < H && i < W )
+                    {   const auto& b{gm[j][i]};
+                        
+                        if(nullptr != b && a->id == b->id)
+                        {   b->match.addL1(a->match.getL1());
+                        }
+                    }
+
+                    ///------------------------|
+                    /// Диагональ "Минус".     |
+                    ///------------------------:
+                    if(size_t j = h - 1, i = w - 1; j < H && i < W )
+                    {   const auto& b{gm[j][i]};
+                        
+                        if(nullptr != b && a->id == b->id)
+                        {   b->match.addL5(a->match.getL5());
+                        }
+                    }
+                }
+            }
+
+            for       (const auto& r : gm)
+            {   for   (const auto& e : r )
+                {   if(nullptr != e)
+                    {   if(e->match.isMatch())
+                        {
+                            matchGems.push_back(e->igm);
+                        }
+                    }
+                }
+            }
+
+            ///----------------|
+            /// Дебаг.         |
+            ///----------------:
+            if(!matchGems.empty()) {l(matchGems.size())ln(matchGems)}
+
+            return matchGems;
+        }
 
         friend struct Well;
     };

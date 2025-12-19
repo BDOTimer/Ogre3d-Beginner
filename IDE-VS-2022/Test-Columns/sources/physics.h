@@ -67,7 +67,7 @@ namespace myl
         }
 
         int getIndexY(const float val) const ///-/////////////////////////////-?
-        {   return int(val + 1000) / SZCELL - 10;
+        {   return int(val + 1000 - 50) / SZCELL - 10;
         }
 
         enum    EDIR
