@@ -245,7 +245,7 @@ namespace mdl
         ///------------------------------|
         /// Сколько нужно для match?     |
         ///------------------------------:
-        static constexpr const uint8_t AMOUNTMATCH{2};
+        static constexpr const uint8_t AMOUNTMATCH{3};
 
         enum ETYPEMATCH
         {   LV, /// Линия по вертикали.
@@ -458,6 +458,7 @@ namespace mdl
             else if(!isFalling && !step2DistanceB.isUserMoving())
             {   
                 onGroundCollision();
+                SNDSTOP(drop1);
             }
             
             ///------------------------|
@@ -472,37 +473,36 @@ namespace mdl
         float speedMoving{100.0f};
         bool  keyPressed (const KeyboardEvent& evt)
         {   
-            if (evt.keysym.sym == SDLK_SPACE)
-            {   reShuffleGems();
-            }
-
             switch(evt.keysym.sym)
             {
             case OgreBites::SDLK_UP:
+                reShuffleGems();
                 break;
                 
             case OgreBites::SDLK_DOWN:
                 speedFigFall.up();
-                //Sound::test();
+                //Sound::test();/////////////////////////////////////: TODO: ...
+                SNDPLAY(drop1);
                 break;
                 
             case OgreBites::SDLK_LEFT: /// 122: 'Z'
             {   
                 const auto& p = node->getPosition();
+
                 if(idexer.lookL(p) && idexer.fooLookWay(myl::Indexer::ELEFT))
                 {   step2DistanceB.start(p.x, myl::Step2Distance::LEFT);
-                    Sound::get().dart();
+                    MUSPLAY(dart);
                 }
-                else Sound::get().wow1();
+                else MUSPLAY(wow1);
                 break;
             }
             case OgreBites::SDLK_RIGHT: /// 120: 'X'
             {   const auto& p = node->getPosition();
                 if(idexer.lookR(p) && idexer.fooLookWay(myl::Indexer::ERIGHT))
                 {   step2DistanceB.start(p.x, myl::Step2Distance::RIGHT);
-                    Sound::get().dart();
+                    MUSPLAY(dart);
                 }
-                else Sound::get().wow1();
+                else MUSPLAY(wow1);
                 break;
             } 
             default:
@@ -539,8 +539,7 @@ namespace mdl
         {    sendFigure2Well();
              reGenerate();
              isFalling = true;
-
-             Sound::get().wu();
+             MUSPLAY(wu);
         }
 
         ///----------------------------------------|
@@ -563,7 +562,6 @@ namespace mdl
         ///---------------------------------------:
         bool sensorCollisions()
         {
-
         }
 
         ///---------------------------------------|

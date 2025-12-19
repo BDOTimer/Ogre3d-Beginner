@@ -48,7 +48,7 @@ namespace mdl
         int mWidthS      = 110;
         int mWidthL      = 350;
         int mShortHeight =  34;
-        int mLongHeight  = 150;
+        int mLongHeight  = 180;
  
         bool mIsLongText = false;
 
@@ -191,10 +191,11 @@ namespace mdl
             ctb = std::make_unique<ClickableTextBox>(trayMgr);
             ctb->setText(
                 "", 
-                "CURSOR : LEFT, RIGHT, DOWN\n"
-                "SPACE  : Сдвинуть жемчуг\n"
+                "CURSOR : LEFT, RIGHT\n"
+                "UP     : Рофлить жемчуг\n"
+                "DOWN   : Бросить жемчуг\n"
                 "F5, F6 : Вращение сцены\n"
-                "'P'    : Пауза\n"
+                "SPACE  : Пауза\n"
                 "ESCAPE : Выход из игры\n"
             );
             ctb->setCaption("F1::Help");

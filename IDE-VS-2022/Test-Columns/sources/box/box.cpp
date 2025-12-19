@@ -95,7 +95,9 @@ namespace mdl
     ///------------------------------------------------------------------------:
     std::ostream& operator<<(std::ostream& o, const std::vector<igm_t>& m)
     {   for(const auto it : m)
-        {   o << std::format("id: {}\n", it->id);
+        {   o << std::format("id: {} ---> {}\n", 
+                it->id, 
+                ConfigGame::get().decode4DescriptionGems(it->id));
         }   o << '\n';
         return o;
     }
@@ -103,15 +105,18 @@ namespace mdl
     std::ostream& operator<<(std::ostream& o, const Gm_t& gm)
     {   l(gm.size()) l(gm.back().size())
 
+        const char* pad{"   |"};
+
         auto line
-        {   [&o, &gm]()
-            {   o << std::string(gm.back().size()  * 5, '-') << std::endl;
+        {   [&o, &gm, &pad]()
+            {   o << pad << std::string(gm.back().size()  * 5, '-') << "\b|\n";
             }
         };
 
         for(auto r{gm.crbegin()}; r != gm.crend(); ++r)
         {   
-            line(); 
+            line();
+            o << pad;
 
             for(const auto  e : *r)
             {   char c{'.'}; if(nullptr !=   e) c = '0' + (int8_t)e->id;

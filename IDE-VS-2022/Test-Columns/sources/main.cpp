@@ -63,6 +63,8 @@ int main(int argc, char **argv)
     unsigned int RANDSEED{false ? (unsigned int)time(NULL) : 2025}; 
     srand       (RANDSEED); l(RANDSEED)
 
+    /// mdl::SNDPLAY(wu);
+
     ///------------------|
     /// Запуск тестов.   |
     ///------------------:

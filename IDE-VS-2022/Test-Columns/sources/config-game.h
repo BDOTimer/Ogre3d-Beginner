@@ -57,6 +57,19 @@ struct  ConfigGame
         DS{3, "cube.mesh"  , Ogre::ColourValue{ 0.0 , 0.5f , 1.0}, C},
         DS{1, "cube.mesh"  , Ogre::ColourValue{ 1.0 , 0.0f , 0.5}, C}
     };
+
+    const char* decode4DescriptionGems(size_t id)
+    {   ASSERT(id < descriptionGems.size())
+        static const char* const m[]
+        {   "Лимон",
+            "Синий Мяч",
+            "Зелёное яблоко",
+            "Куб небесный",
+            "Куб розовый"
+        };
+        return m[id];
+    }
+
     #undef S
     #undef C
     ///-----------------------------------.

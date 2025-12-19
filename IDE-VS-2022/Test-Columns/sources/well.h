@@ -151,7 +151,7 @@ namespace mdl
         /// Путь свободен от gem?           |
         /// Сначала проверить на стенки!    |
         ///---------------------------------:
-        bool fooLookWay(myl::Indexer::EDIR dir)
+        bool fooLookWay(const myl::Indexer::EDIR dir)
         {   
             const Ogre::Vector3& posFig{figure.node->getPosition()};
 
@@ -169,20 +169,23 @@ namespace mdl
                 switch(dir)
                 {   case myl::Indexer::ELEFT:
                     {   if(nullptr != gm[vi[1]][vi[0]-1]) return false;
+                        break;
                     }
                     case myl::Indexer::ERIGHT:
                     {   if(nullptr != gm[vi[1]][vi[0]+1]) return false;
+                        break;
                     }
                     case myl::Indexer::EDOWN:
                     {   if(nullptr != gm[vi[1]-1][vi[0]]) return false;
+                        break;
                     }
                     case myl::Indexer::EUP:
                     {   if(nullptr != gm[vi[1]+1][vi[0]]) return false;
+                        break;
                     }
                     default:;
                 }
             }
-
             return true;
         };
         
@@ -313,7 +316,7 @@ namespace mdl
         ///---------------------------------:
         std::vector<igm_t> findMatchGems()
         {   
-            std::vector<igm_t> swg; swg.reserve(128);
+            std::vector<igm_t> matchGems; matchGems.reserve(128);
 
             for       (auto& r : gm)
             {   for   (auto& e : r )
@@ -388,7 +391,7 @@ namespace mdl
                 {   if(nullptr != e)
                     {   if(e->match.isMatch())
                         {
-                            swg.push_back(e->igm);
+                            matchGems.push_back(e->igm);
                         }
                     }
                 }
@@ -397,9 +400,9 @@ namespace mdl
             ///----------------|
             /// Дебаг.         |
             ///----------------:
-            l(swg.size())ln(swg)
+            if(!matchGems.empty()) {l(matchGems.size())ln(matchGems)}
 
-            return swg;
+            return matchGems;
         }
 
         friend struct Well;

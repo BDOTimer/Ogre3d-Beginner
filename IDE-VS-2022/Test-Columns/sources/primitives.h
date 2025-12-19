@@ -93,7 +93,7 @@ namespace mdl
             man = std::make_unique<OgreBites::CameraMan>(camNode);
 
             man->setTarget(camGoal);
-            man->setYawPitchDist(Ogre::Degree(0), Ogre::Degree(-30), 2000.0f);
+            man->setYawPitchDist(Ogre::Degree(0), Ogre::Degree(-20), 2000.0f);
 
             man->setStyle(OgreBites::CS_ORBIT); // или  CS_FREELOOK
             man->setTopSpeed(100);
