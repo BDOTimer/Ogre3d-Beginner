@@ -293,16 +293,16 @@ namespace mdl
 
         const char* name1{"myModel"};
 
-        void setup(Ogre::String filename)
+        void setup(Ogre::String filename="model.obj")
         {   
             mesh = Ogre::MeshManager::getSingleton().load(
-                "model.obj",
+                filename,
                 Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
                 Ogre::HardwareBuffer::HBU_STATIC,
                 Ogre::HardwareBuffer::HBU_STATIC
             );
 
-            entity = scnMgr->createEntity("myModel", "model.obj");
+            entity = scnMgr->createEntity("myModel", filename);
             node   = nodeBase->createChildSceneNode();
             node->attachObject(entity);
             node->setPosition (0, 0, 0);

@@ -46,7 +46,6 @@ namespace mdl
             float W  = cfg.get().getWellW();
             float H  = cfg.get().getWellH();
             float D  = cfg.get().sizeCell;
-            float T  = 1.0f;
         
             Ogre::MeshManager::getSingleton().createPlane(
                 names[0],
@@ -201,13 +200,13 @@ namespace mdl
             node = nodeWell->createChildSceneNode();
         }
 
-        bool add(Figure& figure)///-////////////////////////////////////////////
+        bool add(Figure& fig)///-////////////////////////////////////////////
         {   
             /// return;
 
-            const Ogre::Vector3& posFig{figure.node->getPosition()};
+            const Ogre::Vector3& posFig{fig.node->getPosition()};
 
-            for(auto& gem : figure.gems)
+            for(auto& gem : fig.gems)
             {   
                 const Ogre::Vector3& posGem{gem.node->getPosition()};
 
@@ -298,10 +297,10 @@ namespace mdl
             return true;
         }
 
-        void update(float deltaTime)
+        void update()
         {   for    (auto& r : gm)
             {   for(auto& e : r)
-                {   if(nullptr != e) e->update(deltaTime);
+                {   if(nullptr != e) e->update();
                 }
             }
         }
@@ -433,8 +432,8 @@ namespace mdl
             /// Нод корзины!           |
             ///------------------------:
             node = nodeBase->createChildSceneNode();
-            figure.setup(scnMgr, node);
 
+            figure   .setup(node);
             well3Wall.setup(node);
             logic    .setup(node);
 
@@ -463,9 +462,9 @@ namespace mdl
         {   return figure.keyPressed(evt);
         }
 
-        void update(float deltaTime)
-        {   figure.update(deltaTime);
-            logic .update(deltaTime);
+        void update()
+        {   figure.update();
+            logic .update();
         }
     
         friend struct InspectorRoot;
