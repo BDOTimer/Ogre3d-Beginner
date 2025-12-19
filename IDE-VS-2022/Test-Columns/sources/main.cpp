@@ -60,7 +60,8 @@ int main(int argc, char **argv)
 {
     std::system("chcp 65001>nul");
 
-    srand((unsigned int)time(NULL));
+    unsigned int RANDSEED{false ? (unsigned int)time(NULL) : 2025}; 
+    srand       (RANDSEED); l(RANDSEED)
 
     ///------------------|
     /// Запуск тестов.   |

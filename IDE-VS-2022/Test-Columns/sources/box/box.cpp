@@ -89,4 +89,36 @@ namespace mdl
             }
 #endif
         }
+
+    ///------------------------------------------------------------------------|
+    /// Дебажный вывод.
+    ///------------------------------------------------------------------------:
+    std::ostream& operator<<(std::ostream& o, const std::vector<igm_t>& m)
+    {   for(const auto it : m)
+        {   o << std::format("id: {}\n", it->id);
+        }   o << '\n';
+        return o;
+    }
+
+    std::ostream& operator<<(std::ostream& o, const Gm_t& gm)
+    {   l(gm.size()) l(gm.back().size())
+
+        auto line
+        {   [&o, &gm]()
+            {   o << std::string(gm.back().size()  * 5, '-') << std::endl;
+            }
+        };
+
+        for(auto r{gm.crbegin()}; r != gm.crend(); ++r)
+        {   
+            line(); 
+
+            for(const auto  e : *r)
+            {   char c{'.'}; if(nullptr !=   e) c = '0' + (int8_t)e->id;
+                o << std::format(" {:2} |", c);
+            }   o << '\n';
+        }       line();
+                o << '\n';
+        return  o;
+    }
 }
