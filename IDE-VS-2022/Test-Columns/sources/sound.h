@@ -32,7 +32,11 @@ namespace mdl
 
         void wu  (){ _wu  .play(); }
         void wow1(){ _wow1.play(); }
-        void dart(){ _dart.play(); }
+        void dart()
+        {
+            if (_dart.getStatus() != sf::Music::Status::Playing)
+                _dart.play();
+        }
     };
 }
 
