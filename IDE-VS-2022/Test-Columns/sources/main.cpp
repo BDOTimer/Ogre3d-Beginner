@@ -56,7 +56,8 @@ bool tests()
 ///----------------------------------------------------------------------------|
 /// Старт.
 ///----------------------------------------------------------------------- main:
-int main(int argc, char **argv)
+int main([[maybe_unused]] int    argc,
+         [[maybe_unused]] char** argv)
 {
     std::system("chcp 65001>nul");
 

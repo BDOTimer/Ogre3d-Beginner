@@ -56,11 +56,13 @@ namespace mdl
     };
 }
 
-#define MUSPLAY(a) Musics::get().a.play()
-#define MUSSTOP(a) Musics::get().a.stop()
+#define MUSPLAY(a) if (Musics::get().a.getStatus() != sf::Music::Status::Playing)\
+                       Musics::get().a.play()
+#define MUSSTOP(a)     Musics::get().a.stop()
 
-#define SNDPLAY(a) Sound ::get().a.play()
-#define SNDSTOP(a) Sound ::get().a.stop()
+#define SNDPLAY(a) if (Sound::get().a.getStatus() != sf::Sound::Status::Playing)\
+                       Sound::get().a.play()
+#define SNDSTOP(a)     Sound::get().a.stop()
 
 #endif // SOUND_H
 

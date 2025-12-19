@@ -167,7 +167,7 @@ namespace mdl
             {
             }
             else
-            {   well.update(evt.timeSinceLastFrame);
+            {   well.update();
             }
 
             if(isSpeedRotWold)

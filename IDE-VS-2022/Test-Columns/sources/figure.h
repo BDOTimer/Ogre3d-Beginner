@@ -27,16 +27,16 @@ namespace myl
         ///---------------------------------------|
         /// Начать движение.                      |
         ///---------------------------------------:
-        void start(float posStart, float distance)
+        void start(float PosStart, float Distance)
         {   
-            if(0.f == distance) return;
+            if(0.f == Distance) return;
 
-            eDir = distance < 0 ? LEFT : RIGHT;
+            eDir = Distance < 0 ? LEFT : RIGHT;
             
-            this->position =           posStart;
-            this->posStart =           posStart;
-            this->distance =           distance;
-            this->distancA =  std::abs(distance);
+            this->position =           PosStart;
+            this->posStart =           PosStart;
+            this->distance =           Distance;
+            this->distancA =  std::abs(Distance);
             dist           =  0;
             isMoving = true;
         }
@@ -122,39 +122,39 @@ namespace myl
                 Step2Distance::distance = distance;
             }
 
-        void startGravity(const Ogre::Vector3& posStart)
+        void startGravity(const Ogre::Vector3& PosStart)
         {   
             const unsigned w = (unsigned)ConfigGame::get().sizeCell;
 
             ///--------------|
             /// Коррекция.   |
             ///--------------:
-            const float Y{float(w) * (unsigned(posStart.y + 50.f) / w)};
+            const float Y{float(w) * (unsigned(PosStart.y + 50.f) / w)};
 
             ///--------------|
             /// Дебаг.       |
             ///--------------:
             if(false)
             {   LN
-                l(posStart.y)
+                l(PosStart.y)
                 l(Y)
             }
             
             start(Y, Step2Distance::LEFT);
         }
 
-        void start(float posStart, EDIR dir)
+        void start(float PosStart, EDIR dir)
         {   
             if(isMoving) return;
 
-            posStart = std::ceilf(posStart);
+            PosStart = std::ceilf(PosStart);
 
-            ASSERT(posStart == int(posStart)) ///<-----------------------: TODO.
+            ASSERT(PosStart == int(PosStart)) ///<-----------------------: TODO.
 
             eDir = dir;
             
-            this->position = posStart;
-            this->posStart = posStart;
+            this->position = PosStart;
+            this->posStart = PosStart;
             if(dir == LEFT) this->distance = -std::abs(this->distance);
             dist     = 0;
             isMoving = true;
@@ -203,7 +203,7 @@ namespace mdl
     using Gm_t = std::vector<std::vector<GemData*>>;
     std::ostream& operator<<(std::ostream& o, const Gm_t&);
 
-    struct GemData
+    struct GemData : Base
     {   size_t             id{  NPOS}; /// Масть(тип) жемчужины.
         Ogre::SceneNode* node{nullptr}; /// Нод на котором висит жемчужена.
         Ogre::Entity*  entity{nullptr}; /// Геометрия + материал жемчужины.
@@ -232,7 +232,7 @@ namespace mdl
         ///------------------------------|
         /// Анимация жемчужины.          |
         ///------------------------------:
-        void update(float deltaTime)
+        void update()
         {   
             if(ConfigGame::get().isGemAnimate)
             switch(id)
@@ -287,7 +287,7 @@ namespace mdl
     ///------------------------------------------------------------------------|
     /// Gem
     ///-------------------------------------------------------------------- Gem:
-    struct  Gem : Base, GemData
+    struct  Gem : GemData
     {           
  
         ///---------------------------------------|
@@ -295,13 +295,13 @@ namespace mdl
         ///---------------------------------------:
         void setup(const size_t        n     ,
                    SceneNode*          parent,
-                   const size_t        id)
+                   const size_t        Id)
         {   
-            GemData::id = id;
+            GemData::id = Id;
 
             const auto& SZCELL{ConfigGame::get().sizeCell};
 
-            if(nullptr != entity) clear(scnMgr);
+            if(nullptr != entity) clear();
 
             const auto& descriptions{ConfigGame::get().descriptionGems};
 
@@ -309,7 +309,7 @@ namespace mdl
 
             entity = scnMgr->createEntity(
                 std::format("Gem{}", N++),
-                descriptions[id].nameMesh
+                descriptions[Id].nameMesh
             );
 
             if(nullptr == node)
@@ -326,7 +326,7 @@ namespace mdl
         ///---------------------------------------|
         /// Удаление жемчужины из фигуры.         |
         ///---------------------------------------:
-        void clear(Ogre::SceneManager* scnMgr)
+        void clear()
         {   /// TODO ...
             /// node->detachAllObjects();
 
@@ -356,7 +356,6 @@ namespace mdl
             {   
             }
 
-        Ogre::SceneManager*      scnMgr;
         std::vector<Gem>         gems;
         std::vector<MaterialPtr> mat ;
         SceneNode*               node; /// Нод фигуры!
@@ -383,9 +382,8 @@ namespace mdl
         ///---------------------------------------|
         /// Стартовая инициализация.              |
         ///---------------------------------------:
-        void setup(Ogre::SceneManager* scnMgr, SceneNode* well)
-        {   this->scnMgr = scnMgr;
-
+        void setup(SceneNode* well)
+        {   
             ///------------------------|
             /// Крепим к корзине.      |
             ///------------------------:
@@ -431,7 +429,7 @@ namespace mdl
         ///---------------------------------------|
         /// Вызывается для каждого фрейма(кадра). |
         ///---------------------------------------:
-        void update(float deltaTime)
+        void update()
         {   
             ///------------------------|
             /// Гравитация.            |
@@ -464,7 +462,7 @@ namespace mdl
             ///------------------------|
             /// Анимация.              |
             ///------------------------:
-            for(auto& e : gems) e.update(deltaTime);
+            for(auto& e : gems) e.update();
         }
 
         ///---------------------------------------|
