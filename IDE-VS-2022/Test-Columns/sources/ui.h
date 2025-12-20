@@ -229,6 +229,8 @@ namespace mdl
         {   return ctb->mousePressed(evt);
         }
 
+        ScoreLabel* grtPanel() { return score.get(); } /// <------------------ +
+
         void setup()
         {   
             OverlaySystem*  overlaySystem = ctx->getOverlaySystem();
