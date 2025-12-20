@@ -157,6 +157,11 @@ namespace mdl
                 };
             }
 
+        std::function<void(int)> SetScore;
+        void setDelegateSetScore(std::function<void(int)> dlg)
+        {   SetScore = dlg;
+        }
+
     private:
         Figure& figure;
 
@@ -435,6 +440,8 @@ namespace mdl
             /// Дебаг.         |
             ///----------------:
             if(!matchGems.empty()) {l(matchGems.size())ln(matchGems)}
+
+            SetScore(int(matchGems.size()));
 
             return matchGems;
         }

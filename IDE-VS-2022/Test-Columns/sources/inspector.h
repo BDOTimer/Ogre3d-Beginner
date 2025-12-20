@@ -222,6 +222,11 @@ namespace mdl
             well = std::make_unique<Well>();
             well->setup();
             well->setDelegate([this](){ this->fooGameOver(); });
+            well->logic.setDelegateSetScore(
+                [this](int score)
+                {   this->setScore(score);
+                }
+            );
         }
 
         void safeRemoveNode(Ogre::SceneNode* node)
@@ -235,6 +240,10 @@ namespace mdl
             }
     
             node->getCreator()->destroySceneNode(node);
+        }
+
+        void setScore(int score)
+        {   ui.score->set(score);
         }
     };
 }
