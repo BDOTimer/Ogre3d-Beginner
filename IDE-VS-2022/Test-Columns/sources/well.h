@@ -90,21 +90,21 @@ namespace mdl
             const auto H2 = H/2;
         
             // Позиционируем стенки
-            Ogre::SceneNode* leftNode = wallNode->createChildSceneNode();
-            leftNode->attachObject(walls[0]);
-            leftNode->setPosition (-W2, H2, 0);
+            Ogre::SceneNode* lNode = wallNode->createChildSceneNode(names[0]);
+            lNode->attachObject(walls[0]);
+            lNode->setPosition (-W2, H2, 0);
         
-            Ogre::SceneNode* rightNode = wallNode->createChildSceneNode();
-            rightNode->attachObject(walls[1]);
-            rightNode->setPosition ( W2, H2, 0);
+            Ogre::SceneNode* rNode = wallNode->createChildSceneNode(names[1]);
+            rNode->attachObject(walls[1]);
+            rNode->setPosition ( W2, H2, 0);
         
-            Ogre::SceneNode* backNode = wallNode->createChildSceneNode();
-            backNode->attachObject(walls[2]);
-            backNode->setPosition (0, H2, -D);
+            Ogre::SceneNode* bNode = wallNode->createChildSceneNode(names[2]);
+            bNode->attachObject(walls[2]);
+            bNode->setPosition (0, H2, -D);
 
-            Ogre::SceneNode* downNode = wallNode->createChildSceneNode();
-            downNode->attachObject(walls[3]);
-            downNode->setPosition (0, 0, 0);
+            Ogre::SceneNode* dNode = wallNode->createChildSceneNode(names[3]);
+            dNode->attachObject(walls[3]);
+            dNode->setPosition (0, 0, 0);
         }
     };
 
@@ -154,7 +154,7 @@ namespace mdl
 
         void setup(SceneNode*  nodeWell)
         {   
-           node = nodeWell->createChildSceneNode();
+           node = nodeWell->createChildSceneNode("WellLogic");
         }
 
         ///---------------------------------|
@@ -425,10 +425,10 @@ namespace mdl
                     "|-----------------------------|\n\n";
             }
            ~Well()
-            {   destroyAll();
+            {   //destroyAll();
             }
         
-        SceneNode*  node;
+        SceneNode*  node{nullptr};
         Figure      figure;
         Well3Wall   well3Wall;
 
@@ -443,7 +443,7 @@ namespace mdl
             ///------------------------|
             /// Нод корзины!           |
             ///------------------------:
-            node = nodeBase->createChildSceneNode();
+            node = nodeBase->createChildSceneNode("Well");
 
             figure   .setup(node);
             well3Wall.setup(node);
@@ -481,7 +481,11 @@ namespace mdl
 
         void destroyAll()
         {   if( node != nullptr )
-            {   node -> destroyAllObjects();
+            {   node -> destroyAllChildrenAndObjects();
+                node -> destroyAllObjects();
+                
+                Ogre::Node* parent = node->getParent();
+                parent->removeChild(node);
             }
         }
     

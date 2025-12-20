@@ -297,7 +297,6 @@ namespace mdl
     ///-------------------------------------------------------------------- Gem:
     struct  Gem : GemData
     {           
- 
         ///---------------------------------------|
         /// Стартовая инициализация.              |
         ///---------------------------------------:
@@ -315,13 +314,15 @@ namespace mdl
 
             static size_t N{0};
 
+            const auto name{std::format("Gem{}", N++)};
+
             entity = scnMgr->createEntity(
-                std::format("Gem{}", N++),
+                name,
                 descriptions[Id].nameMesh
             );
 
             if(nullptr == node)
-            {   node   =  parent->createChildSceneNode();
+            {   node   =  parent->createChildSceneNode(name);
             }
             node->resetOrientation  ();
             node->attachObject(entity);
@@ -395,7 +396,7 @@ namespace mdl
             ///------------------------|
             /// Крепим к корзине.      |
             ///------------------------:
-            node = well->createChildSceneNode();
+            node = well->createChildSceneNode("Figure");
 
             createMaterial();
             reGenerate    ();
@@ -531,8 +532,14 @@ namespace mdl
         {   
             for(unsigned i{}; i < mat.size(); ++i)
             {
+                auto name{std::format("matSph{}", i)};
+
+                mat[i] = Ogre::MaterialManager::getSingleton().getByName(name);
+
+                if(mat[i] != nullptr) continue;
+
                 mat[i] = MaterialManager::getSingleton().create(
-                    std::format("matSph{}", i),
+                    name,
                     ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME
                 );
 

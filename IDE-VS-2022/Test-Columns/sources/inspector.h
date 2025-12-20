@@ -68,7 +68,7 @@ namespace mdl
             scnMgr->setShadowTechnique(
                 ShadowTechnique::SHADOWTYPE_STENCIL_ADDITIVE);
 
-            nodeBase = scnMgr->getRootSceneNode()->createChildSceneNode();
+            nodeBase = scnMgr->getRootSceneNode()->createChildSceneNode("Base");
             nodeUser = scnMgr->getRootSceneNode()->createChildSceneNode();
 
             Base::scnMgr   = scnMgr;
@@ -108,7 +108,12 @@ namespace mdl
                     getRoot()->queueEndRendering();
                     return true;
                 case OgreBites::SDLK_F4:
-                /// createNewGame();
+                /// 
+                    createNewGame();
+                    break;
+                case OgreBites::SDLK_F8:
+                /// 
+                    PrintNodeHierarchy(Base::nodeBase);
                     break;
                 case OgreBites::SDLK_F5:
                     isSpeedRotWold = isSpeedRotWold ? 0 :  speedRotWold;
@@ -211,9 +216,34 @@ namespace mdl
 
         void createNewGame()
         {
+            if (well->node)
+            {   //well->node->getCreator()->destroySceneNode(well->node);
+            }
+            //safeRemoveNode(well->node);
+
             well = std::make_unique<Well>();
             well->setup();
             well->setDelegate([this](){ this->fooGameOver(); });
+
+            Base::cntGame++;
+        }
+
+        void safeRemoveNode(Ogre::SceneNode* node)
+        {
+            if (!node || !node->getParent()) return;
+    
+            // Удалить attached объекты
+            while (!node->numAttachedObjects())
+            {   node->detachObject(node->getAttachedObject(0));
+            }
+    
+            // Удалить детей рекурсивно
+            while (node->numChildren())
+            {   safeRemoveNode(static_cast<Ogre::SceneNode*>(node->getChild(0)));
+            }
+    
+            // Удалить самого нода
+            node->getCreator()->destroySceneNode(node);
         }
     };
 }

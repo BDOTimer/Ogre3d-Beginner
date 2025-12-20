@@ -111,6 +111,7 @@ namespace mdl
         inline static Ogre::SceneManager* scnMgr         { nullptr };
         inline static Ogre::SceneNode   * nodeBase       { nullptr };
         inline static float               deltaTime;
+        inline static unsigned            cntGame{0};
     };
 }
 
