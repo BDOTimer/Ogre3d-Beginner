@@ -24,13 +24,13 @@ struct DescriptionGem
 /// Конфигуратор игры Columns.
 ///----------------------------------------------------------------- ConfigGame:
 struct  ConfigGame
-{       ConfigGame()
-        {   W += (W+1)%2;
-        }
+{       //ConfigGame()
+        //{   W += (W+1)%2;
+        //}
 
     unsigned W{ 7}; /// Ширина (кол-во ячеек) корзины(Well).
-    unsigned H{12}; /// Выстота(кол-во ячеек) корзины(Well).
-    unsigned N{ 4}; /// Количество элементов(Gems) в фигуре(Column).
+    unsigned H{11}; /// Выстота(кол-во ячеек) корзины(Well).
+    unsigned N{ 5}; /// Количество элементов(Gems) в фигуре(Column).
 
     float sizeCell{100}; /// Размер ячейки корзины.
     float sizeGems{ 20}; /// Если это шар, то тогда это Диаметр...
@@ -78,9 +78,12 @@ struct  ConfigGame
     /// Анимация(на логику не влияет).    |
     ///-----------------------------------:
     bool isGemAnimate{true};
-        
+    
+    ConfigGame* configGame{nullptr};
+
     static ConfigGame& get()
-    {   static ConfigGame cfg; return cfg;
+    {   static ConfigGame cfg; 
+        return cfg.configGame == nullptr ? cfg : *cfg.configGame;
     }
 };
 

@@ -75,12 +75,12 @@ namespace mdl
             cam->setNearClipDistance  (5);
 
             camGoal = scnMgr->getRootSceneNode()->createChildSceneNode();
-            camGoal->setPosition(0, 700, 0);
+            camGoal->setPosition(0, 900, 0);
 
 
             camNode = nodeUser->createChildSceneNode();
-            camNode->setPosition   (0, 800, 1900);
-            camNode->lookAt(Vector3(0, 650, 0), Node::TransformSpace::TS_WORLD);
+            camNode->setPosition   (0, 999, 1900);
+            camNode->lookAt(Vector3(0, 1200, 0), Node::TransformSpace::TS_WORLD);
             camNode->attachObject  (cam);
 
             vp = ctx->getRenderWindow()->addViewport(cam);
@@ -159,13 +159,15 @@ namespace mdl
 
         void setup()
         {   
+            auto X{ConfigGame::get().getWellW() / 2 + 100};
+
             entity = scnMgr->createEntity("ninja.mesh");
             entity ->setCastShadows(true);
 
             node = nodeBase->createChildSceneNode("Ninja");
             node->attachObject   (entity);
             node->yaw(Ogre::Degree (160));
-            node->setPosition (400, 0, 100);
+            node->setPosition (X, 0, 100);
             node->setScale(1.5, 1.5, 1.5);
         }
     };

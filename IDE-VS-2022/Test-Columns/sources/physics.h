@@ -95,7 +95,7 @@ namespace myl
         {   const Ogre::Vector3i&& vi
             {   
                 getIndex3({
-                    vf.x + 50.f,
+                    vf.x,// + 50.f,
                     vf.y,
                     vf.z
                 })

@@ -12,7 +12,7 @@
 namespace mdl
 {   
     ///------------------------------------------------------------------------|
-    /// Три стенки корзины.
+    /// Три стенки корзины.  (+дно)
     ///-------------------------------------------------------------- Well3Wall:
     struct  Well3Wall : Base
     {      ~Well3Wall  ()
@@ -415,7 +415,7 @@ namespace mdl
                     ///------------------------|
                     /// Диагональ "Минус".     |
                     ///------------------------:
-                    if(size_t j = h - 1, i = w - 1; j < H && i < W )
+                    if(size_t j = h + 1, i = w - 1; j < H && i < W )
                     {   const auto& b{gm[j][i]};
                         
                         if(nullptr != b && a->id == b->id)
@@ -461,7 +461,7 @@ namespace mdl
                 "|----------------------------------|");
             }
            ~Well()
-            {   //destroyAll();
+            {
             }
         
         SceneNode*  node{nullptr};
@@ -515,14 +515,8 @@ namespace mdl
             logic .update();
         }
 
-        void destroyAll()
-        {   if( node != nullptr )
-            {   node -> destroyAllChildrenAndObjects();
-                node -> destroyAllObjects();
-                
-                Ogre::Node* parent = node->getParent();
-                parent->removeChild(node);
-            }
+        void destroy()
+        {   
         }
     
         friend struct InspectorRoot;

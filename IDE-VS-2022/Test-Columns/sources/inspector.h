@@ -39,7 +39,7 @@ namespace mdl
         ///---------------------------------------|
         /// Игра...                               |
         ///---------------------------------------:
-        std::unique_ptr<Well>                 well;
+        Well*    well{ nullptr };
 
         Ogre::RTShader::ShaderGenerator* shadergen;
 
@@ -126,6 +126,11 @@ namespace mdl
                 case 112: // 'P'--->112
                     isPause = !isPause;
                     break;
+                case OgreBites::SDLK_F12:
+    				if (ui.trayMgr) ui.trayMgr->areFrameStatsVisible()
+                        ? ui.trayMgr->hideFrameStats()
+    					: ui.trayMgr->showFrameStats(TrayLocation::TL_BOTTOMLEFT);
+    				break;
                 default: // l(evt.keysym.sym)
                     ;
             }
@@ -217,9 +222,12 @@ namespace mdl
         void createNewGame()
         {   Base::cntGame++;
 
-            if (well) safeRemoveNode(well->node);
+            if (well)
+            {   safeRemoveNode(well->node);
+                delete(well);
+            }
 
-            well = std::make_unique<Well>();
+            well = new Well();
             well->setup();
             well->setDelegate([this](){ this->fooGameOver(); });
             well->logic.setDelegateSetScore(

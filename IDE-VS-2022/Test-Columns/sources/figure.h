@@ -358,7 +358,7 @@ namespace mdl
     ///----------------------------------------------------------------- Figure:
     struct  Figure   : Base
     {       Figure() : 
-                gems(ConfigGame::get().descriptionGems.size())
+                gems(ConfigGame::get().N)
             ,   mat (ConfigGame::get().descriptionGems.size())
             ,   step2DistanceB(ConfigGame::get().sizeCell)
             ,   step2Gravity  (ConfigGame::get().sizeCell)
@@ -428,6 +428,7 @@ namespace mdl
         ///---------------------------------------:
         const float groundLevel {0};
         bool        isFalling{true};
+        float   speedMoving{200.0f};
 
         const myl::Indexer& idexer{myl::Indexer::get()};
 
@@ -484,7 +485,6 @@ namespace mdl
         ///---------------------------------------|
         /// Обработка клавиш.                     |
         ///---------------------------------------:
-        float speedMoving{100.0f};
         bool  keyPressed (const KeyboardEvent& evt)
         {   
             switch(evt.keysym.sym)
