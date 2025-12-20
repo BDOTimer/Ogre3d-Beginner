@@ -173,7 +173,6 @@ namespace mdl
 	public:
 	    ScoreLabel(TrayManager* trayManager)
 	        : mTrayMgr(trayManager)
-	        , mScore(0)
 	    {
 	        createScoreLabel();
 	    }
