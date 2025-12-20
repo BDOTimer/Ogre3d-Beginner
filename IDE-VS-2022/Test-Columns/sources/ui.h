@@ -49,7 +49,7 @@ namespace mdl
         int mWidthS      = 110;
         int mWidthL      = 350;
         int mShortHeight =  34;
-        int mLongHeight  = 180;
+        int mLongHeight  = 190;
  
         bool mIsLongText = false;
 
