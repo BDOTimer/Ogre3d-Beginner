@@ -39,7 +39,7 @@ namespace mdl
         ///---------------------------------------|
         /// Игра...                               |
         ///---------------------------------------:
-        Well*                 well{ nullptr };
+        Well*    well{ nullptr };
 
         Ogre::RTShader::ShaderGenerator* shadergen;
 
@@ -222,7 +222,10 @@ namespace mdl
         void createNewGame()
         {   Base::cntGame++;
 
-            if (well) safeRemoveNode(well->node);
+            if (well)
+            {   safeRemoveNode(well->node);
+                delete(well);
+            }
 
             well = new Well();
             well->setup();
