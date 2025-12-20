@@ -64,7 +64,8 @@ int main([[maybe_unused]] int    argc,
     unsigned int RANDSEED{false ? (unsigned int)time(NULL) : 2025}; 
     srand       (RANDSEED); l(RANDSEED)
 
-    /// mdl::SNDPLAY(wu);
+    ConfigGame  cfg{11, 15, 4};
+    ConfigGame::get().configGame = &cfg;
 
     ///------------------|
     /// Запуск тестов.   |
