@@ -152,6 +152,11 @@ namespace mdl
         ///----------------------------------:
         std::vector<std::vector<GemData*>> gm;
 
+        void setup(SceneNode*  nodeWell)
+        {   
+           node = nodeWell->createChildSceneNode();
+        }
+
         ///---------------------------------|
         /// Путь свободен от gem?           |
         /// Сначала проверить на стенки!    |
@@ -200,12 +205,6 @@ namespace mdl
             }
             return true;
         };
-        
-
-        void setup(SceneNode*  nodeWell)
-        {   
-           node = nodeWell->createChildSceneNode();
-        }
 
         bool add(Figure& fig)///-////////////////////////////////////////////
         {   
@@ -418,9 +417,15 @@ namespace mdl
     ///------------------------------------------------------------------------|
     /// Корзина.
     ///------------------------------------------------------------------- Well:
-    struct  Well : Base
+    struct  Well   : Base
     {       Well() : logic(figure)
-            {   
+            {   std::cout << '\n' <<
+                    "|-----------------------------|\n"
+                    "|     Новая игра создана!     |\n"
+                    "|-----------------------------|\n\n";
+            }
+           ~Well()
+            {   destroyAll();
             }
         
         SceneNode*  node;
@@ -472,6 +477,12 @@ namespace mdl
         void update()
         {   figure.update();
             logic .update();
+        }
+
+        void destroyAll()
+        {   if( node != nullptr )
+            {   node -> destroyAllObjects();
+            }
         }
     
         friend struct InspectorRoot;

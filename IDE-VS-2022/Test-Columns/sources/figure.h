@@ -203,8 +203,15 @@ namespace mdl
     using Gm_t = std::vector<std::vector<GemData*>>;
     std::ostream& operator<<(std::ostream& o, const Gm_t&);
 
-    struct GemData : Base
-    {   size_t             id{  NPOS}; /// Масть(тип) жемчужины.
+    struct  GemData : Base
+    {   
+           ~GemData()
+            {   if( node != nullptr )
+                { //node -> destroyAllObjects();
+                }
+            }
+        
+        size_t             id{  NPOS}; /// Масть(тип) жемчужины.
         Ogre::SceneNode* node{nullptr}; /// Нод на котором висит жемчужена.
         Ogre::Entity*  entity{nullptr}; /// Геометрия + материал жемчужины.
         igm_t             igm;          /// Место аллокации этих данных.
