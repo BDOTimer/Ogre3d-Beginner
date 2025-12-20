@@ -32,6 +32,12 @@ namespace mdl
         static Musics& get()
         {   static Musics a; return a;
         }
+
+        void play(sf::Music& snd)
+        {   if( snd.getStatus() != sf::Music::Status::Playing)
+            {   snd.play();
+            }
+        }
     };
 
     ///------------------------------------------------------------------------|
@@ -53,16 +59,20 @@ namespace mdl
         static Sound& get()
         {   static Sound a; return a;
         }
+
+        void play(sf::Sound& snd)
+        {   if(snd.getStatus() != sf::Sound::Status::Playing)
+            {   snd.play();
+            }
+        }
     };
 }
 
-#define MUSPLAY(a) if (Musics::get().a.getStatus() != sf::Music::Status::Playing)\
-                       Musics::get().a.play()
-#define MUSSTOP(a)     Musics::get().a.stop()
+#define MUSPLAY(a) Musics::get().play(Musics::get().a)
+#define MUSSTOP(a) Musics::get().a.stop()
 
-#define SNDPLAY(a) if (Sound::get().a.getStatus() != sf::Sound::Status::Playing)\
-                       Sound::get().a.play()
-#define SNDSTOP(a)     Sound::get().a.stop()
+#define SNDPLAY(a) Sound::get().play(Sound::get().a)
+#define SNDSTOP(a) Sound::get().a.stop()
 
 #endif // SOUND_H
 

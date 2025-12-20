@@ -120,10 +120,16 @@ namespace mdl
             ,   H  (    cfg.getArrH())
             ,   gm(H, std::vector<GemData*>(W, nullptr))
             {   
+                ///-----------------------------|
+                /// Настраиваем физику.         |
+                ///-----------------------------:
+                myl::Indexer::get().fooLookWay = [this](myl::Indexer::EDIR d)
+                {   return this->fooLookWay(d);
+                };
             }
 
     private:
-        Figure&   figure;
+        Figure& figure;
 
         const ConfigGame& cfg{ConfigGame::get()};
 
@@ -167,22 +173,29 @@ namespace mdl
 
                 switch(dir)
                 {   case myl::Indexer::ELEFT:
-                    {   if(nullptr != gm[vi[1]][vi[0]-1]) return false;
+                    {   if( int x = vi[0]-1; x < 0 ||
+                            nullptr != gm[vi[1]][x]) return false;
                         break;
                     }
                     case myl::Indexer::ERIGHT:
-                    {   if(nullptr != gm[vi[1]][vi[0]+1]) return false;
+                    {   if( int x = vi[0]+1; x >= W ||
+                            nullptr != gm[vi[1]][x]) return false;
                         break;
                     }
                     case myl::Indexer::EDOWN:
-                    {   if(nullptr != gm[vi[1]-1][vi[0]]) return false;
+                    {   if( int y = vi[1]-1; y < 0 ||
+                            nullptr != gm[y][vi[0]]) return false;
                         break;
                     }
                     case myl::Indexer::EUP:
-                    {   if(nullptr != gm[vi[1]+1][vi[0]]) return false;
+                    {   if( int y = vi[1]+1; y >= H ||
+                            nullptr != gm[y][vi[0]]) return false;
                         break;
                     }
-                    default:;
+                    default:
+                        if( vi[0] < 0 || vi[1] >= H ||
+                            nullptr != gm[vi[1]][vi[0]]) return false;
+                        ;
                 }
             }
             return true;
@@ -191,13 +204,7 @@ namespace mdl
 
         void setup(SceneNode*  nodeWell)
         {   
-            ///-----------------------------|
-            /// Настраиваем физику.         |
-            ///-----------------------------:
-            myl::Indexer::get().fooLookWay = [this](myl::Indexer::EDIR d)->bool
-            {   return this->fooLookWay(d);
-            };
-            node = nodeWell->createChildSceneNode();
+           node = nodeWell->createChildSceneNode();
         }
 
         bool add(Figure& fig)///-////////////////////////////////////////////
@@ -263,8 +270,10 @@ namespace mdl
                     "|-----------------------------|\n"
                     "|      Чувак, геймовер!       |\n"
                     "|-----------------------------.\n\n";
+
+            /// figure.setVisibleGems(false);
                 fooGameOver();
-                return false;
+                return  false;
             }
 
             allocator.emplace_back(GemData());
@@ -326,9 +335,7 @@ namespace mdl
             }
 
             for(    size_t h{}; h < H; ++h)
-            {   
-            
-                for(size_t w{}; w < W; ++w)
+            {   for(size_t w{}; w < W; ++w)
                 {   
                     ///------------------------|
                     /// В фокусе только 1 раз! |
