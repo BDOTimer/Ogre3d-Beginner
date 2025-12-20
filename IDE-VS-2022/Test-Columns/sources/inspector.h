@@ -39,7 +39,7 @@ namespace mdl
         ///---------------------------------------|
         /// Игра...                               |
         ///---------------------------------------:
-        std::unique_ptr<Well>                 well;
+        Well*                 well;
 
         Ogre::RTShader::ShaderGenerator* shadergen;
 
@@ -224,7 +224,7 @@ namespace mdl
 
             if (well) safeRemoveNode(well->node);
 
-            well = std::make_unique<Well>();
+            well = new Well();
             well->setup();
             well->setDelegate([this](){ this->fooGameOver(); });
             well->logic.setDelegateSetScore(
