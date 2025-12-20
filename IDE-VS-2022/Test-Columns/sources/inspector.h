@@ -39,7 +39,7 @@ namespace mdl
         ///---------------------------------------|
         /// Игра...                               |
         ///---------------------------------------:
-        Well*                 well;
+        Well*                 well{ nullptr };
 
         Ogre::RTShader::ShaderGenerator* shadergen;
 
