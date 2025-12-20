@@ -126,6 +126,11 @@ namespace mdl
                 case 112: // 'P'--->112
                     isPause = !isPause;
                     break;
+                case OgreBites::SDLK_F12:
+    				if (ui.trayMgr) ui.trayMgr->areFrameStatsVisible()
+                        ? ui.trayMgr->hideFrameStats()
+    					: ui.trayMgr->showFrameStats(TrayLocation::TL_BOTTOMLEFT);
+    				break;
                 default: // l(evt.keysym.sym)
                     ;
             }
