@@ -89,6 +89,8 @@ namespace mdl
             cam->setAspectRatio(Real(vp->getActualWidth ()) / 
                                 Real(vp->getActualHeight()));
 
+            cam->setAutoAspectRatio(true);
+
             ///------------------|
             /// Manager.         |
             ///------------------:
