@@ -215,35 +215,35 @@ namespace mdl
         }
 
         void createNewGame()
-        {
-            if (well->node)
-            {   //well->node->getCreator()->destroySceneNode(well->node);
-            }
-            //safeRemoveNode(well->node);
+        {   Base::cntGame++;
+
+            if (well) safeRemoveNode(well->node);
 
             well = std::make_unique<Well>();
             well->setup();
             well->setDelegate([this](){ this->fooGameOver(); });
-
-            Base::cntGame++;
+            well->logic.setDelegateSetScore(
+                [this](int score)
+                {   this->setScore(score);
+                }
+            );
         }
 
         void safeRemoveNode(Ogre::SceneNode* node)
         {
-            if (!node || !node->getParent()) return;
-    
-            // Удалить attached объекты
-            while (!node->numAttachedObjects())
+            while (node->numAttachedObjects())
             {   node->detachObject(node->getAttachedObject(0));
             }
-    
-            // Удалить детей рекурсивно
+
             while (node->numChildren())
             {   safeRemoveNode(static_cast<Ogre::SceneNode*>(node->getChild(0)));
             }
     
-            // Удалить самого нода
             node->getCreator()->destroySceneNode(node);
+        }
+
+        void setScore(int score)
+        {   ui.score->set(score);
         }
     };
 }

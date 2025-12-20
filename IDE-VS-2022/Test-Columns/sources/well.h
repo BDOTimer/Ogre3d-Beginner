@@ -14,31 +14,29 @@ namespace mdl
     ///------------------------------------------------------------------------|
     /// Три стенки корзины.
     ///-------------------------------------------------------------- Well3Wall:
-    struct Well3Wall : Base
-    {
-        Ogre::SceneNode* wallNode;
+    struct  Well3Wall : Base
+    {      ~Well3Wall  ()
+            {   destroy();
+            }
+
+        Ogre::SceneNode* wallNode{nullptr};
         Ogre::Entity*    walls[4];
 
         const char* nameMat1{"Ogre/Skin1"};
         const char* nameMat2{"drbunsen_glasses"};
         const char* nameMat {"Glass/WellWallsSimple"};
     /// const char* nameMat {"Examples/Rockwall"};
+
+        std::array<const char*, 4> names
+        {   "LeftWall" ,
+            "RightWall",
+            "BackWall" ,
+            "DownWall"
+        };
     
         void setup(SceneNode*  node)
         {
             wallNode = node->createChildSceneNode("3Walls");
-
-            Ogre::Plane leftPlane (Ogre::Vector3::UNIT_X, 0);
-            Ogre::Plane rightPlane(Ogre::Vector3::NEGATIVE_UNIT_X, 0);
-            Ogre::Plane backPlane (Ogre::Vector3::UNIT_Z, 0);
-            Ogre::Plane downPlane (Ogre::Vector3::UNIT_Y, 0);
-
-            const char* names[]
-            {   "LeftWall" ,
-                "RightWall",
-                "BackWall" ,
-                "DownWall"
-            };
 
             const auto& cfg{ConfigGame::get()};
 
@@ -46,7 +44,15 @@ namespace mdl
             float W  = cfg.get().getWellW();
             float H  = cfg.get().getWellH();
             float D  = cfg.get().sizeCell;
-        
+
+            const auto W2 = W/2;
+            const auto H2 = H/2;
+
+            Ogre::Plane leftPlane (Ogre::Vector3::UNIT_X, 0);
+            Ogre::Plane rightPlane(Ogre::Vector3::NEGATIVE_UNIT_X, 0);
+            Ogre::Plane backPlane (Ogre::Vector3::UNIT_Z, 0);
+            Ogre::Plane downPlane (Ogre::Vector3::UNIT_Y, 0);
+
             Ogre::MeshManager::getSingleton().createPlane(
                 names[0],
                 Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
@@ -86,8 +92,6 @@ namespace mdl
             walls[3]->setMaterialName(nameMat1);
             walls[3]->setCastShadows (true);
 
-            const auto W2 = W/2;
-            const auto H2 = H/2;
         
             // Позиционируем стенки
             Ogre::SceneNode* lNode = wallNode->createChildSceneNode(names[0]);
@@ -105,6 +109,31 @@ namespace mdl
             Ogre::SceneNode* dNode = wallNode->createChildSceneNode(names[3]);
             dNode->attachObject(walls[3]);
             dNode->setPosition (0, 0, 0);
+        }
+
+        void destroy()
+        {
+            if (!wallNode) return;
+
+            Ogre::SceneManager* ScnMgr = wallNode->getCreator();
+
+            for (int i = 0; i < 4; ++i)
+            {
+                if (walls[i])
+                {
+                    walls[i]->detachFromParent();
+                    ScnMgr  ->destroyEntity(walls[i]);
+                    walls[i] = nullptr;
+                }
+            }
+    
+            Ogre::MeshManager& meshMgr = Ogre::MeshManager::getSingleton();
+            for (const auto& name : names)
+            {
+                if (meshMgr.resourceExists(name))
+                {   meshMgr.remove(name);
+                }
+            }
         }
     };
 
@@ -127,6 +156,11 @@ namespace mdl
                 {   return this->fooLookWay(d);
                 };
             }
+
+        std::function<void(int)> SetScore;
+        void setDelegateSetScore(std::function<void(int)> dlg)
+        {   SetScore = dlg;
+        }
 
     private:
         Figure& figure;
@@ -407,6 +441,8 @@ namespace mdl
             ///----------------:
             if(!matchGems.empty()) {l(matchGems.size())ln(matchGems)}
 
+            SetScore(int(matchGems.size()));
+
             return matchGems;
         }
 
@@ -419,10 +455,10 @@ namespace mdl
     ///------------------------------------------------------------------- Well:
     struct  Well   : Base
     {       Well() : logic(figure)
-            {   std::cout << '\n' <<
-                    "|-----------------------------|\n"
-                    "|     Новая игра создана!     |\n"
-                    "|-----------------------------|\n\n";
+            {   std::cout << '\n' << std::format("{}\n{}{:2}{}\n{}\n",
+                "|----------------------------------|",
+                "|     Новая игра  - ", Base::cntGame," создана!    |",
+                "|----------------------------------|");
             }
            ~Well()
             {   //destroyAll();
