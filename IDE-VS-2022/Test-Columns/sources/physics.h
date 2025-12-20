@@ -95,7 +95,7 @@ namespace myl
         {   const Ogre::Vector3i&& vi
             {   
                 getIndex3({
-                    vf.x + 50.f,
+                    vf.x, ///+ 50.f,
                     vf.y,
                     vf.z
                 })
@@ -110,8 +110,14 @@ namespace myl
 
         ///-------------------------------------|
         /// Путь свободен?                      |
+        /// Нужна отдельная инициализация!      |
         ///-------------------------------------:
-        std::function<bool(Indexer::EDIR)> fooLookWay;
+        std::function<     bool(Indexer::EDIR)> fooLookWay
+        {   []([[maybe_unused]] Indexer::EDIR a)->bool
+            {   ASSERTM(false, "myl::Indexer::fooLookWay not init!\n")
+                return  false;
+            }
+        };
 
         ///-------------------------------------|
         /// Тест настроен для W = 7             |

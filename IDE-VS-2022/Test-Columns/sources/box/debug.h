@@ -39,8 +39,9 @@
 ///----------------------------------------------------------------------------|
 /// Начинка для ASSERT.
 ///------------------------------------------------------------------------ Ass:
-constexpr char ERR1  []{ "ASSERT_ERROR--->FILE: \"{}\", LINE: {} - {}\n" };
-constexpr char WARNING[]{ "WARNING--->FILE: \"{}\", LINE: {} - {}\n" };
+constexpr char  ERR1   []{ "ASSERT_ERROR--->FILE: \"{}\", LINE: {} - {}\n" };
+constexpr char  WARNING[]{ "WARNING--->FILE: \"{}\", LINE: {} - {}\n" };
+constexpr const size_t NPOS{std::string::npos};
 
 using Strv = std::string_view;
 
@@ -60,7 +61,9 @@ struct  Ass
     }
 
     static Strv cutStr(Strv s)
-    {   auto p = s.rfind("Sources"); return s.substr(p, s.size() - p);
+    {   auto p = s.rfind("sources");
+        if(p == NPOS) p = s.rfind("\\") + 1;
+        return s.substr(p, s.size() - p);
     }
 };
 
@@ -113,7 +116,6 @@ std::ostream& operator<<(std::ostream& o, Ogre::Vector<3, T> v)
     return o;
 }
 
-constexpr const size_t NPOS{std::string::npos};
 
 namespace myl
 {

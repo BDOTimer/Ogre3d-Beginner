@@ -209,6 +209,7 @@ namespace mdl
         Ogre::Entity*  entity{nullptr}; /// Геометрия + материал жемчужины.
         igm_t             igm;          /// Место аллокации этих данных.
         float       speed{50};
+        Vector2i    pos2gm   ;          /// Позиция в зеркале.
 
         ///------------------------------|
         /// Отвязать камень от фигуры.   |
@@ -395,8 +396,10 @@ namespace mdl
 
         void reGenerate()
         {   
-            node->setPosition(0, cfg.get().getWellH(), 0);
+            Ogre::Vector3 posStart(0, cfg.get().getWellH(), 0);
 
+            node->setPosition(posStart);
+            
             for(unsigned i{}; i < gems.size( ); ++i)
             {   
                 const size_t rnd = rand() % mat.size();
@@ -404,6 +407,10 @@ namespace mdl
                 gems[i].setup(i, node, rnd);
                 gems[i].entity->setMaterialName(mat[rnd]->getName());
             }
+
+            using T = myl::Indexer;
+        /// 
+            node->setVisible(T::get().fooLookWay(T::ENONE));
 
             speedFigFall.start();
         }
@@ -463,6 +470,7 @@ namespace mdl
             /// Анимация.              |
             ///------------------------:
             for(auto& e : gems) e.update();
+
         }
 
         ///---------------------------------------|
@@ -479,7 +487,6 @@ namespace mdl
                 
             case OgreBites::SDLK_DOWN:
                 speedFigFall.up();
-                //Sound::test();/////////////////////////////////////: TODO: ...
                 SNDPLAY(drop1);
                 break;
                 
@@ -556,10 +563,10 @@ namespace mdl
         }
 
         ///---------------------------------------|
-        /// Сенсор столновения.                   |
+        /// Сенсор столновения: true ---> бум!    |
         ///---------------------------------------:
-        bool sensorCollisions()
-        {
+        bool sensorCollisions(myl::Indexer::EDIR dir)
+        {   return !idexer.fooLookWay(dir);
         }
 
         ///---------------------------------------|
@@ -572,6 +579,10 @@ namespace mdl
         ///---------------------------------------:
         void sendFigure2Well()
         {   delegate4Well(this);
+        }
+
+        void setVisibleGems(bool val)
+        {   for(auto& gem : gems) gem.node->setVisible(val);
         }
 
         friend struct Well;
