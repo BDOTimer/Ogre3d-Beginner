@@ -203,8 +203,15 @@ namespace mdl
     using Gm_t = std::vector<std::vector<GemData*>>;
     std::ostream& operator<<(std::ostream& o, const Gm_t&);
 
-    struct GemData : Base
-    {   size_t             id{  NPOS}; /// Масть(тип) жемчужины.
+    struct  GemData : Base
+    {   
+           ~GemData()
+            {   if( node != nullptr )
+                { //node -> destroyAllObjects();
+                }
+            }
+        
+        size_t             id{  NPOS}; /// Масть(тип) жемчужины.
         Ogre::SceneNode* node{nullptr}; /// Нод на котором висит жемчужена.
         Ogre::Entity*  entity{nullptr}; /// Геометрия + материал жемчужины.
         igm_t             igm;          /// Место аллокации этих данных.
@@ -290,7 +297,6 @@ namespace mdl
     ///-------------------------------------------------------------------- Gem:
     struct  Gem : GemData
     {           
- 
         ///---------------------------------------|
         /// Стартовая инициализация.              |
         ///---------------------------------------:
@@ -308,13 +314,15 @@ namespace mdl
 
             static size_t N{0};
 
+            const auto name{std::format("Gem{}", N++)};
+
             entity = scnMgr->createEntity(
-                std::format("Gem{}", N++),
+                name,
                 descriptions[Id].nameMesh
             );
 
             if(nullptr == node)
-            {   node   =  parent->createChildSceneNode();
+            {   node   =  parent->createChildSceneNode(name);
             }
             node->resetOrientation  ();
             node->attachObject(entity);
@@ -388,7 +396,7 @@ namespace mdl
             ///------------------------|
             /// Крепим к корзине.      |
             ///------------------------:
-            node = well->createChildSceneNode();
+            node = well->createChildSceneNode("Figure");
 
             createMaterial();
             reGenerate    ();
@@ -524,8 +532,14 @@ namespace mdl
         {   
             for(unsigned i{}; i < mat.size(); ++i)
             {
+                auto name{std::format("matSph{}", i)};
+
+                mat[i] = Ogre::MaterialManager::getSingleton().getByName(name);
+
+                if(mat[i] != nullptr) continue;
+
                 mat[i] = MaterialManager::getSingleton().create(
-                    std::format("matSph{}", i),
+                    name,
                     ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME
                 );
 

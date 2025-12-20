@@ -32,10 +32,14 @@ namespace mdl
         Ninja              ninja;
         UI                    ui;
         Tree                tree;
-        Well                well;
         Ground            ground;
         BlackCylinder2 cylinders;
         Effects          effects;
+
+        ///---------------------------------------|
+        /// Игра...                               |
+        ///---------------------------------------:
+        std::unique_ptr<Well>                 well;
 
         Ogre::RTShader::ShaderGenerator* shadergen;
 
@@ -64,7 +68,7 @@ namespace mdl
             scnMgr->setShadowTechnique(
                 ShadowTechnique::SHADOWTYPE_STENCIL_ADDITIVE);
 
-            nodeBase = scnMgr->getRootSceneNode()->createChildSceneNode();
+            nodeBase = scnMgr->getRootSceneNode()->createChildSceneNode("Base");
             nodeUser = scnMgr->getRootSceneNode()->createChildSceneNode();
 
             Base::scnMgr   = scnMgr;
@@ -86,13 +90,11 @@ namespace mdl
             lights   .setup(camera.camNode);
             ninja    .setup();
             tree     .setup();
-            well     .setup();
             ground   .setup();
             ui       .setup();
             cylinders.setup(ground.node);
             effects  .setup();
-
-            well.setDelegate([this](){ this->fooGameOver(); });
+            createNewGame  ();
         }
 
         ///---------------------------------------|
@@ -105,6 +107,14 @@ namespace mdl
                 case OgreBites::SDLK_ESCAPE:
                     getRoot()->queueEndRendering();
                     return true;
+                case OgreBites::SDLK_F4:
+                /// 
+                    createNewGame();
+                    break;
+                case OgreBites::SDLK_F8:
+                /// 
+                    PrintNodeHierarchy(Base::nodeBase);
+                    break;
                 case OgreBites::SDLK_F5:
                     isSpeedRotWold = isSpeedRotWold ? 0 :  speedRotWold;
                     break;
@@ -121,8 +131,8 @@ namespace mdl
             }
 
             bool    b{false};
-                    b |= ui.keyPressed  (evt);
-                    b |= well.keyPressed(evt);
+                    b |= ui   .keyPressed(evt);
+                    b |= well->keyPressed(evt);
             return  b;
         }
 
@@ -167,7 +177,7 @@ namespace mdl
             {
             }
             else
-            {   well.update();
+            {   well->update();
             }
 
             if(isSpeedRotWold)
@@ -202,6 +212,38 @@ namespace mdl
         void fooGameOver()
         {   isGameOver     = true;
             isSpeedRotWold = true;
+        }
+
+        void createNewGame()
+        {   Base::cntGame++;
+
+            if (well) safeRemoveNode(well->node);
+
+            well = std::make_unique<Well>();
+            well->setup();
+            well->setDelegate([this](){ this->fooGameOver(); });
+            well->logic.setDelegateSetScore(
+                [this](int score)
+                {   this->setScore(score);
+                }
+            );
+        }
+
+        void safeRemoveNode(Ogre::SceneNode* node)
+        {
+            while (node->numAttachedObjects())
+            {   node->detachObject(node->getAttachedObject(0));
+            }
+
+            while (node->numChildren())
+            {   safeRemoveNode(static_cast<Ogre::SceneNode*>(node->getChild(0)));
+            }
+    
+            node->getCreator()->destroySceneNode(node);
+        }
+
+        void setScore(int score)
+        {   ui.score->set(score);
         }
     };
 }

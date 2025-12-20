@@ -65,6 +65,8 @@ namespace mdl
 
         std::unique_ptr<OgreBites::CameraMan> man;
 
+
+
         Ogre::Camera* get() const { return cam; }
 
         void setup(SceneNode* nodeUser)
@@ -86,6 +88,8 @@ namespace mdl
 
             cam->setAspectRatio(Real(vp->getActualWidth ()) / 
                                 Real(vp->getActualHeight()));
+
+            cam->setAutoAspectRatio(true);
 
             ///------------------|
             /// Manager.         |
@@ -137,7 +141,7 @@ namespace mdl
             );
 
             Entity* groundEntity = scnMgr->createEntity(name);
-            node = nodeBase->createChildSceneNode();
+            node = nodeBase->createChildSceneNode(name);
             node->attachObject(groundEntity);
 
             groundEntity->setCastShadows (false);
@@ -158,7 +162,7 @@ namespace mdl
             entity = scnMgr->createEntity("ninja.mesh");
             entity ->setCastShadows(true);
 
-            node = nodeBase->createChildSceneNode();
+            node = nodeBase->createChildSceneNode("Ninja");
             node->attachObject   (entity);
             node->yaw(Ogre::Degree (160));
             node->setPosition (400, 0, 100);
@@ -323,7 +327,7 @@ namespace mdl
             entity = scnMgr->createEntity("12150_Christmas_Tree_V2_L2.mesh");
             entity ->setCastShadows(true);
 
-            node = nodeBase->createChildSceneNode();
+            node = nodeBase->createChildSceneNode("Tree");
             node->attachObject(entity);
 
             //node->pitch(Ogre::Degree( -90));
@@ -428,6 +432,31 @@ namespace mdl
             m[1]->setPosition(Ogre::Vector3( 300,50,0));
         }
     };
+}
+
+
+inline void PrintNodeHierarchy2(Ogre::SceneNode* root, int depth = 1)
+{
+    if (!root) return;
+    
+    std::string indent(depth * 3, '.');
+
+    Ogre::Node::ChildNodeMap list = root->getChildren();
+
+ /// if(!list.empty()) l(list.size())
+
+    for(const auto& e : list)
+    {   std::cout << indent << '|' << e->getName() << '\n';
+        PrintNodeHierarchy2((Ogre::SceneNode*)e, ++depth);
+    }
+}
+
+inline void PrintNodeHierarchy(Ogre::SceneNode* root)
+{
+    std::cout << "\n--- Scene Hierarchy ---\n";
+    std::cout << root->getName() << '\n';
+    PrintNodeHierarchy2(root);
+    std::cout << std::endl;
 }
 
 #endif // PRIMITIVES_H

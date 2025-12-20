@@ -14,31 +14,29 @@ namespace mdl
     ///------------------------------------------------------------------------|
     /// Три стенки корзины.
     ///-------------------------------------------------------------- Well3Wall:
-    struct Well3Wall : Base
-    {
-        Ogre::SceneNode* wallNode;
+    struct  Well3Wall : Base
+    {      ~Well3Wall  ()
+            {   destroy();
+            }
+
+        Ogre::SceneNode* wallNode{nullptr};
         Ogre::Entity*    walls[4];
 
         const char* nameMat1{"Ogre/Skin1"};
         const char* nameMat2{"drbunsen_glasses"};
         const char* nameMat {"Glass/WellWallsSimple"};
     /// const char* nameMat {"Examples/Rockwall"};
+
+        std::array<const char*, 4> names
+        {   "LeftWall" ,
+            "RightWall",
+            "BackWall" ,
+            "DownWall"
+        };
     
         void setup(SceneNode*  node)
         {
             wallNode = node->createChildSceneNode("3Walls");
-
-            Ogre::Plane leftPlane (Ogre::Vector3::UNIT_X, 0);
-            Ogre::Plane rightPlane(Ogre::Vector3::NEGATIVE_UNIT_X, 0);
-            Ogre::Plane backPlane (Ogre::Vector3::UNIT_Z, 0);
-            Ogre::Plane downPlane (Ogre::Vector3::UNIT_Y, 0);
-
-            const char* names[]
-            {   "LeftWall" ,
-                "RightWall",
-                "BackWall" ,
-                "DownWall"
-            };
 
             const auto& cfg{ConfigGame::get()};
 
@@ -46,7 +44,15 @@ namespace mdl
             float W  = cfg.get().getWellW();
             float H  = cfg.get().getWellH();
             float D  = cfg.get().sizeCell;
-        
+
+            const auto W2 = W/2;
+            const auto H2 = H/2;
+
+            Ogre::Plane leftPlane (Ogre::Vector3::UNIT_X, 0);
+            Ogre::Plane rightPlane(Ogre::Vector3::NEGATIVE_UNIT_X, 0);
+            Ogre::Plane backPlane (Ogre::Vector3::UNIT_Z, 0);
+            Ogre::Plane downPlane (Ogre::Vector3::UNIT_Y, 0);
+
             Ogre::MeshManager::getSingleton().createPlane(
                 names[0],
                 Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
@@ -86,25 +92,48 @@ namespace mdl
             walls[3]->setMaterialName(nameMat1);
             walls[3]->setCastShadows (true);
 
-            const auto W2 = W/2;
-            const auto H2 = H/2;
         
             // Позиционируем стенки
-            Ogre::SceneNode* leftNode = wallNode->createChildSceneNode();
-            leftNode->attachObject(walls[0]);
-            leftNode->setPosition (-W2, H2, 0);
+            Ogre::SceneNode* lNode = wallNode->createChildSceneNode(names[0]);
+            lNode->attachObject(walls[0]);
+            lNode->setPosition (-W2, H2, 0);
         
-            Ogre::SceneNode* rightNode = wallNode->createChildSceneNode();
-            rightNode->attachObject(walls[1]);
-            rightNode->setPosition ( W2, H2, 0);
+            Ogre::SceneNode* rNode = wallNode->createChildSceneNode(names[1]);
+            rNode->attachObject(walls[1]);
+            rNode->setPosition ( W2, H2, 0);
         
-            Ogre::SceneNode* backNode = wallNode->createChildSceneNode();
-            backNode->attachObject(walls[2]);
-            backNode->setPosition (0, H2, -D);
+            Ogre::SceneNode* bNode = wallNode->createChildSceneNode(names[2]);
+            bNode->attachObject(walls[2]);
+            bNode->setPosition (0, H2, -D);
 
-            Ogre::SceneNode* downNode = wallNode->createChildSceneNode();
-            downNode->attachObject(walls[3]);
-            downNode->setPosition (0, 0, 0);
+            Ogre::SceneNode* dNode = wallNode->createChildSceneNode(names[3]);
+            dNode->attachObject(walls[3]);
+            dNode->setPosition (0, 0, 0);
+        }
+
+        void destroy()
+        {
+            if (!wallNode) return;
+
+            Ogre::SceneManager* ScnMgr = wallNode->getCreator();
+
+            for (int i = 0; i < 4; ++i)
+            {
+                if (walls[i])
+                {
+                    walls[i]->detachFromParent();
+                    ScnMgr  ->destroyEntity(walls[i]);
+                    walls[i] = nullptr;
+                }
+            }
+    
+            Ogre::MeshManager& meshMgr = Ogre::MeshManager::getSingleton();
+            for (const auto& name : names)
+            {
+                if (meshMgr.resourceExists(name))
+                {   meshMgr.remove(name);
+                }
+            }
         }
     };
 
@@ -127,6 +156,11 @@ namespace mdl
                 {   return this->fooLookWay(d);
                 };
             }
+
+        std::function<void(int)> SetScore;
+        void setDelegateSetScore(std::function<void(int)> dlg)
+        {   SetScore = dlg;
+        }
 
     private:
         Figure& figure;
@@ -151,6 +185,11 @@ namespace mdl
         /// Зеркало корзины.                 |
         ///----------------------------------:
         std::vector<std::vector<GemData*>> gm;
+
+        void setup(SceneNode*  nodeWell)
+        {   
+           node = nodeWell->createChildSceneNode("WellLogic");
+        }
 
         ///---------------------------------|
         /// Путь свободен от gem?           |
@@ -200,12 +239,6 @@ namespace mdl
             }
             return true;
         };
-        
-
-        void setup(SceneNode*  nodeWell)
-        {   
-           node = nodeWell->createChildSceneNode();
-        }
 
         bool add(Figure& fig)///-////////////////////////////////////////////
         {   
@@ -408,6 +441,8 @@ namespace mdl
             ///----------------:
             if(!matchGems.empty()) {l(matchGems.size())ln(matchGems)}
 
+            SetScore(int(matchGems.size()));
+
             return matchGems;
         }
 
@@ -418,12 +453,18 @@ namespace mdl
     ///------------------------------------------------------------------------|
     /// Корзина.
     ///------------------------------------------------------------------- Well:
-    struct  Well : Base
+    struct  Well   : Base
     {       Well() : logic(figure)
-            {   
+            {   std::cout << '\n' << std::format("{}\n{}{:2}{}\n{}\n",
+                "|----------------------------------|",
+                "|     Новая игра  - ", Base::cntGame," создана!    |",
+                "|----------------------------------|");
+            }
+           ~Well()
+            {   //destroyAll();
             }
         
-        SceneNode*  node;
+        SceneNode*  node{nullptr};
         Figure      figure;
         Well3Wall   well3Wall;
 
@@ -438,7 +479,7 @@ namespace mdl
             ///------------------------|
             /// Нод корзины!           |
             ///------------------------:
-            node = nodeBase->createChildSceneNode();
+            node = nodeBase->createChildSceneNode("Well");
 
             figure   .setup(node);
             well3Wall.setup(node);
@@ -472,6 +513,16 @@ namespace mdl
         void update()
         {   figure.update();
             logic .update();
+        }
+
+        void destroyAll()
+        {   if( node != nullptr )
+            {   node -> destroyAllChildrenAndObjects();
+                node -> destroyAllObjects();
+                
+                Ogre::Node* parent = node->getParent();
+                parent->removeChild(node);
+            }
         }
     
         friend struct InspectorRoot;
