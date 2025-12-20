@@ -170,6 +170,12 @@ namespace mdl
 				110.0f // same width as mWidthS in ClickableTextBox
 	        );
 		}
+		void updateDisplay()
+	    {
+			if (mLabel == nullptr) return;
+	        String scoreText = std::format("{:07}", mScore);
+			mLabel->setCaption(scoreText);
+		}
 	public:
 	    ScoreLabel(TrayManager* trayManager)
 	        : mTrayMgr(trayManager)
@@ -198,12 +204,6 @@ namespace mdl
 	    {
 	        return mScore;
 	    }
-	    void updateDisplay()
-	    {
-			if (mLabel == nullptr) return;
-	        String scoreText = std::format("{:07}", mScore);
-			mLabel->setCaption(scoreText);
-		}
 	};
 
     ///------------------------------------------------------------------------|
