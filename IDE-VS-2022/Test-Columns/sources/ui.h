@@ -163,19 +163,17 @@ namespace mdl
 	
 	    void createScoreLabel()
 	    {
-	        String scoreText = std::format("{:07}", mScore);
 	        mLabel = mTrayMgr->createLabel(
 	            TrayLocation::TL_TOPRIGHT,
 	            "ScoreLabel",
-	            scoreText,
+	            std::to_string(mScore),
 				110.0f // same width as mWidthS in ClickableTextBox
 	        );
 		}
 		void updateDisplay()
 	    {
 			if (mLabel == nullptr) return;
-	        String scoreText = std::format("{:07}", mScore);
-			mLabel->setCaption(scoreText);
+	        mLabel->setCaption(std::to_string(mScore));
 		}
 	public:
 	    ScoreLabel(TrayManager* trayManager)
@@ -257,12 +255,6 @@ namespace mdl
             ctb->setCaption("F1::Help");
 
 			score = std::make_unique<ScoreLabel>(trayMgr);
-
-			// Test
-			/*score->set(100500);
-			score->add(250);
-			score->reset();
-			score->add(450);*/
         }
     };
 }
