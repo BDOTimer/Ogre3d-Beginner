@@ -153,6 +153,59 @@ namespace mdl
         }
     };
 
+	class ScoreLabel
+	{
+	private:
+		TrayManager*    mTrayMgr;
+	    int		        mScore{0};
+		Label*  mLabel{ nullptr };
+	
+	    void createScoreLabel()
+	    {
+	        String scoreText = std::format("{:07}", mScore);
+	        mLabel = mTrayMgr->createLabel(
+	            TrayLocation::TL_TOPRIGHT,
+	            "ScoreLabel",
+	            scoreText,
+				110.0f // same width as mWidthS in ClickableTextBox
+	        );
+		}
+		void updateDisplay()
+	    {
+			if (mLabel == nullptr) return;
+	        String scoreText = std::format("{:07}", mScore);
+			mLabel->setCaption(scoreText);
+		}
+	public:
+	    ScoreLabel(TrayManager* trayManager)
+	        : mTrayMgr(trayManager)
+	    {
+	        createScoreLabel();
+	    }
+	    ~ScoreLabel()
+	    {
+	    }
+	    void add(int points)
+	    {
+			mScore = Math::Clamp(mScore + points, 0, 9999999);
+	        updateDisplay();
+	    }
+	    void set(int points)
+	    {
+			mScore = Math::Clamp(points, 0, 9999999);
+	        updateDisplay();
+		}
+	    void reset()
+	    {
+	        mScore = 0;
+	        updateDisplay();
+	    }
+	    int get() const
+	    {
+	        return mScore;
+	    }
+	};
+
     ///------------------------------------------------------------------------|
     /// UI
     ///--------------------------------------------------------------------- UI:
@@ -166,6 +219,7 @@ namespace mdl
     
         OgreBites::TrayManager*        trayMgr;
         std::unique_ptr<ClickableTextBox>  ctb;
+		std::unique_ptr<ScoreLabel>      score;
 
         bool keyPressed(const KeyboardEvent& evt)
         {   return ctb->keyPressed(evt);
@@ -200,6 +254,14 @@ namespace mdl
                 "ESCAPE : Выход из игры\n"
             );
             ctb->setCaption("F1::Help");
+
+			score = std::make_unique<ScoreLabel>(trayMgr);
+
+			// Test
+			/*score->set(100500);
+			score->add(250);
+			score->reset();
+			score->add(450);*/
         }
     };
 }
