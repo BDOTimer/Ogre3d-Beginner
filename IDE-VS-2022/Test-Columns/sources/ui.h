@@ -181,14 +181,12 @@ namespace mdl
 	    }
 	    void add(int points)
 	    {
-			mScore = std::min(9999999, mScore + points);
+			mScore = Math::Clamp(mScore + points, 0, 9999999);
 	        updateDisplay();
 	    }
 	    void set(int points)
 	    {
-			if (points < 0) points = 0;
-			else if (points > 9999999) points = 9999999;
-	        mScore = points;
+			mScore = Math::Clamp(points, 0, 9999999);
 	        updateDisplay();
 		}
 	    void reset()
