@@ -219,7 +219,7 @@ namespace mdl
     
         OgreBites::TrayManager*        trayMgr;
         std::unique_ptr<ClickableTextBox>  ctb;
-		std::unique_ptr<ScoreLabel>          score;
+		std::unique_ptr<ScoreLabel>      score;
 
         bool keyPressed(const KeyboardEvent& evt)
         {   return ctb->keyPressed(evt);
