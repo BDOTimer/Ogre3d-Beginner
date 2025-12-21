@@ -56,7 +56,7 @@ namespace mdl
     ///------------------------------------------------------------------------|
     /// Camera.
     ///----------------------------------------------------------------- Camera:
-    struct  Camera : Base
+    struct  Camera : Glob
     {   
         Ogre::SceneNode* camNode;
         Ogre::SceneNode* camGoal;
@@ -64,8 +64,6 @@ namespace mdl
         Ogre::Viewport*       vp;
 
         std::unique_ptr<OgreBites::CameraMan> man;
-
-
 
         Ogre::Camera* get() const { return cam; }
 
@@ -76,7 +74,6 @@ namespace mdl
 
             camGoal = scnMgr->getRootSceneNode()->createChildSceneNode();
             camGoal->setPosition(0, 900, 0);
-
 
             camNode = nodeUser->createChildSceneNode();
             camNode->setPosition   (0, 999, 1900);
@@ -96,20 +93,24 @@ namespace mdl
             ///------------------:
             man = std::make_unique<OgreBites::CameraMan>(camNode);
 
-            man->setTarget(camGoal);
-            man->setYawPitchDist(Ogre::Degree(0), Ogre::Degree(-20), 2000.0f);
-
             man->setStyle(OgreBites::CS_ORBIT); // или  CS_FREELOOK
+            man->setTarget(camGoal);
             man->setTopSpeed(100);
             man->setFixedYaw(true);
             ctx->addInputListener(man.get());
+
+            set2Start();
+        }
+
+        void set2Start()
+        {   man->setYawPitchDist(Ogre::Degree(0), Ogre::Degree(10), 2000.0f);
         }
     };
 
     ///------------------------------------------------------------------------|
     /// Текст.
     ///--------------------------------------------------------------- TextTest:
-    struct  TextTest : Base
+    struct  TextTest : Glob
     {
         void setup()
         {   
@@ -120,7 +121,7 @@ namespace mdl
     ///------------------------------------------------------------------------|
     /// Грунт.
     ///----------------------------------------------------------------- Ground:
-    struct  Ground : Base
+    struct  Ground : Glob
     {       
         Ogre::Entity*  entity;
         SceneNode*     node  ;
@@ -152,7 +153,7 @@ namespace mdl
     ///------------------------------------------------------------------------|
     /// Нидзя.
     ///------------------------------------------------------------------ Ninja:
-    struct  Ninja : Base
+    struct  Ninja : Glob
     {       
         Ogre::Entity*  entity;
         SceneNode*     node  ;
@@ -175,7 +176,7 @@ namespace mdl
     ///------------------------------------------------------------------------|
     /// Sphere.
     ///----------------------------------------------------------------- Sphere:
-    struct  Sphere : Base
+    struct  Sphere : Glob
     {       
         Ogre::Entity*  entity;
         SceneNode*     node  ;
@@ -229,7 +230,7 @@ namespace mdl
     ///------------------------------------------------------------------------|
     /// Свет.
     ///----------------------------------------------------------------- Lights:
-    struct  Lights : Base
+    struct  Lights : Glob
     {       
         Ogre::Entity*  entity;
 
@@ -291,7 +292,7 @@ namespace mdl
     ///------------------------------------------------------------------------|
     /// Нидзя.
     ///------------------------------------------------------------------ Ninja:
-    struct  Obj5File : Base
+    struct  Obj5File : Glob
     {       
         Ogre::Entity*  entity;
         SceneNode*     node  ;
@@ -319,7 +320,7 @@ namespace mdl
     ///------------------------------------------------------------------------|
     /// Ёлка.
     ///------------------------------------------------------------------ Ninja:
-    struct  Tree : Base
+    struct  Tree : Glob
     {       
         Ogre::Entity*  entity;
         SceneNode*     node  ;
@@ -344,7 +345,7 @@ namespace mdl
     ///------------------------------------------------------------------------|
     /// Цилиндр.
     ///---------------------------------------------------- SimpleBlackCylinder:
-    struct  SimpleBlackCylinder : Base
+    struct  SimpleBlackCylinder : Glob
     {       SimpleBlackCylinder(
                 const std::string name
             ,   SceneNode*  nodeParent
@@ -417,7 +418,7 @@ namespace mdl
     ///------------------------------------------------------------------------|
     /// Две ножки под корзину.
     ///--------------------------------------------------------- BlackCylinder2:
-    struct  BlackCylinder2   : Base
+    struct  BlackCylinder2   : Glob
     {       BlackCylinder2() = default;
            ~BlackCylinder2()
             {   

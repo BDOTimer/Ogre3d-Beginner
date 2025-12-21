@@ -14,7 +14,7 @@ namespace mdl
     ///------------------------------------------------------------------------|
     /// Три стенки корзины.  (+дно)
     ///-------------------------------------------------------------- Well3Wall:
-    struct  Well3Wall : Base
+    struct  Well3Wall : Glob
     {      ~Well3Wall  ()
             {   destroy();
             }
@@ -141,7 +141,7 @@ namespace mdl
     ///------------------------------------------------------------------------|
     /// Корзина - ЛОГИКА.
     ///-------------------------------------------------------------- WellLogic:
-    struct  WellLogic   : Base
+    struct  WellLogic   : Glob
     {       WellLogic(Figure& f) :
                 figure       (f)
             ,   cfg(ConfigGame::get())
@@ -160,6 +160,7 @@ namespace mdl
         std::function<void(int)> SetScore;
         void setDelegateSetScore(std::function<void(int)> dlg)
         {   SetScore = dlg;
+            SetScore   (0);
         }
 
     private:
@@ -453,11 +454,11 @@ namespace mdl
     ///------------------------------------------------------------------------|
     /// Корзина.
     ///------------------------------------------------------------------- Well:
-    struct  Well   : Base
+    struct  Well   : Glob
     {       Well() : logic(figure)
             {   std::cout << '\n' << std::format("{}\n{}{:2}{}\n{}\n",
                 "|----------------------------------|",
-                "|     Новая игра  - ", Base::cntGame," создана!    |",
+                "|     Новая игра  - ", Glob::cntGame," создана!    |",
                 "|----------------------------------|");
             }
            ~Well()
@@ -499,7 +500,7 @@ namespace mdl
         {   figure.reGenerate();
         }
 
-        void setDelegate(std::function<void()> foo)
+        void setDelegateGameOver(std::function<void()> foo)
         {   logic.fooGameOver = foo;
         }
 

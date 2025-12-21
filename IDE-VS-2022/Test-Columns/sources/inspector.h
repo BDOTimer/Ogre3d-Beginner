@@ -16,7 +16,7 @@ namespace mdl
     /// InspectorRoot.("Test-Columns-2025")
     ///---------------------------------------------------------- InspectorRoot:
     struct  InspectorRoot
-            :   Base
+            :   Glob
             ,   OgreBites::ApplicationContext
             ,   OgreBites::InputListener
     {       InspectorRoot( ): OgreBites::ApplicationContext("")
@@ -52,15 +52,17 @@ namespace mdl
         ///---------------------------------------:
         void createRoot() override;
 
+        Ogre::Quaternion orientationWorldStart;
+
         void setup() override
         {   
             OgreBites::ApplicationContext::setup();
 
             addInputListener(this);
 
-            Base::pInspectorRoot = this;
-            Base::ctx             = this;
-            Base::pIListener     = this;
+            Glob::pInspectorRoot = this;
+            Glob::ctx             = this;
+            Glob::pIListener     = this;
 
             root   = getRoot();
             scnMgr = root->createSceneManager();
@@ -68,11 +70,11 @@ namespace mdl
             scnMgr->setShadowTechnique(
                 ShadowTechnique::SHADOWTYPE_STENCIL_ADDITIVE);
 
-            nodeBase = scnMgr->getRootSceneNode()->createChildSceneNode("Base");
+            nodeBase = scnMgr->getRootSceneNode()->createChildSceneNode("Glob");
             nodeUser = scnMgr->getRootSceneNode()->createChildSceneNode();
 
-            Base::scnMgr   = scnMgr;
-            Base::nodeBase = nodeBase;
+            Glob::scnMgr   = scnMgr;
+            Glob::nodeBase = nodeBase;
 
             addResourcePath();
 
@@ -95,6 +97,11 @@ namespace mdl
             cylinders.setup(ground.node);
             effects  .setup();
             createNewGame  ();
+
+            ///-----------------------------------|
+            /// Сохраняем ориентацию мира.        |
+            ///-----------------------------------:
+            orientationWorldStart = nodeBase->getInitialOrientation();
         }
 
         ///---------------------------------------|
@@ -113,7 +120,7 @@ namespace mdl
                     break;
                 case OgreBites::SDLK_F8:
                 /// 
-                    PrintNodeHierarchy(Base::nodeBase);
+                    PrintNodeHierarchy(Glob::nodeBase);
                     break;
                 case OgreBites::SDLK_F5:
                     isSpeedRotWold = isSpeedRotWold ? 0 :  speedRotWold;
@@ -123,13 +130,15 @@ namespace mdl
                     break;
                 case OgreBites::SDLK_SPACE:
                 case OgreBites::SDLK_PAUSE:
-                case 112: // 'P'--->112
+                case 'p':
                     isPause = !isPause;
                     break;
+                case '0': camera2StartGame();
+                    break;
                 case OgreBites::SDLK_F12:
-    				if (ui.trayMgr) ui.trayMgr->areFrameStatsVisible()
-                        ? ui.trayMgr->hideFrameStats()
-    					: ui.trayMgr->showFrameStats(TrayLocation::TL_BOTTOMLEFT);
+    				ui.trayMgr->areFrameStatsVisible()
+                  ? ui.trayMgr->hideFrameStats()
+    			  : ui.trayMgr->showFrameStats(TrayLocation::TL_BOTTOMLEFT);
     				break;
                 default: // l(evt.keysym.sym)
                     ;
@@ -145,20 +154,20 @@ namespace mdl
         {   return ui.mousePressed(evt);
         }
 
-        float accumulatedTime{ 0};  // Накопленное время
-        float intervalTime   { 1};  // Интервал (1 секунда)
-        int   isSpeedRotWold { 0};  // Нет вращения Мира.
-        int     speedRotWold {30};  // Нет вращения Мира.
-        bool  isPause     {false};
-        bool  isGameOver  {false};
-        float seconds         {0};
+        float  accumulatedTime { 0};  // Накопленное время
+        float  intervalTime    { 1};  // Интервал (1 секунда)
+        int    isSpeedRotWold  { 0};  // Нет вращения Мира.
+        const int speedRotWold {30};  // Нет вращения Мира.
+        bool   isPause      {false};
+        bool   isGameOver   {false};
+        float  seconds          {0};
 
         ///---------------------------------------|
         /// Тут крутятся фреймы.                  |
         ///---------------------------------------:
         void frameRendered(const Ogre::FrameEvent& evt) override
         {
-            Base::deltaTime = evt.timeSinceLastFrame;
+            Glob::deltaTime = evt.timeSinceLastFrame;
 
             accumulatedTime += evt.timeSinceLastFrame;
        
@@ -220,7 +229,9 @@ namespace mdl
         }
 
         void createNewGame()
-        {   Base::cntGame++;
+        {   
+            Glob::  cntGame++;
+            isGameOver = false;
 
             if (well)
             {   safeRemoveNode(well->node);
@@ -228,13 +239,19 @@ namespace mdl
             }
 
             well = new Well();
-            well->setup();
-            well->setDelegate([this](){ this->fooGameOver(); });
+            well->setDelegateGameOver(
+                [this]()
+                {   this->fooGameOver(); 
+                }
+            );
             well->logic.setDelegateSetScore(
                 [this](int score)
                 {   this->setScore(score);
                 }
             );
+            well->setup     ();
+            camera2StartGame();
+            isSpeedRotWold = 0;
         }
 
         void safeRemoveNode(Ogre::SceneNode* node)
@@ -253,8 +270,13 @@ namespace mdl
         void setScore(int score)
         {   ui.score->set(score);
         }
-    };
-}
 
+        void camera2StartGame()
+        {   camera.set2Start ();
+            nodeBase->setOrientation(orientationWorldStart);
+        }
+
+    }; // struct InspectorRoot
+}      // namespace mdl
 #endif // INSPECTOR_H
 

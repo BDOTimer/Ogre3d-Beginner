@@ -203,7 +203,7 @@ namespace mdl
     using Gm_t = std::vector<std::vector<GemData*>>;
     std::ostream& operator<<(std::ostream& o, const Gm_t&);
 
-    struct  GemData : Base
+    struct  GemData : Glob
     {   
            ~GemData()
             {   if( node != nullptr )
@@ -356,7 +356,7 @@ namespace mdl
     ///------------------------------------------------------------------------|
     /// Figure
     ///----------------------------------------------------------------- Figure:
-    struct  Figure   : Base
+    struct  Figure   : Glob
     {       Figure() : 
                 gems(ConfigGame::get().N)
             ,   mat (ConfigGame::get().descriptionGems.size())
@@ -498,7 +498,7 @@ namespace mdl
                 SNDPLAY(drop1);
                 break;
                 
-            case OgreBites::SDLK_LEFT: /// 122: 'Z'
+            case OgreBites::SDLK_LEFT:
             {   
                 const auto& p = node->getPosition();
 
@@ -509,7 +509,7 @@ namespace mdl
                 else MUSPLAY(wow1);
                 break;
             }
-            case OgreBites::SDLK_RIGHT: /// 120: 'X'
+            case OgreBites::SDLK_RIGHT:
             {   const auto& p = node->getPosition();
                 if(idexer.lookR(p) && idexer.fooLookWay(myl::Indexer::ERIGHT))
                 {   step2DistanceB.start(p.x, myl::Step2Distance::RIGHT);
@@ -522,6 +522,7 @@ namespace mdl
             /// l(evt.keysym.sym)
                 return true; // Другие клавиши не обрабатываем
             }
+
             return false;
         }
         
