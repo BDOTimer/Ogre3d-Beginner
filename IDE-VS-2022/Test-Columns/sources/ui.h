@@ -49,7 +49,7 @@ namespace mdl
         int mWidthS      = 110;
         int mWidthL      = 350;
         int mShortHeight =  34;
-        int mLongHeight  = 190;
+        int mLongHeight  = 210;
  
         bool mIsLongText = false;
 
@@ -250,6 +250,7 @@ namespace mdl
                 "F5, F6 : Вращение сцены\n"
                 "SPACE  : Пауза\n"
                 "F4     : Новая игра\n"
+                "'0'    : Cбросить камеру\n"
                 "ESCAPE : Выход из игры\n"
             );
             ctb->setCaption("F1::Help");

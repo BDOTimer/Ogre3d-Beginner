@@ -67,7 +67,7 @@ namespace myl
         }
 
         int getIndexY(const float val) const ///-/////////////////////////////-?
-        {   return int(val + 1000 - 50) / SZCELL - 10;
+        {   return int(val + 2000 - 50) / SZCELL - 20;
         }
 
         enum    EDIR
@@ -78,7 +78,7 @@ namespace myl
                 EUP
         };
 
-        bool isIntroWold(const Ogre::Vector3& vf) const
+        bool XisIntroWold(const Ogre::Vector3& vf) const
         {   const Ogre::Vector3i&& vi{getIndex3(vf)};
             return 0 <= vi[0] && vi[0] < W && 0 <= vi[1] && vi[1] < H;
         }

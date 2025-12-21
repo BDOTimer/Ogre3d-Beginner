@@ -499,7 +499,7 @@ namespace mdl
         {   figure.reGenerate();
         }
 
-        void setDelegate(std::function<void()> foo)
+        void setDelegateGameOver(std::function<void()> foo)
         {   logic.fooGameOver = foo;
         }
 

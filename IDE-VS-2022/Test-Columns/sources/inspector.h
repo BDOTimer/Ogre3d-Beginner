@@ -52,6 +52,8 @@ namespace mdl
         ///---------------------------------------:
         void createRoot() override;
 
+        Ogre::Quaternion orientationWorldStart;
+
         void setup() override
         {   
             OgreBites::ApplicationContext::setup();
@@ -95,6 +97,11 @@ namespace mdl
             cylinders.setup(ground.node);
             effects  .setup();
             createNewGame  ();
+
+            ///-----------------------------------|
+            /// Сохраняем ориентацию мира.        |
+            ///-----------------------------------:
+            orientationWorldStart = nodeBase->getInitialOrientation();
         }
 
         ///---------------------------------------|
@@ -123,13 +130,17 @@ namespace mdl
                     break;
                 case OgreBites::SDLK_SPACE:
                 case OgreBites::SDLK_PAUSE:
-                case 112: // 'P'--->112
+                case 'p':
                     isPause = !isPause;
                     break;
+                case '0':
+                    camera.set2Start();
+                    nodeBase->setOrientation(orientationWorldStart);
+                    break;
                 case OgreBites::SDLK_F12:
-    				if (ui.trayMgr) ui.trayMgr->areFrameStatsVisible()
-                        ? ui.trayMgr->hideFrameStats()
-    					: ui.trayMgr->showFrameStats(TrayLocation::TL_BOTTOMLEFT);
+    				ui.trayMgr->areFrameStatsVisible()
+                  ? ui.trayMgr->hideFrameStats()
+    			  : ui.trayMgr->showFrameStats(TrayLocation::TL_BOTTOMLEFT);
     				break;
                 default: // l(evt.keysym.sym)
                     ;
@@ -220,7 +231,9 @@ namespace mdl
         }
 
         void createNewGame()
-        {   Base::cntGame++;
+        {   
+            Base::  cntGame++;
+            isGameOver = false;
 
             if (well)
             {   safeRemoveNode(well->node);
@@ -229,7 +242,11 @@ namespace mdl
 
             well = new Well();
             well->setup();
-            well->setDelegate([this](){ this->fooGameOver(); });
+            well->setDelegateGameOver(
+                [this]()
+                {   this->fooGameOver(); 
+                }
+            );
             well->logic.setDelegateSetScore(
                 [this](int score)
                 {   this->setScore(score);

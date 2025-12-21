@@ -65,8 +65,6 @@ namespace mdl
 
         std::unique_ptr<OgreBites::CameraMan> man;
 
-
-
         Ogre::Camera* get() const { return cam; }
 
         void setup(SceneNode* nodeUser)
@@ -76,7 +74,6 @@ namespace mdl
 
             camGoal = scnMgr->getRootSceneNode()->createChildSceneNode();
             camGoal->setPosition(0, 900, 0);
-
 
             camNode = nodeUser->createChildSceneNode();
             camNode->setPosition   (0, 999, 1900);
@@ -96,13 +93,17 @@ namespace mdl
             ///------------------:
             man = std::make_unique<OgreBites::CameraMan>(camNode);
 
-            man->setTarget(camGoal);
-            man->setYawPitchDist(Ogre::Degree(0), Ogre::Degree(-20), 2000.0f);
-
             man->setStyle(OgreBites::CS_ORBIT); // или  CS_FREELOOK
+            man->setTarget(camGoal);
             man->setTopSpeed(100);
             man->setFixedYaw(true);
             ctx->addInputListener(man.get());
+
+            set2Start();
+        }
+
+        void set2Start()
+        {   man->setYawPitchDist(Ogre::Degree(0), Ogre::Degree(10), 2000.0f);
         }
     };
 

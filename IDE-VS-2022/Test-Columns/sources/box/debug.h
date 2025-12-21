@@ -20,8 +20,6 @@
 
 #include "OgreApplicationContext.h"
 #include "OgreTrays.h"
-
-
 #pragma warning(pop)
 
 #ifdef _MSC_VER
