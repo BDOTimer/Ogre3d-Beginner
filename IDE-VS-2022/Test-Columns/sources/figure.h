@@ -7,187 +7,6 @@
 #include "physics.h"
 
 ///---------|
-/// My lib  |
-///---------:
-namespace myl
-{   
-    ///------------------------------------------------------------------------|
-    /// Движение точки на заданную дистанцию...
-    ///---------------------------------------------------------- Step2Distance:
-    struct  Step2Distance
-    {
-        enum  EDIR
-        {     RIGHT,
-              LEFT ,
-              STOP
-        }eDir{STOP};
-
-        bool isUserMoving() const { return isMoving; }
-
-        ///---------------------------------------|
-        /// Начать движение.                      |
-        ///---------------------------------------:
-        void start(float PosStart, float Distance)
-        {   
-            if(0.f == Distance) return;
-
-            eDir = Distance < 0 ? LEFT : RIGHT;
-            
-            this->position =           PosStart;
-            this->posStart =           PosStart;
-            this->distance =           Distance;
-            this->distancA =  std::abs(Distance);
-            dist           =  0;
-            isMoving = true;
-        }
-
-        bool sensor(const float delta)
-        {   
-            if(!isMoving) return false;
-
-            switch(eDir)
-            {   case RIGHT: position += delta; break;
-                case LEFT : position -= delta; break;
-                default   : ;
-            }
-
-            dist += delta;
-            
-            if(dist > distancA)
-            {
-                position = posStart + distance;
-                
-                isMoving = false;
-                eDir     = STOP ;
-            }
-
-            return isMoving;
-        }
-
-        float getPosition() const { return position; }
-
-        ///--------------|
-        /// Тест.        |
-        ///--------------:
-        static void test()
-        {   TestInfo inf("Step2Distance");
-
-            Step2Distance step2Distance;
-
-            inf.Case();
-            {
-                step2Distance.start(20, 70);
-                while(step2Distance.sensor(0.12345f));
-                l(TestInfo::showResult(90.f, step2Distance.getPosition()))
-            }
-
-            inf.Case();
-            {
-                step2Distance.start(90, -130);
-                while(step2Distance.sensor(0.12345f));
-                l(TestInfo::showResult(-40.f, step2Distance.getPosition()))
-            }
-
-            inf.Case();
-            {
-                step2Distance.start(-20, -130);
-                while(step2Distance.sensor(0.12345f));
-                l(TestInfo::showResult(-150.f, step2Distance.getPosition()))
-            }
-
-            inf.Case();
-            {
-                step2Distance.start(-200, 40);
-                while(step2Distance.sensor(0.12345f));
-                l(TestInfo::showResult(-160.f, step2Distance.getPosition()))
-            }
-        }
-
-    protected:
-        float posStart;
-        float position;
-        float distance;
-        float distancA;
-        
-        float dist;
-        bool  isMoving{false};
-    };
-
-    ///------------------------------------------------------------------------|
-    /// Модификация Step2Distance для удобства юзания.
-    ///--------------------------------------------------------- Step2DistanceB:
-    struct  Step2DistanceB : Step2Distance
-    {       Step2DistanceB(float distance)
-            {   Step2Distance::distancA = distance;
-                Step2Distance::distance = distance;
-            }
-
-        void startGravity(const Ogre::Vector3& PosStart)
-        {   
-            const unsigned w = (unsigned)ConfigGame::get().sizeCell;
-
-            ///--------------|
-            /// Коррекция.   |
-            ///--------------:
-            const float Y{float(w) * (unsigned(PosStart.y + 50.f) / w)};
-
-            ///--------------|
-            /// Дебаг.       |
-            ///--------------:
-            if(false)
-            {   LN
-                l(PosStart.y)
-                l(Y)
-            }
-            
-            start(Y, Step2Distance::LEFT);
-        }
-
-        void start(float PosStart, EDIR dir)
-        {   
-            if(isMoving) return;
-
-            PosStart = std::ceilf(PosStart);
-
-            ASSERT(PosStart == int(PosStart)) ///<-----------------------: TODO.
-
-            eDir = dir;
-            
-            this->position = PosStart;
-            this->posStart = PosStart;
-            if(dir == LEFT) this->distance = -std::abs(this->distance);
-            dist     = 0;
-            isMoving = true;
-        }
-
-        ///--------------|
-        /// Тест.        |
-        ///--------------:
-        static void test()
-        {   TestInfo inf("Step2DistanceB");
-
-            Step2DistanceB step2Distance(100);
-
-            inf.Case();
-            {
-                step2Distance.start(0, Step2DistanceB::RIGHT);
-                while(step2Distance.sensor(0.12345f));
-
-                step2Distance.start(
-                    step2Distance.getPosition(), Step2DistanceB::RIGHT );
-                while(step2Distance.sensor(0.12345f));
-
-                step2Distance.start(
-                    step2Distance.getPosition(), Step2DistanceB::RIGHT );
-                while(step2Distance.sensor(0.12345f));
-
-                l(TestInfo::showResult(300.f, step2Distance.getPosition()))
-            }
-        }
-    };
-}
-
-///---------|
 /// Modules |
 ///---------:
 namespace mdl
@@ -360,8 +179,6 @@ namespace mdl
     {       Figure() : 
                 gems(ConfigGame::get().N)
             ,   mat (ConfigGame::get().descriptionGems.size())
-            ,   step2DistanceB(ConfigGame::get().sizeCell)
-            ,   step2Gravity  (ConfigGame::get().sizeCell)
             {   
             }
 
@@ -371,11 +188,11 @@ namespace mdl
 
     private:
 
-        myl::Step2DistanceB step2DistanceB;
-        myl::Step2DistanceB step2Gravity  ;
+        phs::Stepper steperLR  ;
+        phs::Stepper steperGrav;
 
-        const ConfigGame&         cfg{ConfigGame::get()};
-        const float               D2 {cfg.sizeCell  / 2};
+        const ConfigGame& cfg{ConfigGame::get()};
+        const float       D2 {cfg.sizeCell  / 2};
 
         struct 
         {   float  get() const   { return speedMoveCurr ; }
@@ -386,7 +203,7 @@ namespace mdl
             float speedMoveStart{100.0f}; /// единиц в секунду.
             float speedMoveFast {300.0f};
             float speedMoveCurr {speedMoveStart};
-        }speedFigFall;
+        }speedFall;
 
         ///---------------------------------------|
         /// Стартовая инициализация.              |
@@ -416,70 +233,64 @@ namespace mdl
                 gems[i].entity->setMaterialName(mat[rnd]->getName());
             }
 
-            using T = myl::Indexer;
-        /// 
-            node->setVisible(T::get().fooLookWay(T::ENONE));
+            speedFall.start();
 
-            speedFigFall.start();
+            steperLR  .reset(posStart.x);
+            steperGrav.reset(posStart.y);
+
+            node->setVisible(collisions.isHereEmpty(posStart));
         }
 
         ///---------------------------------------|
         /// Физика.                               |
         ///---------------------------------------:
-        const float groundLevel {0};
-        bool        isFalling{true};
-        float   speedMoving{200.0f};
+        bool  isFalling{true};
+        float speedLR{200.0f};
 
-        const myl::Indexer& idexer{myl::Indexer::get()};
-
-        void doGravity()
-        {   /// l(node->getPosition().y)
-            step2Gravity.startGravity(node->getPosition());
-        }
-
-        bool sensorCollisionY()
-        {   isFalling = node->getPosition().y - D2 > groundLevel;
-            return isFalling;
-        }
+        const phs::Collisions& collisions{phs::Collisions::get()};
         
         ///---------------------------------------|
         /// Вызывается для каждого фрейма(кадра). |
         ///---------------------------------------:
         void update()
         {   
-            ///------------------------|
-            /// Гравитация.            |
-            ///------------------------:
-            if(step2Gravity.sensor(speedFigFall.get() * deltaTime))
-            {   const auto& p{node->getPosition()};
-                node->setPosition(p.x, step2Gravity.getPosition(), p.z);
+            const auto& posFig = node->getPosition();
+
+            ///-------------------|
+            /// Гравитация.       |
+            ///-------------------:
+            if(steperGrav.isActive)
+            {   float y = 
+                    steperGrav.update(Glob::deltaTime * speedFall.get());
+
+                node->setPosition(posFig.x, y, posFig.z);
             }
-            else 
-            {   if(sensorCollisionY())
-                {   
-                    if(myl::Indexer::get().fooLookWay(myl::Indexer::EDOWN))
-                    {   doGravity();
-                    }
-                    else isFalling = false;
-                }
+            else if(isFalling &&
+                    collisions.isDown(posFig, steperLR.isActive))
+            {   
+                steperGrav.start(-cfg.sizeCell);
+            }
+            else isFalling = false;
+
+            ///-------------------|
+            /// LR.               |
+            ///-------------------:
+            if(steperLR.isActive)
+            {   float x = steperLR.update(Glob::deltaTime * speedLR);
+                node->setPosition(x, posFig.y, posFig.z);
+
+                isFalling = true;
             }
 
-            /// TODO: доделать ...
-            if(step2DistanceB.sensor(deltaTime * speedMoving))
-            {   const auto& p{node->getPosition()};
-                node->setPosition(step2DistanceB.getPosition(), p.y, p.z);
-            }
-            else if(!isFalling && !step2DistanceB.isUserMoving())
-            {   
-                onGroundCollision();
+            if(!isFalling && !steperLR.isActive)
+            {   onGroundCollision();
                 SNDSTOP(drop1);
             }
             
-            ///------------------------|
-            /// Анимация.              |
-            ///------------------------:
+            ///-------------------|
+            /// Анимация.         |
+            ///-------------------:
             for(auto& e : gems) e.update();
-
         }
 
         ///---------------------------------------|
@@ -494,7 +305,7 @@ namespace mdl
                 break;
                 
             case OgreBites::SDLK_DOWN:
-                speedFigFall.up();
+                speedFall.up();
                 SNDPLAY(drop1);
                 break;
                 
@@ -502,8 +313,8 @@ namespace mdl
             {   
                 const auto& p = node->getPosition();
 
-                if(idexer.lookL(p) && idexer.fooLookWay(myl::Indexer::ELEFT))
-                {   step2DistanceB.start(p.x, myl::Step2Distance::LEFT);
+                if(collisions.isLeft(p))
+                {   steperLR.start(-cfg.sizeCell);
                     MUSPLAY(dart);
                 }
                 else MUSPLAY(wow1);
@@ -511,8 +322,9 @@ namespace mdl
             }
             case OgreBites::SDLK_RIGHT:
             {   const auto& p = node->getPosition();
-                if(idexer.lookR(p) && idexer.fooLookWay(myl::Indexer::ERIGHT))
-                {   step2DistanceB.start(p.x, myl::Step2Distance::RIGHT);
+
+                if(collisions.isRight(p))
+                {   steperLR.start(cfg.sizeCell);
                     MUSPLAY(dart);
                 }
                 else MUSPLAY(wow1);
@@ -556,10 +368,12 @@ namespace mdl
         /// Обработка столкновения фигуры с землей.|
         ///----------------------------------------:
         void onGroundCollision()
-        {    sendFigure2Well();
-             reGenerate();
-             isFalling = true;
-             MUSPLAY(wu);
+        {    
+            sendFigure2Well();
+            reGenerate     ();
+
+            isFalling = true;
+            MUSPLAY(wu);
         }
 
         ///----------------------------------------|
@@ -575,13 +389,6 @@ namespace mdl
             }
 
             gems.back().node->setPosition(a);
-        }
-
-        ///---------------------------------------|
-        /// Сенсор столновения: true ---> бум!    |
-        ///---------------------------------------:
-        bool sensorCollisions(myl::Indexer::EDIR dir)
-        {   return !idexer.fooLookWay(dir);
         }
 
         ///---------------------------------------|

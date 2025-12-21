@@ -33,6 +33,7 @@
 #define l_(a) std::cout << #a << " = "   << (a) << ", ";
 #define l1(a) std::cout                  << (a);
 #define LN    std::cout << std::string(10, '=') << '\n';
+#define SIG(a)std::cout << std::string(50, '=') << "::" << a << '\n';
 
 ///----------------------------------------------------------------------------|
 /// Начинка для ASSERT.

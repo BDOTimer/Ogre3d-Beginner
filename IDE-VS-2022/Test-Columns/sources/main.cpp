@@ -61,6 +61,7 @@ int main([[maybe_unused]] int    argc,
     srand       (RANDSEED); l(RANDSEED)
 
     ConfigGame  cfg{11, 15, 4};
+/// 
     ConfigGame::get().configGame = &cfg;
 
     ///------------------|

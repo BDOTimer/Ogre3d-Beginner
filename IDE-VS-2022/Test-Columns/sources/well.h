@@ -12,7 +12,7 @@
 namespace mdl
 {   
     ///------------------------------------------------------------------------|
-    /// Три стенки корзины.  (+дно)
+    /// Три стенки корзины + дно.
     ///-------------------------------------------------------------- Well3Wall:
     struct  Well3Wall : Glob
     {      ~Well3Wall  ()
@@ -92,7 +92,6 @@ namespace mdl
             walls[3]->setMaterialName(nameMat1);
             walls[3]->setCastShadows (true);
 
-        
             // Позиционируем стенки
             Ogre::SceneNode* lNode = wallNode->createChildSceneNode(names[0]);
             lNode->attachObject(walls[0]);
@@ -152,8 +151,8 @@ namespace mdl
                 ///-----------------------------|
                 /// Настраиваем физику.         |
                 ///-----------------------------:
-                myl::Indexer::get().fooLookWay = [this](myl::Indexer::EDIR d)
-                {   return this->fooLookWay(d);
+                phs::Collisions::get().fooLookWay = [this](int x, int y)
+                {   return this->fooLookWay(x, y);
                 };
             }
 
@@ -166,14 +165,13 @@ namespace mdl
     private:
         Figure& figure;
 
-        const ConfigGame& cfg{ConfigGame::get()};
+        const      ConfigGame& cfg       {     ConfigGame::get()};
+        const phs::Collisions& collisions{phs::Collisions::get()};
 
         size_t W;
         size_t H;
 
         SceneNode*  node;
-
-        const myl::Indexer& indexer{myl::Indexer::get()};
 
         bool isGameOver{false};
 
@@ -193,57 +191,23 @@ namespace mdl
         }
 
         ///---------------------------------|
-        /// Путь свободен от gem?           |
-        /// Сначала проверить на стенки!    |
+        /// true - Путь свободен!           |
         ///---------------------------------:
-        bool fooLookWay(const myl::Indexer::EDIR dir)
+        bool fooLookWay(int w, int h)
         {   
-            const Ogre::Vector3& posFig{figure.node->getPosition()};
+            ASSERTM(h < (int)H, "Жемчуг вылез на крышу массива!")
 
-            for(auto& gem : figure.gems)
-            {   
-                const Ogre::Vector3& posGem{gem.node->getPosition()};
-                const Ogre::Vector3& posGemF
-                {   std::ceilf(posFig.x + posGem.x),
-                    std::ceilf(posFig.y + posGem.y),
-                    std::ceilf(posFig.z + posGem.z)
-                };
+            if( 0 > w || w >= (int)W  ||
+                0 > h || h >= (int)H) return false;
+                
+            if( nullptr != gm[h][w])  return false;
 
-                const Vector3i vi{ indexer.getIndex3(posGemF) };
-
-                switch(dir)
-                {   case myl::Indexer::ELEFT:
-                    {   if( int x = vi[0]-1; x < 0 ||
-                            nullptr != gm[vi[1]][x]) return false;
-                        break;
-                    }
-                    case myl::Indexer::ERIGHT:
-                    {   if( int x = vi[0]+1; x >= W ||
-                            nullptr != gm[vi[1]][x]) return false;
-                        break;
-                    }
-                    case myl::Indexer::EDOWN:
-                    {   if( int y = vi[1]-1; y < 0 ||
-                            nullptr != gm[y][vi[0]]) return false;
-                        break;
-                    }
-                    case myl::Indexer::EUP:
-                    {   if( int y = vi[1]+1; y >= H ||
-                            nullptr != gm[y][vi[0]]) return false;
-                        break;
-                    }
-                    default:
-                        if( vi[0] < 0 || vi[1] >= H ||
-                            nullptr != gm[vi[1]][vi[0]]) return false;
-                        ;
-                }
-            }
             return true;
         };
 
-        bool add(Figure& fig)///-////////////////////////////////////////////
+        bool add(Figure& fig)///-///////////////////////////////////////////////
         {   
-            /// return;
+            /// return true;
 
             const Ogre::Vector3& posFig{fig.node->getPosition()};
 
@@ -257,12 +221,15 @@ namespace mdl
                     std::ceilf(posFig.z + posGem.z)
                 };
 
-                const Ogre::Vector3i&& posGemI
-                {   indexer.getIndex3(posGemF)
+                const Ogre::Vector3i     posGemI
+                {   collisions.getIndex3(
+                        {posGemF.x, posGemF.y - 50.f, posGemF.z})
                 };
 
-                /// LN
-                /// l(posGemI)
+                //LN//////////////////////////////////////////////////////////-?
+                //l(posGemF)
+                //l(posGemI)
+                
 
                 if(posGemI[0] < 0)
                 {   std::cout << "ERROR-[Физика]: Фигура за левым бортом!\n";
@@ -271,6 +238,11 @@ namespace mdl
 
                 if(posGemI[0] >= W)
                 {   std::cout << "ERROR-[Физика]: Фигура за правым бортом!\n";
+                    return false;
+                }
+
+                if(posGemI[1] < 0)
+                {   std::cout << "ERROR-[Физика]: Фигура ушла под пол!\n";
                     return false;
                 }
 
@@ -340,111 +312,22 @@ namespace mdl
             return true;
         }
 
-        void update()
-        {   for    (auto& r : gm)
-            {   for(auto& e : r)
-                {   if(nullptr != e) e->update();
-                }
-            }
-        }
-
         ///---------------------------------|
         /// Повесь сюда делегат!            |
         ///---------------------------------:
         std::function<void()> fooGameOver{[](){}};
 
         ///---------------------------------|
-        /// Ищем где совпало.               |
+        /// Ищем где совпало. [box.cpp]     |
         ///---------------------------------:
-        std::vector<igm_t> findMatchGems()
-        {   
-            std::vector<igm_t> matchGems; matchGems.reserve(128);
+        std::vector<igm_t>   findMatchGems();
 
-            for       (auto& r : gm)
-            {   for   (auto& e : r )
-                {   if(nullptr != e)
-                    {   e->match.reset();
-                    }
+        void update()
+        {   for    (auto& r : gm)
+            {   for(auto& e : r)
+                {   if(nullptr != e) e->update();
                 }
             }
-
-            for(    size_t h{}; h < H; ++h)
-            {   for(size_t w{}; w < W; ++w)
-                {   
-                    ///------------------------|
-                    /// В фокусе только 1 раз! |
-                    ///------------------------:
-                    const auto& a{gm[h][w]};
-
-                    if(nullptr == a)
-                    {   continue;
-                    }
-                    
-                    ///------------------------|
-                    /// Горизонталь.           |
-                    ///------------------------:
-                    if(size_t i = w + 1; i < W )
-                    {   const auto& b{gm[h][i]};
-                        
-                        if(nullptr != b && a->id == b->id)
-                        {   b->match.addLG(a->match.getLG());
-                        }
-                    }
-
-                    ///------------------------|
-                    /// Вертикаль.             |
-                    ///------------------------:
-                    if(size_t j = h + 1; j < H )
-                    {   const auto& b{gm[j][w]};
-                        
-                        if(nullptr != b && a->id == b->id)
-                        {   b->match.addLV(a->match.getLV());
-                        }
-                    }
-
-                    ///------------------------|
-                    /// Диагональ "Плюс".      |
-                    ///------------------------:
-                    if(size_t j = h + 1, i = w + 1; j < H && i < W )
-                    {   const auto& b{gm[j][i]};
-                        
-                        if(nullptr != b && a->id == b->id)
-                        {   b->match.addL1(a->match.getL1());
-                        }
-                    }
-
-                    ///------------------------|
-                    /// Диагональ "Минус".     |
-                    ///------------------------:
-                    if(size_t j = h + 1, i = w - 1; j < H && i < W )
-                    {   const auto& b{gm[j][i]};
-                        
-                        if(nullptr != b && a->id == b->id)
-                        {   b->match.addL5(a->match.getL5());
-                        }
-                    }
-                }
-            }
-
-            for       (const auto& r : gm)
-            {   for   (const auto& e : r )
-                {   if(nullptr != e)
-                    {   if(e->match.isMatch())
-                        {
-                            matchGems.push_back(e->igm);
-                        }
-                    }
-                }
-            }
-
-            ///----------------|
-            /// Дебаг.         |
-            ///----------------:
-            if(!matchGems.empty()) {l(matchGems.size())ln(matchGems)}
-
-            SetScore(int(matchGems.size()));
-
-            return matchGems;
         }
 
         friend struct Well;
@@ -456,10 +339,8 @@ namespace mdl
     ///------------------------------------------------------------------- Well:
     struct  Well   : Glob
     {       Well() : logic(figure)
-            {   std::cout << '\n' << std::format("{}\n{}{:2}{}\n{}\n",
-                "|----------------------------------|",
-                "|     Новая игра  - ", Glob::cntGame," создана!    |",
-                "|----------------------------------|");
+            {   
+                infoNewGame2Console();
             }
            ~Well()
             {
@@ -496,10 +377,6 @@ namespace mdl
             figure.delegate4Well = [this](Figure* figure){ logic.add(*figure);};
         }
 
-        void changeFigure    ()
-        {   figure.reGenerate();
-        }
-
         void setDelegateGameOver(std::function<void()> foo)
         {   logic.fooGameOver = foo;
         }
@@ -508,7 +385,12 @@ namespace mdl
         /// Обработка клавиш.                         |
         ///-------------------------------------------:
         bool keyPressed(const KeyboardEvent& evt)
-        {   return figure.keyPressed(evt);
+        {   
+            switch(evt.keysym.sym)
+            {   case '1': ln(logic.gm) break; /// Дебаг.
+                default:;
+            }
+            return figure.keyPressed(evt);
         }
 
         void update()
@@ -519,6 +401,8 @@ namespace mdl
         void destroy()
         {   
         }
+
+        void infoNewGame2Console() const;
     
         friend struct InspectorRoot;
     };
