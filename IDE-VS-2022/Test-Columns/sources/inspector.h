@@ -133,9 +133,7 @@ namespace mdl
                 case 'p':
                     isPause = !isPause;
                     break;
-                case '0':
-                    camera.set2Start();
-                    nodeBase->setOrientation(orientationWorldStart);
+                case '0': camera2StartGame();
                     break;
                 case OgreBites::SDLK_F12:
     				ui.trayMgr->areFrameStatsVisible()
@@ -156,13 +154,13 @@ namespace mdl
         {   return ui.mousePressed(evt);
         }
 
-        float accumulatedTime{ 0};  // Накопленное время
-        float intervalTime   { 1};  // Интервал (1 секунда)
-        int   isSpeedRotWold { 0};  // Нет вращения Мира.
-        int     speedRotWold {30};  // Нет вращения Мира.
-        bool  isPause     {false};
-        bool  isGameOver  {false};
-        float seconds         {0};
+        float  accumulatedTime { 0};  // Накопленное время
+        float  intervalTime    { 1};  // Интервал (1 секунда)
+        int    isSpeedRotWold  { 0};  // Нет вращения Мира.
+        const int speedRotWold {30};  // Нет вращения Мира.
+        bool   isPause      {false};
+        bool   isGameOver   {false};
+        float  seconds          {0};
 
         ///---------------------------------------|
         /// Тут крутятся фреймы.                  |
@@ -241,7 +239,6 @@ namespace mdl
             }
 
             well = new Well();
-            well->setup();
             well->setDelegateGameOver(
                 [this]()
                 {   this->fooGameOver(); 
@@ -252,6 +249,9 @@ namespace mdl
                 {   this->setScore(score);
                 }
             );
+            well->setup     ();
+            camera2StartGame();
+            isSpeedRotWold = 0;
         }
 
         void safeRemoveNode(Ogre::SceneNode* node)
@@ -270,8 +270,13 @@ namespace mdl
         void setScore(int score)
         {   ui.score->set(score);
         }
-    };
-}
 
+        void camera2StartGame()
+        {   camera.set2Start ();
+            nodeBase->setOrientation(orientationWorldStart);
+        }
+
+    }; // struct InspectorRoot
+}      // namespace mdl
 #endif // INSPECTOR_H
 

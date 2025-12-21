@@ -160,6 +160,7 @@ namespace mdl
         std::function<void(int)> SetScore;
         void setDelegateSetScore(std::function<void(int)> dlg)
         {   SetScore = dlg;
+            SetScore   (0);
         }
 
     private:
