@@ -56,7 +56,7 @@ namespace mdl
     ///------------------------------------------------------------------------|
     /// Camera.
     ///----------------------------------------------------------------- Camera:
-    struct  Camera : Base
+    struct  Camera : Glob
     {   
         Ogre::SceneNode* camNode;
         Ogre::SceneNode* camGoal;
@@ -110,7 +110,7 @@ namespace mdl
     ///------------------------------------------------------------------------|
     /// Текст.
     ///--------------------------------------------------------------- TextTest:
-    struct  TextTest : Base
+    struct  TextTest : Glob
     {
         void setup()
         {   
@@ -121,7 +121,7 @@ namespace mdl
     ///------------------------------------------------------------------------|
     /// Грунт.
     ///----------------------------------------------------------------- Ground:
-    struct  Ground : Base
+    struct  Ground : Glob
     {       
         Ogre::Entity*  entity;
         SceneNode*     node  ;
@@ -153,7 +153,7 @@ namespace mdl
     ///------------------------------------------------------------------------|
     /// Нидзя.
     ///------------------------------------------------------------------ Ninja:
-    struct  Ninja : Base
+    struct  Ninja : Glob
     {       
         Ogre::Entity*  entity;
         SceneNode*     node  ;
@@ -176,7 +176,7 @@ namespace mdl
     ///------------------------------------------------------------------------|
     /// Sphere.
     ///----------------------------------------------------------------- Sphere:
-    struct  Sphere : Base
+    struct  Sphere : Glob
     {       
         Ogre::Entity*  entity;
         SceneNode*     node  ;
@@ -230,7 +230,7 @@ namespace mdl
     ///------------------------------------------------------------------------|
     /// Свет.
     ///----------------------------------------------------------------- Lights:
-    struct  Lights : Base
+    struct  Lights : Glob
     {       
         Ogre::Entity*  entity;
 
@@ -292,7 +292,7 @@ namespace mdl
     ///------------------------------------------------------------------------|
     /// Нидзя.
     ///------------------------------------------------------------------ Ninja:
-    struct  Obj5File : Base
+    struct  Obj5File : Glob
     {       
         Ogre::Entity*  entity;
         SceneNode*     node  ;
@@ -320,7 +320,7 @@ namespace mdl
     ///------------------------------------------------------------------------|
     /// Ёлка.
     ///------------------------------------------------------------------ Ninja:
-    struct  Tree : Base
+    struct  Tree : Glob
     {       
         Ogre::Entity*  entity;
         SceneNode*     node  ;
@@ -345,7 +345,7 @@ namespace mdl
     ///------------------------------------------------------------------------|
     /// Цилиндр.
     ///---------------------------------------------------- SimpleBlackCylinder:
-    struct  SimpleBlackCylinder : Base
+    struct  SimpleBlackCylinder : Glob
     {       SimpleBlackCylinder(
                 const std::string name
             ,   SceneNode*  nodeParent
@@ -418,7 +418,7 @@ namespace mdl
     ///------------------------------------------------------------------------|
     /// Две ножки под корзину.
     ///--------------------------------------------------------- BlackCylinder2:
-    struct  BlackCylinder2   : Base
+    struct  BlackCylinder2   : Glob
     {       BlackCylinder2() = default;
            ~BlackCylinder2()
             {   

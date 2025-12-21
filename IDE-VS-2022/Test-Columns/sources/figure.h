@@ -203,7 +203,7 @@ namespace mdl
     using Gm_t = std::vector<std::vector<GemData*>>;
     std::ostream& operator<<(std::ostream& o, const Gm_t&);
 
-    struct  GemData : Base
+    struct  GemData : Glob
     {   
            ~GemData()
             {   if( node != nullptr )
@@ -356,7 +356,7 @@ namespace mdl
     ///------------------------------------------------------------------------|
     /// Figure
     ///----------------------------------------------------------------- Figure:
-    struct  Figure   : Base
+    struct  Figure   : Glob
     {       Figure() : 
                 gems(ConfigGame::get().N)
             ,   mat (ConfigGame::get().descriptionGems.size())

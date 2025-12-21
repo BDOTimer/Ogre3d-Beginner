@@ -16,7 +16,7 @@ namespace mdl
     using namespace Ogre;
     using namespace OgreBites;
  
-    struct  Effects : Base
+    struct  Effects : Glob
     {       Effects()
             {   
             }
@@ -51,7 +51,7 @@ namespace mdl
                 }
         
                 SceneNode* snowNode 
-                    = Base::nodeBase->createChildSceneNode("SnowNode");
+                    = Glob::nodeBase->createChildSceneNode("SnowNode");
                 snowNode->attachObject(snowPS);
                 snowNode->setPosition(0, 1500, 0);
         

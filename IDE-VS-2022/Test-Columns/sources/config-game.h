@@ -104,15 +104,15 @@ namespace mdl
     using namespace Ogre;
     using namespace OgreBites;
     ///------------------------------------------------------------------------|
-    /// Base.
-    ///------------------------------------------------------------------- Base:
+    /// Glob.
+    ///------------------------------------------------------------------- Glob:
     struct  InspectorRoot;
-    struct  Base
-    {   inline static InspectorRoot     * pInspectorRoot{ nullptr };
-        inline static ApplicationContext* ctx            { nullptr };
-        inline static InputListener     * pIListener    { nullptr };
-        inline static Ogre::SceneManager* scnMgr         { nullptr };
-        inline static Ogre::SceneNode   * nodeBase       { nullptr };
+    struct  Glob
+    {   inline static InspectorRoot     * pInspectorRoot;
+        inline static ApplicationContext* ctx           ;
+        inline static InputListener     * pIListener    ;
+        inline static Ogre::SceneManager* scnMgr        ;
+        inline static Ogre::SceneNode   * nodeBase      ;
         inline static float               deltaTime;
         inline static unsigned            cntGame{0};
     };

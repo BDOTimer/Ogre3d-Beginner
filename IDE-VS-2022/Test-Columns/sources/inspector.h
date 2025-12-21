@@ -16,7 +16,7 @@ namespace mdl
     /// InspectorRoot.("Test-Columns-2025")
     ///---------------------------------------------------------- InspectorRoot:
     struct  InspectorRoot
-            :   Base
+            :   Glob
             ,   OgreBites::ApplicationContext
             ,   OgreBites::InputListener
     {       InspectorRoot( ): OgreBites::ApplicationContext("")
@@ -60,9 +60,9 @@ namespace mdl
 
             addInputListener(this);
 
-            Base::pInspectorRoot = this;
-            Base::ctx             = this;
-            Base::pIListener     = this;
+            Glob::pInspectorRoot = this;
+            Glob::ctx             = this;
+            Glob::pIListener     = this;
 
             root   = getRoot();
             scnMgr = root->createSceneManager();
@@ -70,11 +70,11 @@ namespace mdl
             scnMgr->setShadowTechnique(
                 ShadowTechnique::SHADOWTYPE_STENCIL_ADDITIVE);
 
-            nodeBase = scnMgr->getRootSceneNode()->createChildSceneNode("Base");
+            nodeBase = scnMgr->getRootSceneNode()->createChildSceneNode("Glob");
             nodeUser = scnMgr->getRootSceneNode()->createChildSceneNode();
 
-            Base::scnMgr   = scnMgr;
-            Base::nodeBase = nodeBase;
+            Glob::scnMgr   = scnMgr;
+            Glob::nodeBase = nodeBase;
 
             addResourcePath();
 
@@ -120,7 +120,7 @@ namespace mdl
                     break;
                 case OgreBites::SDLK_F8:
                 /// 
-                    PrintNodeHierarchy(Base::nodeBase);
+                    PrintNodeHierarchy(Glob::nodeBase);
                     break;
                 case OgreBites::SDLK_F5:
                     isSpeedRotWold = isSpeedRotWold ? 0 :  speedRotWold;
@@ -167,7 +167,7 @@ namespace mdl
         ///---------------------------------------:
         void frameRendered(const Ogre::FrameEvent& evt) override
         {
-            Base::deltaTime = evt.timeSinceLastFrame;
+            Glob::deltaTime = evt.timeSinceLastFrame;
 
             accumulatedTime += evt.timeSinceLastFrame;
        
@@ -230,7 +230,7 @@ namespace mdl
 
         void createNewGame()
         {   
-            Base::  cntGame++;
+            Glob::  cntGame++;
             isGameOver = false;
 
             if (well)
