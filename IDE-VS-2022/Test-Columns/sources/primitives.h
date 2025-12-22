@@ -67,13 +67,19 @@ namespace mdl
 
         Ogre::Camera* get() const { return cam; }
 
+        float val{2200.0f};
+
+        void reset()
+        {   val = 2200.0f;
+        }
+
         void setup(SceneNode* nodeUser)
         {   
             cam = scnMgr->createCamera("myCam");
             cam->setNearClipDistance  (5);
 
             camGoal = scnMgr->getRootSceneNode()->createChildSceneNode();
-            camGoal->setPosition(0, 900, 0);
+            camGoal->setPosition(0, 850, 0);
 
             camNode = nodeUser->createChildSceneNode();
             camNode->setPosition   (0, 999, 1900);
@@ -103,7 +109,7 @@ namespace mdl
         }
 
         void set2Start()
-        {   man->setYawPitchDist(Ogre::Degree(0), Ogre::Degree(10), 2000.0f);
+        {   man->setYawPitchDist(Ogre::Degree(0), Ogre::Degree(10), val);
         }
     };
 

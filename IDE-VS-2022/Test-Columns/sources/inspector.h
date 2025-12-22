@@ -19,9 +19,13 @@ namespace mdl
             :   Glob
             ,   OgreBites::ApplicationContext
             ,   OgreBites::InputListener
-    {       InspectorRoot( ): OgreBites::ApplicationContext("")
+
+    {       InspectorRoot( ) : 
+                OgreBites::ApplicationContext("")
+            ,   autoCotrollerSin( camera.val,
+                                  [this](){this->camera.set2Start();})
             {}
-        
+
         Ogre::Root*           root;
         Ogre::SceneManager* scnMgr;
         SceneNode*        nodeBase;
@@ -44,6 +48,8 @@ namespace mdl
         Ogre::RTShader::ShaderGenerator* shadergen;
 
         ConfigGame& cfg{ConfigGame::get()};
+
+        AutoCotrollerSin  autoCotrollerSin;
 
     protected:
 
@@ -115,12 +121,10 @@ namespace mdl
                     getRoot()->queueEndRendering();
                     return true;
                 case OgreBites::SDLK_F4:
-                /// 
                     createNewGame();
                     break;
                 case OgreBites::SDLK_F8:
-                /// 
-                    PrintNodeHierarchy(Glob::nodeBase);
+                /// PrintNodeHierarchy(Glob::nodeBase);
                     break;
                 case OgreBites::SDLK_F5:
                     isSpeedRotWold = isSpeedRotWold ? 0 :  speedRotWold;
@@ -133,7 +137,7 @@ namespace mdl
                 case 'p':
                     isPause = !isPause;
                     break;
-                case '0': camera2StartGame();
+                case '0': camera2StartGame(); 
                     break;
                 case OgreBites::SDLK_F12:
     				ui.trayMgr->areFrameStatsVisible()
@@ -196,6 +200,7 @@ namespace mdl
 
             if(isSpeedRotWold)
             {   nodeBase->yaw(Ogre::Degree(deltaTime * speedRotWold));
+                autoCotrollerSin.update();
             }
         }
 
