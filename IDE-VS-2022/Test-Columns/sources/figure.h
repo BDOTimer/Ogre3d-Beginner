@@ -38,7 +38,7 @@ namespace mdl
         Vector2i    pos2gm   ;             /// Позиция в зеркале.
 
         /// not use ...
-        GemData**        cell   {nullptr}; /// Указатель на указатель 
+        GemData**       pcell   {nullptr}; /// Указатель на указатель 
 
         ///------------------------------|
         /// Отвязать камень от фигуры.   |
@@ -84,8 +84,12 @@ namespace mdl
                 {   match.isMatch = 2;
                 /// node->setVisible(false);
 
-                /// clear();
-                /// scnMgr->destroySceneNode(node);
+                    ///--------------------------------|
+                    /// Удаление камня из колодца.     |
+                    ///--------------------------------:-/////////////////////-!
+                    deLink(); 
+                    (*pcell) = nullptr;
+                    EraseIt(igm);
                 }
             }
         }
@@ -153,6 +157,10 @@ namespace mdl
             /// if(node) scnMgr->destroySceneNode(node);
             }
         }
+
+    private:
+        
+        void EraseIt(igm_t igm);
     };
 
 

@@ -220,4 +220,9 @@ namespace mdl
 
             SetScore(int(gemsMatch.size()));
         }
+
+
+    void GemData::EraseIt(igm_t igm)
+    {    Glob::pInspectorRoot->well->EraseIt(igm);
+    }
 }

@@ -251,7 +251,7 @@ namespace mdl
                     return false;
                 }
 
-                if(!add(gem, posGemI, posGemF)) break;
+                if(!addOne(gem, posGemI, posGemF)) break;
             }
 
             findMatchGems();
@@ -264,13 +264,17 @@ namespace mdl
             return true;
         }
 
-        bool add(Gem& gem, const Ogre::Vector3i& posGemI,
-                           const Ogre::Vector3 & posGemF)
+        bool addOne(Gem& gem, const Ogre::Vector3i& posGemI,
+                              const Ogre::Vector3 & posGemF)
         {               
             unsigned x = *(posGemI.ptr() + 0);
             unsigned y = *(posGemI.ptr() + 1);
 
             auto& cell = gm[y][x];
+
+            gem.pos2gm[0] = x;
+            gem.pos2gm[1] = y;
+            gem.pcell     = &cell;
 
             ///------------------------------|
             /// Ячейка занята.               |
@@ -359,6 +363,8 @@ namespace mdl
         /// Содержимое корзины!        |
         ///----------------------------:
         WellLogic  logic;
+
+        void EraseIt(igm_t igm){ logic.allocator.erase(igm); }
 
     private:
         void setup()
