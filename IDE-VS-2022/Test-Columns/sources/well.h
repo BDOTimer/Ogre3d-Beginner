@@ -185,6 +185,11 @@ namespace mdl
         ///----------------------------------:
         std::vector<std::vector<GemData*>> gm;
 
+        ///----------------------------------|
+        /// Жемчуг для удаления.             |
+        ///----------------------------------:
+        GemsMatch                   gemsMatch;
+
         void setup(SceneNode*  nodeWell)
         {   
            node = nodeWell->createChildSceneNode("WellLogic");
@@ -320,7 +325,7 @@ namespace mdl
         ///---------------------------------|
         /// Ищем где совпало. [box.cpp]     |
         ///---------------------------------:
-        std::vector<igm_t>   findMatchGems();
+        void                 findMatchGems();
 
         void update()
         {   for    (auto& r : gm)

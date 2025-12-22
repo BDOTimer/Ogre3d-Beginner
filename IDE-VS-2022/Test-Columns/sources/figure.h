@@ -30,12 +30,15 @@ namespace mdl
                 }
             }
         
-        size_t             id{  NPOS}; /// Масть(тип) жемчужины.
-        Ogre::SceneNode* node{nullptr}; /// Нод на котором висит жемчужена.
-        Ogre::Entity*  entity{nullptr}; /// Геометрия + материал жемчужины.
-        igm_t             igm;          /// Место аллокации этих данных.
+        size_t             id   {  NPOS}; /// Масть(тип) жемчужины.
+        Ogre::SceneNode* node   {nullptr}; /// Нод на котором висит жемчужена.
+        Ogre::Entity*  entity   {nullptr}; /// Геометрия + материал жемчужины.
+        igm_t             igm;             /// Место аллокации этих данных.
         float       speed{50};
-        Vector2i    pos2gm   ;          /// Позиция в зеркале.
+        Vector2i    pos2gm   ;             /// Позиция в зеркале.
+
+        /// not use ...
+        GemData**        cell   {nullptr}; /// Указатель на указатель 
 
         ///------------------------------|
         /// Отвязать камень от фигуры.   |
@@ -51,9 +54,9 @@ namespace mdl
         /// Отвязать камень от фигуры.   |
         ///------------------------------:
         void reset()
-        {       id = NPOS   ;
-              node = nullptr;
-            entity = nullptr;
+        {          id = NPOS   ;
+              node    = nullptr;
+            entity    = nullptr;
         }
 
         ///------------------------------|
@@ -61,11 +64,29 @@ namespace mdl
         ///------------------------------:
         void update()
         {   
+            if(node == nullptr) return;
+
+            const float SPEED{speed * deltaTime};
+
             if(ConfigGame::get().isGemAnimate)
             switch(id)
-            {   case   3: node->yaw  (Ogre::Degree(speed * deltaTime)); break;
-                case   4: node->pitch(Ogre::Degree(speed * deltaTime)); break;
+            {   case   3: node->yaw  (Ogre::Degree(SPEED)); break;
+                case   4: node->pitch(Ogre::Degree(SPEED)); break;
                 default:;
+            }
+
+            if(match.isMatch == 1)
+            {   float S = 1.f - 2.f * deltaTime;
+                if(S > 0.005f && node->getScale().x > 0.1f)
+                {   node->scale({S, S, S});
+                }
+                else
+                {   match.isMatch = 2;
+                /// node->setVisible(false);
+
+                /// clear();
+                /// scnMgr->destroySceneNode(node);
+                }
             }
         }
 
@@ -98,18 +119,42 @@ namespace mdl
                 for(auto& p : nType) p = 1   ;
             }
 
-            bool isMatch() const
-            {   return  pp[0]->nType[0] >= AMOUNTMATCH ||
-                        pp[1]->nType[1] >= AMOUNTMATCH ||
-                        pp[2]->nType[2] >= AMOUNTMATCH ||
-                        pp[3]->nType[3] >= AMOUNTMATCH ;
+            int isMatch{0};
+
+            bool doIsMatch()
+            {   isMatch
+                =   pp[0]->nType[0] >= AMOUNTMATCH ||
+                    pp[1]->nType[1] >= AMOUNTMATCH ||
+                    pp[2]->nType[2] >= AMOUNTMATCH ||
+                    pp[3]->nType[3] >= AMOUNTMATCH ;
+                return isMatch;
             }
 
         private:
             std::array<uint8_t, 4> nType;
             std::array<Match* , 4> pp   ;
         }match;
+
+        ///---------------------------------------|
+        /// Удаление жемчужины из фигуры.         |
+        ///---------------------------------------:
+        void clear()
+        {   /// TODO ...
+            /// node->detachAllObjects();
+
+            if(entity->isAttached())
+            {
+                Ogre::SceneNode* parentNode = entity->getParentSceneNode();
+                if( parentNode)
+                {   parentNode->detachObject(entity);
+                    scnMgr->destroyEntity   (entity->getName());
+                }
+
+            /// if(node) scnMgr->destroySceneNode(node);
+            }
+        }
     };
+
 
     ///------------------------------------------------------------------------|
     /// Gem
@@ -149,25 +194,6 @@ namespace mdl
             node->setScale    (descriptions[id].scale);
 
             if(id % 2) speed = -speed;
-        }
-
-        ///---------------------------------------|
-        /// Удаление жемчужины из фигуры.         |
-        ///---------------------------------------:
-        void clear()
-        {   /// TODO ...
-            /// node->detachAllObjects();
-
-            if(entity->isAttached())
-            {
-                Ogre::SceneNode* parentNode = entity->getParentSceneNode();
-                if( parentNode)
-                {   parentNode->detachObject(entity);
-                    scnMgr->destroyEntity   (entity->getName());
-                }
-
-            /// if(node) scnMgr->destroySceneNode(node);
-            }
         }
     };
 
@@ -426,6 +452,28 @@ namespace mdl
         }
 
         friend struct Well;
+    };
+
+
+    ///------------------------------------------------------------------------|
+    /// Жемчужины, которые нужно удалить из колодца.
+    ///-------------------------------------------------------------- GemsMatch:
+    struct  GemsMatch : Glob, std::vector<igm_t>
+    {       GemsMatch()
+            {   reserve(128);
+            }
+
+        void debug()
+        {   std::vector<igm_t>& gemsMatch{*this};
+
+            ///----------------|
+            /// Дебаг.         |
+            ///----------------:
+            if(!empty()) {l(gemsMatch.size())ln(gemsMatch)}
+        }
+
+    private:
+
     };
 }
 

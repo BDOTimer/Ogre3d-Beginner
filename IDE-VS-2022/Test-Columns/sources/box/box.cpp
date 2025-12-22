@@ -137,9 +137,9 @@ namespace mdl
         ///---------------------------------|
         /// Ищем где совпало.               |
         ///---------------------------------:
-        std::vector<igm_t> WellLogic::findMatchGems()
+        void WellLogic::findMatchGems()
         {   
-            std::vector<igm_t> matchGems; matchGems.reserve(128);
+            gemsMatch.clear();
 
             for       (auto& r : gm)
             {   for   (auto& e : r )
@@ -210,21 +210,14 @@ namespace mdl
             for       (const auto& r : gm)
             {   for   (const auto& e : r )
                 {   if(nullptr != e)
-                    {   if(e->match.isMatch())
+                    {   if(e->match.doIsMatch())
                         {
-                            matchGems.push_back(e->igm);
+                            gemsMatch.push_back(e->igm);
                         }
                     }
                 }
             }
 
-            ///----------------|
-            /// Дебаг.         |
-            ///----------------:
-            if(!matchGems.empty()) {l(matchGems.size())ln(matchGems)}
-
-            SetScore(int(matchGems.size()));
-
-            return matchGems;
+            SetScore(int(gemsMatch.size()));
         }
 }
