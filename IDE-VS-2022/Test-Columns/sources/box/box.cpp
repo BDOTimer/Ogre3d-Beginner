@@ -225,4 +225,8 @@ namespace mdl
     void GemData::EraseIt(igm_t Igm)
     {    Glob::pInspectorRoot->well->EraseIt(Igm);
     }
+
+    void GemData::setGem2Well(GemData* gem)
+    {   Glob::pInspectorRoot->well->setGem(gem);
+    }
 }

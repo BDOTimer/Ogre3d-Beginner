@@ -5,7 +5,7 @@
 ///----------------------------------------------------------------------------:
 #include "inspector.h"
 
-const char* const NAMEGAME{"Колоны-2025::ver-0.2"};
+const char* const NAMEGAME{"Колоны-2025::ver-0.3"};
 
 ///----------------------------------------------------------------------------|
 /// Application.
@@ -60,9 +60,9 @@ int main([[maybe_unused]] int    argc,
     unsigned int RANDSEED{false ? (unsigned int)time(NULL) : 2025}; 
     srand       (RANDSEED); l(RANDSEED)
 
-    ConfigGame  cfg{11, 15, 4};
-/// 
-    ConfigGame::get().configGame = &cfg;
+    ConfigGame  cfg0{11, 15, 4};
+    ConfigGame  cfg1{ 7, 15, 4};
+    ConfigGame::get().configGame = &cfg1;
 
     ///------------------|
     /// Запуск тестов.   |

@@ -147,6 +147,7 @@ namespace mdl
             ,   W  (    cfg.getArrW())
             ,   H  (    cfg.getArrH())
             ,   gm(H, std::vector<GemData*>(W, nullptr))
+            ,   stepers(H, std::vector<phs::Stepper>(W))
             {   
                 ///-----------------------------|
                 /// Настраиваем физику.         |
@@ -184,6 +185,7 @@ namespace mdl
         /// Зеркало корзины.                 |
         ///----------------------------------:
         std::vector<std::vector<GemData*>> gm;
+        std::vector<std::vector<phs::Stepper>> stepers;
 
         ///----------------------------------|
         /// Жемчуг для удаления.             |
@@ -298,6 +300,7 @@ namespace mdl
             allocator.back().igm = --allocator.end();
 
             cell = &allocator.back();
+            cell->setupGravitate  (&stepers[y][x]);
 
             gem.reset();
             
@@ -366,8 +369,6 @@ namespace mdl
         ///----------------------------:
         WellLogic  logic;
 
-        void EraseIt(igm_t igm){ logic.allocator.erase(igm); }
-
     private:
         void setup()
         {   
@@ -409,14 +410,32 @@ namespace mdl
         void update()
         {   figure.update();
             logic .update();
+
+            //updateGravitate();
         }
 
-        void destroy()
-        {   
+        void XupdateGravitate()///-///////////////////////////////////////////-!
+        {   for(auto& e : logic.allocator)
+            {   e.updateGravitate();
+            }
         }
 
         void infoNewGame2Console() const;
-    
+
+    public:
+        void EraseIt(igm_t igm){ logic.allocator.erase(igm); }
+
+        void setGem(GemData* gem)
+        {
+            const int x = gem->pos2gm[0];
+            const int y = gem->pos2gm[1];
+
+            gem->pos2gm[1] -= 1;
+
+            logic.gm[y - 1][x] = gem;
+            logic.gm[y    ][x] = nullptr;
+        }
+
         friend struct InspectorRoot;
     };
 }

@@ -66,6 +66,8 @@ namespace mdl
         {   
             if(node == nullptr) return;
 
+            if(match.isMatch == 0) updateGravitate();///-///////////////////////
+
             const float SPEED{speed * deltaTime};
 
             if(ConfigGame::get().isGemAnimate)
@@ -87,8 +89,9 @@ namespace mdl
                     ///--------------------------------|
                     /// Удаление камня из колодца.     |
                     ///--------------------------------:-/////////////////////-!
-                    deLink(); 
                     (*pcell) = nullptr;
+                    deLink();
+                    node = nullptr;
                     EraseIt(igm);
                 }
             }
@@ -158,9 +161,44 @@ namespace mdl
             }
         }
 
+        ///---------------------------------------|
+        /// Гравитация.                           |
+        ///---------------------------------------:
+        phs::Stepper* steperGrav{nullptr};
+        bool          isGrav    {false  };
+
+        void setupGravitate(phs::Stepper* grav)
+        {   ASSERT(nullptr != node)
+            const auto& posFig = node->getPosition();
+            steperGrav = grav;
+            steperGrav->reset(posFig.y);
+            isGrav = true;
+        }
+
+        void updateGravitate()
+        {   if(!isGrav) return;
+
+            const ConfigGame& cfg{ConfigGame::get()};
+            const phs::Collisions& collisions{phs::Collisions::get()};
+
+            const auto& posFig = node->getPosition();
+
+            if(steperGrav->isActive)
+            {   float y = steperGrav->update(Glob::deltaTime * 100.f);
+
+                node->setPosition(posFig.x, y, posFig.z);
+            }
+            else if(collisions.isDown(
+                        {posFig.x, posFig.y - 50.f, posFig.z}, false))
+            {   steperGrav->start(-cfg.sizeCell);
+
+                setGem2Well (this);
+            }
+        }
+
     private:
-        
-        void EraseIt(igm_t igm);
+        void EraseIt    (igm_t    igm);
+        void setGem2Well(GemData* gem);
     };
 
 
@@ -168,7 +206,7 @@ namespace mdl
     /// Gem
     ///-------------------------------------------------------------------- Gem:
     struct  Gem : GemData
-    {           
+    {
         ///---------------------------------------|
         /// Стартовая инициализация.              |
         ///---------------------------------------:
