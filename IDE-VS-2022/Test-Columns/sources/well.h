@@ -190,6 +190,8 @@ namespace mdl
         ///----------------------------------:
         GemsMatch                   gemsMatch;
 
+        int statisticScore{};
+
         void setup(SceneNode*  nodeWell)
         {   
            node = nodeWell->createChildSceneNode("WellLogic");

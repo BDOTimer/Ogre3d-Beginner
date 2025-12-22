@@ -218,11 +218,11 @@ namespace mdl
                 }
             }
 
-            SetScore(int(gemsMatch.size()));
+            SetScore(statisticScore += int(gemsMatch.size()));
         }
 
 
-    void GemData::EraseIt(igm_t igm)
-    {    Glob::pInspectorRoot->well->EraseIt(igm);
+    void GemData::EraseIt(igm_t Igm)
+    {    Glob::pInspectorRoot->well->EraseIt(Igm);
     }
 }
