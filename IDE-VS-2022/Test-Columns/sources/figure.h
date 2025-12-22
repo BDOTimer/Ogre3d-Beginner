@@ -318,6 +318,7 @@ namespace mdl
 
                 if(collisions.isLeft(p))
                 {   steperLR.start(-cfg.sizeCell);
+                    steperLR.update(0.01f); /// ::anti-bug injection.
                     MUSPLAY(dart);
                 }
                 else MUSPLAY(wow1);
@@ -328,6 +329,7 @@ namespace mdl
 
                 if(collisions.isRight(p))
                 {   steperLR.start(cfg.sizeCell);
+                    steperLR.update(0.01f); /// ::anti-bug injection.
                     MUSPLAY(dart);
                 }
                 else MUSPLAY(wow1);
