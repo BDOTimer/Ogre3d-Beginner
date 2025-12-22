@@ -204,6 +204,7 @@ namespace phs
         ///-------------------------------------:
         void reset(float xy)
         {   pos = xy;
+            tmp =  0;
         }
 
         const Collisions& cln{ Collisions::get() };
@@ -212,7 +213,6 @@ namespace phs
         {   if(isActive) return;
             
             isActive = true;
-            tmp      =   0 ;
 
             dir = val < 0.f ? -1.f : 1.f;
         }
@@ -226,6 +226,7 @@ namespace phs
             if(tmp > Distance)
             {   isActive = false;
                 pos += dir * Distance;
+                tmp -= Distance;
                 return pos;
             } 
             return dir * tmp + pos;

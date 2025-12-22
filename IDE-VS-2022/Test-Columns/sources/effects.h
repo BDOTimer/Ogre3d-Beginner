@@ -107,6 +107,35 @@ namespace mdl
             ParticleSystem* snowPS{nullptr};
     };
  
+
+    ///------------------------------------------------------------------------|
+    /// ...
+    ///------------------------------------------------------------------------:
+    struct  AutoCotrollerSin : Glob
+    {       AutoCotrollerSin(float& val, std::function<void()> cb) :
+                K(val)
+            {   this->val = &val;
+                callback  =   cb;
+            }
+
+        float update()
+        {   auto ss1 = std::sinf(t);
+            *val = K + a * ss1;
+            callback();
+
+            t += speed * Glob::deltaTime;
+        }
+
+    private:
+        float* val;
+        float  speed{0.2f};
+        float  a    {600.f};
+        const float  K;
+        float t{0};
+        int  cnt{};
+
+        std::function<void()> callback;
+    };
 }
  
 #endif // EFFECTS_H

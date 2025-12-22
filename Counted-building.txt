@@ -1,1 +1,1 @@
-Counted-building: 512
+Counted-building: 547

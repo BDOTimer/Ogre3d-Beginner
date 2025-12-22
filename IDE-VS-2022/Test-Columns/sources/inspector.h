@@ -19,9 +19,13 @@ namespace mdl
             :   Glob
             ,   OgreBites::ApplicationContext
             ,   OgreBites::InputListener
-    {       InspectorRoot( ): OgreBites::ApplicationContext("")
+
+    {       InspectorRoot( ) : 
+                OgreBites::ApplicationContext("")
+            ,   autoCotrollerSin( camera.val,
+                                  [this](){this->camera.set2Start();})
             {}
-        
+
         Ogre::Root*           root;
         Ogre::SceneManager* scnMgr;
         SceneNode*        nodeBase;
@@ -44,6 +48,8 @@ namespace mdl
         Ogre::RTShader::ShaderGenerator* shadergen;
 
         ConfigGame& cfg{ConfigGame::get()};
+
+        AutoCotrollerSin  autoCotrollerSin;
 
     protected:
 
@@ -194,6 +200,7 @@ namespace mdl
 
             if(isSpeedRotWold)
             {   nodeBase->yaw(Ogre::Degree(deltaTime * speedRotWold));
+                autoCotrollerSin.update();
             }
         }
 

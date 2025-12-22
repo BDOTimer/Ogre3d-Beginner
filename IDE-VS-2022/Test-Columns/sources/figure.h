@@ -257,6 +257,16 @@ namespace mdl
             const auto& posFig = node->getPosition();
 
             ///-------------------|
+            /// LR.               |
+            ///-------------------:
+            if(steperLR.isActive)
+            {   float x = steperLR.update(Glob::deltaTime * speedLR);
+                node->setPosition(x, posFig.y, posFig.z);
+
+                isFalling = true;
+            }
+
+            ///-------------------|
             /// Гравитация.       |
             ///-------------------:
             if(steperGrav.isActive)
@@ -273,15 +283,8 @@ namespace mdl
             else isFalling = false;
 
             ///-------------------|
-            /// LR.               |
+            /// Тишина...         |
             ///-------------------:
-            if(steperLR.isActive)
-            {   float x = steperLR.update(Glob::deltaTime * speedLR);
-                node->setPosition(x, posFig.y, posFig.z);
-
-                isFalling = true;
-            }
-
             if(!isFalling && !steperLR.isActive)
             {   onGroundCollision();
                 SNDSTOP(drop1);
