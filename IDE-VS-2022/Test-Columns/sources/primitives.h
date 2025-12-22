@@ -110,6 +110,7 @@ namespace mdl
 
         void set2Start()
         {   man->setYawPitchDist(Ogre::Degree(0), Ogre::Degree(10), val);
+            reset();
         }
     };
 

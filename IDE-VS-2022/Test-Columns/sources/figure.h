@@ -279,6 +279,7 @@ namespace mdl
                     collisions.isDown(posFig, steperLR.isActive))
             {   
                 steperGrav.start(-cfg.sizeCell);
+                antiBugInjectionY();
             }
             else isFalling = false;
 
@@ -317,7 +318,8 @@ namespace mdl
                 const auto& p = node->getPosition();
 
                 if(collisions.isLeft(p))
-                {   steperLR.start(-cfg.sizeCell);
+                {   steperLR .start (-cfg.sizeCell);
+                    antiBugInjectionX();
                     MUSPLAY(dart);
                 }
                 else MUSPLAY(wow1);
@@ -327,7 +329,8 @@ namespace mdl
             {   const auto& p = node->getPosition();
 
                 if(collisions.isRight(p))
-                {   steperLR.start(cfg.sizeCell);
+                {   steperLR .start (cfg.sizeCell);
+                    antiBugInjectionX();
                     MUSPLAY(dart);
                 }
                 else MUSPLAY(wow1);
@@ -408,6 +411,18 @@ namespace mdl
 
         void setVisibleGems(bool val)
         {   for(auto& gem : gems) gem.node->setVisible(val);
+        }
+
+        void antiBugInjectionX()
+        {   float x = steperLR.update(0.01f);
+            const auto& posFig = node->getPosition();
+            node->setPosition(x, posFig.y, posFig.z);
+        }
+
+        void antiBugInjectionY()
+        {   float y = steperGrav.update(0.01f);
+            const auto& posFig = node->getPosition();
+            node->setPosition(posFig.x, y, posFig.z);
         }
 
         friend struct Well;
