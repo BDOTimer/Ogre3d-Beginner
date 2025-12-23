@@ -442,6 +442,74 @@ namespace mdl
             m[1]->setPosition(Ogre::Vector3( 300,50,0));
         }
     };
+
+
+    ///------------------------------------------------------------------------|
+    /// Куб.
+    ///------------------------------------------------------------------- Cube:
+    struct  Cube : Glob
+    {       
+        Ogre::Entity*     entity;
+        SceneNode*        node  ;
+        Ogre::MaterialPtr mat   ;
+
+        void setup(const char* mesh = "cube")
+        {   
+            auto X{ConfigGame::get().getWellW() / 2 + 100};
+
+            createMaterial();
+
+            entity = scnMgr->createEntity(std::format("{}.mesh", mesh));
+            entity->setMaterial(mat);
+            entity ->setCastShadows(true);
+
+            node = nodeBase->createChildSceneNode();
+            node->attachObject   (entity);
+            node->setPosition (X, 0, 100);
+            node->setScale(1.f, 1.f, 1.f);
+        }
+
+        void createMaterial()
+        {   
+            auto name{std::format("cube{}", 0)};
+
+            mat = Ogre::MaterialManager::getSingleton().getByName(name);
+
+            if(mat != nullptr) return;
+
+            mat = MaterialManager::getSingleton().create(
+                name,
+                ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME
+            );
+
+            Ogre::Pass* const p = mat->getTechnique(0)->getPass(0);
+                        p->setDiffuse (ColourValue(0.05f, 0.05f, 0.05f));
+                        p->setAmbient (ColourValue(0.3f, 0.1f, 0.0f));
+                        p->setSpecular(ColourValue(1.0f, 1.0f, 1.0f));
+                        p->setShininess(64.0);
+        }
+    };
+
+    ///------------------------------------------------------------------------|
+    /// Две ножки под корзину.
+    ///------------------------------------------------------------------ Cube2:
+    struct  Cube2   : Glob
+    {       Cube2() = default;
+           ~Cube2()
+            {   
+            }
+
+        Cube m[2];
+
+        void setup()
+        {
+            m[0].setup();
+            m[1].setup();
+
+            m[0].node->setPosition(Ogre::Vector3(-300,50,0));
+            m[1].node->setPosition(Ogre::Vector3( 300,50,0));
+        }
+    };
 }
 
 

@@ -50,12 +50,13 @@ struct  ConfigGame
     #define S Ogre::Vector3{0.5f, 0.5f, 0.5f}
     #define C Ogre::Vector3{0.7f, 0.7f, 0.7f}
     
-    static constexpr std::array<DescriptionGem, 2> descriptionGems
-    {   DS{0, "sphere.mesh", Ogre::ColourValue{ 1.0 , 0.5f , 0.0}, S},
-    //    DS{4, "sphere.mesh", Ogre::ColourValue{ 0.0 , 0.0f , 1.0}, S},
-    //    DS{2, "sphere.mesh", Ogre::ColourValue{ 0.0 , 1.0f , 0.0}, S},
-    //    DS{3, "cube.mesh"  , Ogre::ColourValue{ 0.0 , 0.5f , 1.0}, C},
-        DS{1, "cube.mesh"  , Ogre::ColourValue{ 1.0 , 0.0f , 0.5}, C}
+    static constexpr std::array<DescriptionGem, 6> descriptionGems
+    {   DS{0, "sphere.mesh", Ogre::ColourValue{ 1.0f , 0.5f , 0.0f}, S},
+        DS{1, "sphere.mesh", Ogre::ColourValue{ 0.0f , 0.0f , 1.0f}, S},
+        DS{2, "sphere.mesh", Ogre::ColourValue{ 0.0f , 1.0f , 0.0f}, S},
+        DS{3, "cube.mesh"  , Ogre::ColourValue{ 0.0f , 0.5f , 1.0f}, C},
+        DS{4, "cube.mesh"  , Ogre::ColourValue{ 1.0f , 0.0f , 0.5f}, C},
+        DS{5, "cube.mesh"  , Ogre::ColourValue{ 0.5f , 0.1f , 0.1f}, C}
     };
 
     const char* decode4DescriptionGems(size_t id)

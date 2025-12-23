@@ -37,8 +37,9 @@ namespace mdl
         UI                    ui;
         Tree                tree;
         Ground            ground;
-        BlackCylinder2 cylinders;
+    /// BlackCylinder2 cylinders;
         Effects          effects;
+        Cube2              cube2;
 
         ///---------------------------------------|
         /// Игра...                               |
@@ -100,8 +101,9 @@ namespace mdl
             tree     .setup();
             ground   .setup();
             ui       .setup();
-            cylinders.setup(ground.node);
+        /// cylinders.setup(ground.node);
             effects  .setup();
+            cube2    .setup();
             createNewGame  ();
 
             ///-----------------------------------|

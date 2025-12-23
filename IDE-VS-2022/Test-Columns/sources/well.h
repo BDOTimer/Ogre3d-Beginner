@@ -276,7 +276,6 @@ namespace mdl
 
             gem.pos2gm[0] = x;
             gem.pos2gm[1] = y;
-            gem.pcell     = &cell;
 
             ///------------------------------|
             /// Ячейка занята.               |
@@ -294,12 +293,13 @@ namespace mdl
             }
 
             allocator.emplace_back(GemData());
-            allocator.back() = gem;
+            allocator.back()     =        gem;
             allocator.back().igm = --allocator.end();
 
             cell = &allocator.back();
 
             cell->setupGravitate(new phs::Stepper);
+            cell->steperGrav->setup    (posGemF.y);
 
             gem.reset();
             
@@ -336,13 +336,19 @@ namespace mdl
         void                 findMatchGems();
 
         void update()
-        {   for    (auto& r : gm)
-            {   for(auto& e : r)
-                {   if(nullptr != e) e->update();
-                }
-            }
+        {   
+            for(auto it = allocator.begin(); it !=  allocator.end(); )
+            {
+                ASSERT(it->isLive()) 
 
-        ///for(auto& e : allocator) e.update();
+                it->update();
+
+                if(!it->isLive())
+                {   gm[it->pos2gm[1]][it->pos2gm[0]] = nullptr;
+                       it = allocator.erase(it);
+                }
+                else ++it;
+            }
         }
 
         friend struct Well;
@@ -416,7 +422,6 @@ namespace mdl
         void infoNewGame2Console() const;
 
     public:
-        void EraseIt(igm_t igm){ logic.allocator.erase(igm); }
 
         void setGem(GemData* gem)
         {
