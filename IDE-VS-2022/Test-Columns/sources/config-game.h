@@ -31,9 +31,9 @@ struct  ConfigGame
     unsigned W{ 7}; /// Ширина (кол-во ячеек) корзины(Well).
     unsigned H{11}; /// Выстота(кол-во ячеек) корзины(Well).
     unsigned N{ 5}; /// Количество элементов(Gems) в фигуре(Column).
+    unsigned T{ 5}; /// Количество типов элементов(Gems) в фигуре(Column).
 
     float sizeCell{100}; /// Размер ячейки корзины.
-    float sizeGems{ 20}; /// Если это шар, то тогда это Диаметр...
 
     float getWellW() const { return sizeCell * W; }
     float getWellH() const { return sizeCell * H; }

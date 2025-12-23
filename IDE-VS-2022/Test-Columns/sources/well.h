@@ -147,6 +147,7 @@ namespace mdl
             ,   W  (    cfg.getArrW())
             ,   H  (    cfg.getArrH())
             ,   gm(H, std::vector<GemData*>(W, nullptr))
+            ,   repeatMatch(this)
             {   
                 ///-----------------------------|
                 /// Настраиваем физику.         |
@@ -333,15 +334,37 @@ namespace mdl
         ///---------------------------------|
         /// Ищем где совпало. [box.cpp]     |
         ///---------------------------------:
-        void                 findMatchGems();
+        int                  findMatchGems();
+
+        ///---------------------------------|
+        /// RepeatMatch                     |
+        ///---------------------------------:
+        struct  RepeatMatch
+        {       RepeatMatch(WellLogic* wl) : wl(wl) {}
+
+            void tick(bool t) /// Вызвается на сигнале покоя в колодце.
+            {   if((tt ^ t) )
+                {   tt = t;
+                    wl->findMatchGems();
+
+                    /// l1("RepeatMatch:tick(.) run findMatchGems().\n")
+                }
+            }
+
+        private:
+            bool tt{false};
+            WellLogic* wl;
+        }repeatMatch;
 
         void update()
         {   
+            bool isActive{false};
+
             for(auto it = allocator.begin(); it !=  allocator.end(); )
             {
                 ASSERT(it->isLive()) 
 
-                it->update();
+                isActive |= it->update();
 
                 if(!it->isLive())
                 {   gm[it->pos2gm[1]][it->pos2gm[0]] = nullptr;
@@ -349,6 +372,8 @@ namespace mdl
                 }
                 else ++it;
             }
+
+            repeatMatch.tick(isActive);
         }
 
         friend struct Well;
@@ -384,8 +409,8 @@ namespace mdl
             ///------------------------:
             node = nodeBase->createChildSceneNode("Well");
 
-            figure   .setup(node);
-            well3Wall.setup(node);
+            figure   .setup(node); 
+            well3Wall.setup(node); 
             logic    .setup(node);
 
             const auto& cfgPOS{ConfigGame::get().positionWell};

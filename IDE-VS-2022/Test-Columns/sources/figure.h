@@ -68,14 +68,10 @@ namespace mdl
         inline static int cntDead{};
 
         ///------------------------------|
-        /// Анимация жемчужины.          |
+        /// Танец жемчужины.             |
         ///------------------------------:
-        void update()
-        {   
-            if(match.isMatch == 2) return;
-
-            if(match.isMatch == 0) updateGravitate();///-///////////////////////
-
+        void animate()
+        {
             const float SPEED{speed * deltaTime};
 
             if(ConfigGame::get().isGemAnimate)
@@ -87,6 +83,18 @@ namespace mdl
                     break;
                 default:;
             }
+        }
+
+        ///------------------------------|
+        /// Анимация жемчужины.          |
+        ///------------------------------:
+        bool update()
+        {   
+            if(match.isMatch == 2) return false;
+
+            if(match.isMatch == 0) updateGravitate();///-///////////////////////
+
+            animate();
 
             ///--------------------------|
             /// Анимация Matching.       |
@@ -108,18 +116,19 @@ namespace mdl
                     ///---------------|
                     /// Debug.        |
                     ///---------------:
-                    if(true)
+                    if(false)
                     {   LN
-                        
                         l1(std::format("Удалён Cnt: {}\n", ++cntDead))
                         l(pos2gm)
                     }
 
                     deLink();
-                    //scnMgr->destroySceneNode(node);
+                    scnMgr->destroySceneNode(node);
                     node = nullptr;
                 }
             }
+
+            return steperGrav->isActive;
         }
 
         ///------------------------------|
@@ -334,6 +343,7 @@ namespace mdl
                 gems(ConfigGame::get().N)
             ,   mat (ConfigGame::get().descriptionGems.size())
             {   
+                rndMax = cfg.T > mat.size() ? unsigned(mat.size()) : cfg.T;
             }
 
         std::vector<Gem>         gems;
@@ -347,6 +357,8 @@ namespace mdl
 
         const ConfigGame& cfg{ConfigGame::get()};
         const float       D2 {cfg.sizeCell  / 2};
+
+        unsigned rndMax;
 
         struct 
         {   float  get() const   { return speedMoveCurr ; }
@@ -396,7 +408,8 @@ namespace mdl
         }
 
         size_t rndGen() const
-        {   if(true) return rand() % mat.size();  ///-////////////////////////-!
+        {   
+            if(true) return rand() % rndMax;
 
             static constexpr const size_t N{8};
             
@@ -462,7 +475,7 @@ namespace mdl
             ///-------------------|
             /// Анимация.         |
             ///-------------------:
-            for(auto& e : gems) e.update();
+            for(auto& e : gems) e.animate();
         }
 
         ///---------------------------------------|
