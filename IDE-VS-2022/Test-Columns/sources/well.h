@@ -294,12 +294,13 @@ namespace mdl
             }
 
             allocator.emplace_back(GemData());
-            allocator.back() = gem;
+            allocator.back()     =        gem;
             allocator.back().igm = --allocator.end();
 
             cell = &allocator.back();
 
             cell->setupGravitate(new phs::Stepper);
+            cell->steperGrav->setup    (posGemF.y);
 
             gem.reset();
             

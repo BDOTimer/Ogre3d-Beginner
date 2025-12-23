@@ -30,7 +30,7 @@ namespace mdl
                 }
             }
         
-        size_t             id   {  NPOS}; /// Масть(тип) жемчужины.
+        size_t             id   {  NPOS};  /// Масть(тип) жемчужины.
         Ogre::SceneNode* node   {nullptr}; /// Нод на котором висит жемчужена.
         Ogre::Entity*  entity   {nullptr}; /// Геометрия + материал жемчужины.
         igm_t             igm;             /// Место аллокации этих данных.
@@ -171,34 +171,95 @@ namespace mdl
         {   ASSERT(nullptr != node)
             const auto& posFig = node->getPosition();
             steperGrav = grav;
-            steperGrav->reset(posFig.y);
+            steperGrav->setup(posFig.y);
             isGrav = true;
         }
 
         void updateGravitate()
         {   if(!isGrav) return;
 
-            const ConfigGame& cfg{ConfigGame::get()};
+            const    ::ConfigGame& cfg       {   ::ConfigGame::get()};
             const phs::Collisions& collisions{phs::Collisions::get()};
 
-            const auto& posFig = node->getPosition();
+            const auto& posGem = node->getPosition();
 
             if(steperGrav->isActive)
-            {   float y = steperGrav->update(Glob::deltaTime * 100.f);
+            {   
+                ASSERT(nullptr != steperGrav)
+                
+                float y = steperGrav->update(Glob::deltaTime * 50.f);
 
-                node->setPosition(posFig.x, y, posFig.z);
+                node->setPosition(posGem.x, y, posGem.z);
+
+                ///---------------------|
+                /// Шаг закочен!        |
+                ///---------------------:
+                if(!steperGrav->isActive)
+                {   
+                    isCorrect("Финиш");
+                }
             }
             else if(collisions.isDown(
-                        {posFig.x, posFig.y - 50.f, posFig.z}, false))
+                        {posGem.x, posGem.y - 50.f, posGem.z}, false))
             {   steperGrav->start(-cfg.sizeCell);
 
-                setGem2Well (this);
+            /// steperGrav->doDebug();//////////////////////////////////////////
+
+                isCorrect("Старт", true);
+
+                setGem2Well(this);
             }
         }
 
     private:
         void EraseIt    (igm_t    igm);
         void setGem2Well(GemData* gem);
+
+        int cntStart{};
+
+        bool isCorrect(const char* mess, bool isStart = false)
+        {   
+            /// TODO ... ///////////////////////////////////////////////////////
+            const auto& posGem = node->getPosition();
+
+            const int x = pos2gm[0];
+            const int y = pos2gm[1];
+
+            Ogre::Vector3i _vi_{phs::Collisions::get().getIndex3(
+                {   posGem.x,
+                    posGem.y - 50.f,
+                    posGem.z
+                })
+            };
+
+            using namespace std;
+
+            ///---------------------|
+            /// Дебаг.              |
+            ///---------------------:
+            if(true)
+            {   
+                if(isStart) SIG(++cntStart)
+
+                l(steperGrav->pos)
+
+                ASSERTM(steperGrav->pos == posGem.y, "steperGrav bad setup")
+                
+                Ogre::Vector3i wait{x , y, (int)posGem.z};
+                
+                LN
+                l2(format("{} {}: ", mess, "posGem: "), posGem)
+                l2(format("{} {}: ", mess, "pos2gm: "), pos2gm)
+                l(wait)
+                l(_vi_)
+            }
+
+            static constexpr const char* sErr{"Позиция {} деградировала!"};
+            ASSERTM(_vi_[0] == x, format(sErr, "X"))
+            ASSERTM(_vi_[1] == y, format(sErr, "Y"))
+
+            return true;
+        }
     };
 
 
@@ -272,7 +333,7 @@ namespace mdl
             void    up(){ speedMoveCurr = speedMoveFast ; }
 
         private:
-            float speedMoveStart{100.0f}; /// единиц в секунду.
+            float speedMoveStart{ 40.0f}; /// единиц в секунду.
             float speedMoveFast {300.0f};
             float speedMoveCurr {speedMoveStart};
         }speedFall;
@@ -307,8 +368,8 @@ namespace mdl
 
             speedFall.start();
 
-            steperLR  .reset(posStart.x);
-            steperGrav.reset(posStart.y);
+            steperLR  .setup(posStart.x);
+            steperGrav.setup(posStart.y);
 
             node->setVisible(collisions.isHereEmpty(posStart));
         }

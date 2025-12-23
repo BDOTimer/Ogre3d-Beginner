@@ -64,9 +64,9 @@ int main([[maybe_unused]] int    argc,
     ConfigGame  cfg1{ 7, 15, 4};
     ConfigGame::get().configGame = &cfg1;
 
-    ///------------------|
-    /// Запуск тестов.   |
-    ///------------------:
+    ///-----------------|
+    /// Запуск тестов.  |
+    ///-----------------:
     if(tests()) return 0;
 
     std::cout 

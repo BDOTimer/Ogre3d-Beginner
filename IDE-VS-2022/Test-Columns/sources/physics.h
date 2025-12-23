@@ -202,7 +202,7 @@ namespace phs
         /// Полный контроль!                    |
         /// Вызвать на старте фигуры!           |
         ///-------------------------------------:
-        void reset(float xy)
+        void setup(float xy)
         {   pos = xy;
             tmp =  0;
         }
@@ -217,9 +217,18 @@ namespace phs
             dir = val < 0.f ? -1.f : 1.f;
         }
 
+        void endMoved()
+        {   tmp =  0;
+        }
+
         float update(float   dt)
         {   tmp += getSpeed (dt);
-            
+
+            if(isDebug)
+            {   l(Distance)
+                l(tmp)
+            }
+
             ///--------------|
             /// СТОП!        |
             ///--------------:
@@ -235,12 +244,15 @@ namespace phs
         float getSpeed(float dt) const
         {   return dt <= cln.CellSizeFloat  ? dt : cln.CellSizeFloat + 1;
         }
-              float      dir; /// Направление движения.
-              float      tmp; /// Всегда > 0 !
-              float      pos; /// Только операции(+-) с Distance!
-        const float Distance; /// Шаг движения.
 
+        const float Distance   ; /// Шаг движения.
+              float      pos   ; /// Только операции(+-) с Distance!
+              float      tmp{0}; /// Всегда > 0 !
+              float      dir   ; /// Направление движения.
+        
         bool isActive{false};
+
+        void doDebug() { isDebug = true; }
 
         static void test()
         {   Stepper stepper;
@@ -250,14 +262,14 @@ namespace phs
         void initStep()
         {   
         }
+
+        bool isDebug{false};
     };
 
     void inline tests()
     {
         //Test$f2i::testX();
         //Test$f2i::testY();
-
-        Stepper stepper;
     }
 }
 
