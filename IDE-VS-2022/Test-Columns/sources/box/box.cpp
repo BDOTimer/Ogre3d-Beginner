@@ -137,11 +137,8 @@ namespace mdl
         ///---------------------------------|
         /// Ищем где совпало.               |
         ///---------------------------------:
-        void WellLogic::findMatchGems()
+        int WellLogic::findMatchGems()
         {   
-            ///gemsMatch.check4Erase(allocator);
-            gemsMatch.clear();
-
             for       (auto& r : gm)
             {   for   (auto& e : r )
                 {   if(nullptr != e)
@@ -208,21 +205,25 @@ namespace mdl
                 }
             }
 
+            int cnt{};
+
             for       (const auto& r : gm)
             {   for   (const auto& e : r )
                 {   if(nullptr != e)
                     {   if(e->match.doIsMatch())
                         {
-                            gemsMatch.push_back(e->igm);
+                            ++cnt;
                         }
                     }
                 }
             }
 
-            SetScore(statisticScore += int(gemsMatch.size()));
+            SetScore(statisticScore += cnt);
+
+            return cnt;
         }
 
-    void GemData::setGem2Well(GemData* gem)
+    void GemData::setGem2Well    (GemData* gem)
     {   Glob::pInspectorRoot->well->setGem(gem);
     }
 }

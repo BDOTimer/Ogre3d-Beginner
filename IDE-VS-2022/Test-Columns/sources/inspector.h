@@ -68,7 +68,7 @@ namespace mdl
             addInputListener(this);
 
             Glob::pInspectorRoot = this;
-            Glob::ctx             = this;
+            Glob::ctx            = this;
             Glob::pIListener     = this;
 
             root   = getRoot();
