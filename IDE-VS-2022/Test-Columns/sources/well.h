@@ -147,7 +147,6 @@ namespace mdl
             ,   W  (    cfg.getArrW())
             ,   H  (    cfg.getArrH())
             ,   gm(H, std::vector<GemData*>(W, nullptr))
-            ,   stepers(H, std::vector<phs::Stepper>(W))
             {   
                 ///-----------------------------|
                 /// Настраиваем физику.         |
@@ -185,7 +184,6 @@ namespace mdl
         /// Зеркало корзины.                 |
         ///----------------------------------:
         std::vector<std::vector<GemData*>> gm;
-        std::vector<std::vector<phs::Stepper>> stepers;
 
         ///----------------------------------|
         /// Жемчуг для удаления.             |
@@ -300,7 +298,8 @@ namespace mdl
             allocator.back().igm = --allocator.end();
 
             cell = &allocator.back();
-            cell->setupGravitate  (&stepers[y][x]);
+
+            cell->setupGravitate(new phs::Stepper);
 
             gem.reset();
             
@@ -342,6 +341,8 @@ namespace mdl
                 {   if(nullptr != e) e->update();
                 }
             }
+
+        ///for(auto& e : allocator) e.update();
         }
 
         friend struct Well;
@@ -410,14 +411,6 @@ namespace mdl
         void update()
         {   figure.update();
             logic .update();
-
-            //updateGravitate();
-        }
-
-        void XupdateGravitate()///-///////////////////////////////////////////-!
-        {   for(auto& e : logic.allocator)
-            {   e.updateGravitate();
-            }
         }
 
         void infoNewGame2Console() const;

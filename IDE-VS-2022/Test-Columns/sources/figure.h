@@ -25,8 +25,8 @@ namespace mdl
     struct  GemData : Glob
     {   
            ~GemData()
-            {   if( node != nullptr )
-                { //node -> destroyAllObjects();
+            {   if( nullptr != steperGrav)
+                {   delete    (steperGrav);
                 }
             }
         
