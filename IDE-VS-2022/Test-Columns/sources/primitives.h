@@ -176,7 +176,7 @@ namespace mdl
             node->attachObject   (entity);
             node->yaw(Ogre::Degree (160));
             node->setPosition (X, 0, 100);
-            node->setScale(1.5, 1.5, 1.5);
+            node->setScale(3.0, 3.0, 3.0);
         }
     };
 
@@ -344,7 +344,7 @@ namespace mdl
             node->setOrientation(Ogre::Quaternion(
                 Ogre::Degree(-90), Ogre::Vector3::UNIT_X));
 
-            node->setPosition(-600, 0, -400);
+            node->setPosition(-760, 0, -300);
             node->setScale   (7, 7, 7);
         }
     };
@@ -466,7 +466,7 @@ namespace mdl
             node = nodeBase->createChildSceneNode();
             node->attachObject   (entity);
             node->setPosition (X, 0, 100);
-            node->setScale(1.f, 1.f, 1.f);
+            node->setScale(1.f, 1.f, 2.f);
         }
 
         void createMaterial()

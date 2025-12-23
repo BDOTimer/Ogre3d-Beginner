@@ -60,8 +60,9 @@ int main([[maybe_unused]] int    argc,
     unsigned int RANDSEED{false ? (unsigned int)time(NULL) : 2025}; 
     srand       (RANDSEED); l(RANDSEED)
 
-    ConfigGame  cfgDemo {11, 15, 4};
-    ConfigGame  cfgDebug{ 7, 15, 4};
+    ConfigGame  cfgHard {11, 15, 5, 6};
+    ConfigGame  cfgDemo {11, 15, 4, 5};
+    ConfigGame  cfgDebug{ 7, 15, 4, 2};
     ConfigGame::get().configGame = &cfgDemo;
 
     ///-----------------|

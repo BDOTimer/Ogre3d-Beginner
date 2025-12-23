@@ -152,6 +152,7 @@ namespace mdl
 
             bool    b{false};
                     b |= ui   .keyPressed(evt);
+            if(!isPause || !isGameOver)
                     b |= well->keyPressed(evt);
             return  b;
         }
@@ -160,13 +161,13 @@ namespace mdl
         {   return ui.mousePressed(evt);
         }
 
-        float  accumulatedTime { 0};  // Накопленное время
-        float  intervalTime    { 1};  // Интервал (1 секунда)
-        int    isSpeedRotWold  { 0};  // Нет вращения Мира.
-        const int speedRotWold {30};  // Нет вращения Мира.
-        bool   isPause      {false};
-        bool   isGameOver   {false};
-        float  seconds          {0};
+        float    accumulatedTime { 0};  // Накопленное время
+        float    intervalTime    { 1};  // Интервал (1 секунда)
+        float    isSpeedRotWold  { 0};  // Нет вращения Мира.
+        const float speedRotWold {30};  // Нет вращения Мира.
+        bool     isPause      {false};
+        bool     isGameOver   {false};
+        float    seconds          {0};
 
         ///---------------------------------------|
         /// Тут крутятся фреймы.                  |
@@ -200,8 +201,8 @@ namespace mdl
             {   well->update();
             }
 
-            if(isSpeedRotWold)
-            {   nodeBase->yaw(Ogre::Degree(deltaTime * speedRotWold));
+            if(isSpeedRotWold != 0)
+            {   nodeBase->yaw(Ogre::Degree(deltaTime * isSpeedRotWold));
                 autoCotrollerSin.update();
             }
         }

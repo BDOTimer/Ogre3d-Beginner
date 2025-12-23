@@ -343,7 +343,7 @@ namespace mdl
         {       RepeatMatch(WellLogic* wl) : wl(wl) {}
 
             void tick(bool t) /// Вызвается на сигнале покоя в колодце.
-            {   if((tt ^ t) && t)
+            {   if((tt ^ t) )
                 {   tt = t;
                     wl->findMatchGems();
 
