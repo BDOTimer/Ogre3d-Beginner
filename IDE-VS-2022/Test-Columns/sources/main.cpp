@@ -1,11 +1,11 @@
-﻿/// Push::cnt::002
+﻿/// ...
 ///----------------------------------------------------------------------------|
 /// C++20
 /// Sources UTF-8
 ///----------------------------------------------------------------------------:
 #include "inspector.h"
 
-const char* const NAMEGAME{"Колоны-2025::ver-0.3"};
+const char* const NAMEGAME{"Колоны-2025::Demo-rc1::ver-0.4"};
 
 ///----------------------------------------------------------------------------|
 /// Application.
@@ -60,9 +60,9 @@ int main([[maybe_unused]] int    argc,
     unsigned int RANDSEED{false ? (unsigned int)time(NULL) : 2025}; 
     srand       (RANDSEED); l(RANDSEED)
 
-    ConfigGame  cfg0{11, 15, 4};
-    ConfigGame  cfg1{ 7, 15, 4};
-    ConfigGame::get().configGame = &cfg1;
+    ConfigGame  cfgDemo {11, 15, 4};
+    ConfigGame  cfgDebug{ 7, 15, 4};
+    ConfigGame::get().configGame = &cfgDemo;
 
     ///-----------------|
     /// Запуск тестов.  |

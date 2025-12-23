@@ -29,6 +29,8 @@ namespace mdl
         sf::Music wow1 {"sound/wow1.mp3"};
         sf::Music dart {"sound/dart.mp3"};
 
+        sf::Music sony2{"sound/sony2.mp3"};
+
         static Musics& get()
         {   static Musics a; return a;
         }
@@ -49,21 +51,21 @@ namespace mdl
                 drop1.setVolume (10.0f);
             }
 
-
         const sf::SoundBuffer _wu{"sound/wu.mp3"};
               sf::Sound    wu{_wu};
 
         const sf::SoundBuffer _drop1{"sound/drop1.mp3"};
               sf::Sound drop1{_drop1};
 
+        const sf::SoundBuffer _sony2{"sound/sony2.mp3"};
+              sf::Sound sony2{_sony2};
+
         static Sound& get()
         {   static Sound a; return a;
         }
 
         void play(sf::Sound& snd)
-        {   if(snd.getStatus() != sf::Sound::Status::Playing)
-            {   snd.play();
-            }
+        {   snd.play();
         }
     };
 }

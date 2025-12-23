@@ -139,6 +139,7 @@ namespace mdl
         ///---------------------------------:
         void WellLogic::findMatchGems()
         {   
+            ///gemsMatch.check4Erase(allocator);
             gemsMatch.clear();
 
             for       (auto& r : gm)
@@ -220,11 +221,6 @@ namespace mdl
 
             SetScore(statisticScore += int(gemsMatch.size()));
         }
-
-
-    void GemData::EraseIt(igm_t Igm)
-    {    Glob::pInspectorRoot->well->EraseIt(Igm);
-    }
 
     void GemData::setGem2Well(GemData* gem)
     {   Glob::pInspectorRoot->well->setGem(gem);

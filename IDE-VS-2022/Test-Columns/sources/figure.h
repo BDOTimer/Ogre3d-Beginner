@@ -37,9 +37,6 @@ namespace mdl
         float       speed{50};
         Vector2i    pos2gm   ;             /// Позиция в зеркале.
 
-        /// not use ...
-        GemData**       pcell   {nullptr}; /// Указатель на указатель 
-
         ///------------------------------|
         /// Отвязать камень от фигуры.   |
         ///------------------------------:
@@ -48,6 +45,11 @@ namespace mdl
             Ogre::SceneNode*  parent = node->getParentSceneNode();
             ASSERT(nullptr != parent)
             parent->removeChild(node);
+        }
+
+        void XdeLinkDelete()///-//////////////////////////////////////////////-?
+        {   deLink();
+            node = nullptr;
         }
 
         ///------------------------------|
@@ -59,12 +61,18 @@ namespace mdl
             entity    = nullptr;
         }
 
+        bool isLive() const
+        {   return node != nullptr;
+        }
+
+        inline static int cntDead{};
+
         ///------------------------------|
         /// Анимация жемчужины.          |
         ///------------------------------:
         void update()
         {   
-            if(node == nullptr) return;
+            if(match.isMatch == 2) return;
 
             if(match.isMatch == 0) updateGravitate();///-///////////////////////
 
@@ -74,9 +82,15 @@ namespace mdl
             switch(id)
             {   case   3: node->yaw  (Ogre::Degree(SPEED)); break;
                 case   4: node->pitch(Ogre::Degree(SPEED)); break;
+                case   5: node->roll (Ogre::Degree(SPEED));
+                          node->pitch(Ogre::Degree(SPEED));
+                    break;
                 default:;
             }
 
+            ///--------------------------|
+            /// Анимация Matching.       |
+            ///--------------------------:
             if(match.isMatch == 1)
             {   float S = 1.f - 2.f * deltaTime;
                 if(S > 0.005f && node->getScale().x > 0.1f)
@@ -89,10 +103,21 @@ namespace mdl
                     ///--------------------------------|
                     /// Удаление камня из колодца.     |
                     ///--------------------------------:-/////////////////////-!
-                    (*pcell) = nullptr;
+                    ASSERTM(node != nullptr, "Мёртвые с косами стоят...")
+                    
+                    ///---------------|
+                    /// Debug.        |
+                    ///---------------:
+                    if(true)
+                    {   LN
+                        
+                        l1(std::format("Удалён Cnt: {}\n", ++cntDead))
+                        l(pos2gm)
+                    }
+
                     deLink();
+                    //scnMgr->destroySceneNode(node);
                     node = nullptr;
-                    EraseIt(igm);
                 }
             }
         }
@@ -187,7 +212,7 @@ namespace mdl
             {   
                 ASSERT(nullptr != steperGrav)
                 
-                float y = steperGrav->update(Glob::deltaTime * 50.f);
+                float y = steperGrav->update(Glob::deltaTime * 150.f);
 
                 node->setPosition(posGem.x, y, posGem.z);
 
@@ -212,7 +237,6 @@ namespace mdl
         }
 
     private:
-        void EraseIt    (igm_t    igm);
         void setGem2Well(GemData* gem);
 
         int cntStart{};
@@ -237,13 +261,9 @@ namespace mdl
             ///---------------------|
             /// Дебаг.              |
             ///---------------------:
-            if(true)
+            if(false)
             {   
                 if(isStart) SIG(++cntStart)
-
-                l(steperGrav->pos)
-
-                ASSERTM(steperGrav->pos == posGem.y, "steperGrav bad setup")
                 
                 Ogre::Vector3i wait{x , y, (int)posGem.z};
                 
@@ -257,6 +277,7 @@ namespace mdl
             static constexpr const char* sErr{"Позиция {} деградировала!"};
             ASSERTM(_vi_[0] == x, format(sErr, "X"))
             ASSERTM(_vi_[1] == y, format(sErr, "Y"))
+            ASSERTM(steperGrav->pos == posGem.y, "steperGrav bad setup")
 
             return true;
         }
@@ -333,7 +354,7 @@ namespace mdl
             void    up(){ speedMoveCurr = speedMoveFast ; }
 
         private:
-            float speedMoveStart{ 40.0f}; /// единиц в секунду.
+            float speedMoveStart{100.0f}; /// единиц в секунду.
             float speedMoveFast {300.0f};
             float speedMoveCurr {speedMoveStart};
         }speedFall;
@@ -360,7 +381,7 @@ namespace mdl
             
             for(unsigned i{}; i < gems.size( ); ++i)
             {   
-                const size_t rnd = rand() % mat.size();
+                const size_t rnd{rndGen()};
                 
                 gems[i].setup(i, node, rnd);
                 gems[i].entity->setMaterialName(mat[rnd]->getName());
@@ -372,6 +393,20 @@ namespace mdl
             steperGrav.setup(posStart.y);
 
             node->setVisible(collisions.isHereEmpty(posStart));
+        }
+
+        size_t rndGen() const
+        {   if(true) return rand() % mat.size();  ///-////////////////////////-!
+
+            static constexpr const size_t N{8};
+            
+            std::array<size_t, N> r
+            {   1, 1, 0, 0,
+                0, 0, 1, 1
+            };
+
+            static size_t i{};
+            return r[ i++%N ];
         }
 
         ///---------------------------------------|
@@ -439,6 +474,7 @@ namespace mdl
             {
             case OgreBites::SDLK_UP:
                 reShuffleGems();
+                SNDPLAY(sony2);
                 break;
                 
             case OgreBites::SDLK_DOWN:
@@ -577,6 +613,23 @@ namespace mdl
             /// Дебаг.         |
             ///----------------:
             if(!empty()) {l(gemsMatch.size())ln(gemsMatch)}
+        }
+
+        void check4Erase(std::list<GemData>& allocator) const
+        {   const std::vector<igm_t>& gemsMatch{*this};
+            int cntErase{};
+            const size_t sz = allocator.size();
+            for(const auto& it : gemsMatch)
+            {   if(it->node == nullptr)
+                {   allocator.erase(it); ++cntErase;
+                }
+            }
+            if(cntErase)
+            {   SIG("GemsMatch::check4Erase(.)")
+                l1(std::format("Было кол-во Gem в allocator: {}\n", sz      ))
+                l1(std::format("Удалено Gem из allocator   : {}\n", cntErase))
+                l(allocator.size())
+            } 
         }
 
     private:
