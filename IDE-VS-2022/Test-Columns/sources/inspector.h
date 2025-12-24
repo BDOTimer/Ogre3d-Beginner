@@ -40,6 +40,7 @@ namespace mdl
     /// BlackCylinder2 cylinders;
         Effects          effects;
         Cube2              cube2;
+    /// SkyDome*         skyDome;
 
         ///---------------------------------------|
         /// Игра...                               |
@@ -104,6 +105,9 @@ namespace mdl
         /// cylinders.setup(ground.node);
             effects  .setup();
             cube2    .setup();
+
+            //skyDome = new SkyDome(scnMgr);
+
             createNewGame  ();
 
             ///-----------------------------------|

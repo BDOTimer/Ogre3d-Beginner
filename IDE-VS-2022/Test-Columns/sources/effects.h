@@ -16,14 +16,15 @@ namespace mdl
     using namespace Ogre;
     using namespace OgreBites;
  
-    struct  Effects : Glob
-    {       Effects()
+    struct  Effects   : Glob
+    {       Effects() : weather(*this)
             {   
             }
  
         void setup()
         {   
             createSnowEffect();
+
         }
  
         void createSnowEffect()
@@ -90,21 +91,39 @@ namespace mdl
             }
         }
 
-        /// TODO: плавность смены интенсивности ...
-        bool isSnow{false};
-        void update(float seconds)
-        {   
-            if(unsigned (seconds) % 30 == 0)
-            {   setSnow(isSnow = !isSnow);
+        void update       (float seconds)
+        {   weather.updateSecund(seconds);
+        }
 
-                if(isSnow)
-                {   setRate(float((rand()% 3) * 50 + 1));
+        ///--------------------------------------------------------------------|
+        /// Плавность смены интенсивности ...
+        ///--------------------------------------------------------------------:
+        struct  Weather
+        {       Weather(Effects& e) : effects(e) {}
+
+            void updateSecund(float seconds)
+            {   
+                if(unsigned (seconds) % ttp[ir] == 0)
+                {   
+                    ir += rand()% 3 - 1;
+
+                    if     (ir <  0) ir = 0;
+                    else if(ir >= N) ir = N - 2;
+
+                    effects.setRate(inn[ir]);
                 }
             }
-        }
-        
+
         private:
-            ParticleSystem* snowPS{nullptr};
+            Effects& effects;
+            int      ir   {};
+            static constexpr const int N{10};
+            const std::array<float,N> inn{  0,  1,  2,  8, 15, 30, 60, 120 };
+            const std::array<int,  N> ttp{ 10, 10, 10, 20, 10, 20, 10, 20  };
+        }weather;
+
+    private:
+        ParticleSystem* snowPS{nullptr};
     };
  
 
@@ -124,6 +143,7 @@ namespace mdl
             callback();
 
             t += speed * Glob::deltaTime;
+            return t;
         }
 
     private:
