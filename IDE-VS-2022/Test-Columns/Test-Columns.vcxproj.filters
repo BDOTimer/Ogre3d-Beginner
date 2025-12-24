@@ -42,6 +42,15 @@
     <ClInclude Include="sources\physics.h">
       <Filter>sources</Filter>
     </ClInclude>
+    <ClInclude Include="sources\game.h">
+      <Filter>sources\new</Filter>
+    </ClInclude>
+    <ClInclude Include="sources\intro.h">
+      <Filter>sources\new</Filter>
+    </ClInclude>
+    <ClInclude Include="sources\sky.h">
+      <Filter>sources\new</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="sources">
@@ -52,6 +61,9 @@
     </Filter>
     <Filter Include="Resourses">
       <UniqueIdentifier>{dda990f6-ada6-4555-98da-448ff984d89c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sources\new">
+      <UniqueIdentifier>{abc37a7f-bd63-49db-b2d7-3c2e777a5f84}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

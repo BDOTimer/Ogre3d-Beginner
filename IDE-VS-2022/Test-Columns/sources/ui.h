@@ -47,9 +47,9 @@ namespace mdl
         DisplayString mCaption;
  
         int mWidthS      = 110;
-        int mWidthL      = 350;
+        int mWidthL      = 360;
         int mShortHeight =  34;
-        int mLongHeight  = 210;
+        int mLongHeight  = 250;
  
         bool mIsLongText = false;
 
@@ -216,9 +216,9 @@ namespace mdl
             {   trayMgr = nullptr;
             }
     
-        OgreBites::TrayManager*        trayMgr;
-        std::unique_ptr<ClickableTextBox>  ctb;
-		std::unique_ptr<ScoreLabel>      score;
+        OgreBites::TrayManager*       trayMgr;
+        std::unique_ptr<ClickableTextBox> ctb;
+		std::unique_ptr<ScoreLabel>     score;
 
         bool keyPressed(const KeyboardEvent& evt)
         {   return ctb->keyPressed(evt);
@@ -243,13 +243,15 @@ namespace mdl
  
             ctb = std::make_unique<ClickableTextBox>(trayMgr);
             ctb->setText(
-                "", 
+                "",
+                "'1'    : xНовая игра - 1 игрок\n"
+                "'2'    : xНовая игра - 2 игрока\n"
+                "'3'    : Новая игра...\n"
                 "CURSOR : LEFT, RIGHT\n"
                 "UP     : Рофлить жемчуг\n"
                 "DOWN   : Бросить жемчуг\n"
                 "F5, F6 : Вращение сцены\n"
                 "SPACE  : Пауза\n"
-                "F4     : Новая игра\n"
                 "'0'    : Cбросить камеру\n"
                 "ESCAPE : Выход из игры\n"
             );

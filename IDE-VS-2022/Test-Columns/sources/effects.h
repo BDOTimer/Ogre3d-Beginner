@@ -96,7 +96,7 @@ namespace mdl
         }
 
         ///--------------------------------------------------------------------|
-        /// Плавность смены интенсивности ...
+        /// Плавность смены интенсивности  ...
         ///--------------------------------------------------------------------:
         struct  Weather
         {       Weather(Effects& e) : effects(e) {}
@@ -117,9 +117,9 @@ namespace mdl
         private:
             Effects& effects;
             int      ir   {};
-            static constexpr const int N{10};
-            const std::array<float,N> inn{  0,  1,  2,  8, 15, 30, 60, 120 };
-            const std::array<int,  N> ttp{ 10, 10, 10, 20, 10, 20, 10, 20  };
+            static constexpr const int N{8};
+            const std::array<float,N> inn{  0,  1,  2,  8, 25, 50, 100, 150 };
+            const std::array<int,  N> ttp{  5,  5, 10, 10, 10, 20,  10, 20  };
         }weather;
 
     private:

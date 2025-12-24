@@ -453,7 +453,7 @@ namespace mdl
         SceneNode*        node  ;
         Ogre::MaterialPtr mat   ;
 
-        void setup(const char* mesh = "cube")
+        void setup(SceneNode*  par, const char* mesh = "cube")
         {   
             auto X{ConfigGame::get().getWellW() / 2 + 100};
 
@@ -463,10 +463,10 @@ namespace mdl
             entity->setMaterial(mat);
             entity ->setCastShadows(true);
 
-            node = nodeBase->createChildSceneNode();
-            node->attachObject   (entity);
-            node->setPosition (X, 0, 100);
-            node->setScale(1.f, 1.f, 2.f);
+            node = par->createChildSceneNode();
+            node->attachObject        (entity);
+            node->setPosition    (X,   0, 100);
+            node->setScale     (1.f, 1.f, 2.f);
         }
 
         void createMaterial()
@@ -501,13 +501,15 @@ namespace mdl
 
         Cube m[2];
 
-        void setup()
+        void setup(SceneNode*  node)
         {
-            m[0].setup();
-            m[1].setup();
+            auto X{ConfigGame::get().getWellW() / 2 - 100};
 
-            m[0].node->setPosition(Ogre::Vector3(-300,50,0));
-            m[1].node->setPosition(Ogre::Vector3( 300,50,0));
+            m[0].setup(node);
+            m[1].setup(node);
+
+            m[0].node->setPosition(Ogre::Vector3(-X,-50,0));
+            m[1].node->setPosition(Ogre::Vector3( X,-50,0));
         }
     };
 }

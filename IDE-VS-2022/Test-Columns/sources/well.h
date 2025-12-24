@@ -163,6 +163,13 @@ namespace mdl
             SetScore   (0);
         }
 
+        void setup(SceneNode*  nodeB)
+        {   
+           node = nodeB->createChildSceneNode("WellLogic");
+        }
+
+        
+
     private:
         Figure& figure;
 
@@ -192,11 +199,6 @@ namespace mdl
         GemsMatch                   gemsMatch;
 
         int statisticScore{};
-
-        void setup(SceneNode*  nodeWell)
-        {   
-           node = nodeWell->createChildSceneNode("WellLogic");
-        }
 
         ///---------------------------------|
         /// true - Путь свободен!           |
@@ -391,6 +393,10 @@ namespace mdl
            ~Well()
             {
             }
+
+           Cube2      cube2;
+
+        unsigned idPlayer{};
         
         SceneNode*  node{nullptr};
         Figure      figure;
@@ -416,6 +422,7 @@ namespace mdl
             const auto& cfgPOS{ConfigGame::get().positionWell};
 
             node->setPosition(cfgPOS);
+            cube2.setup      (node  );
 
             ///------------------------|
             /// Делегируем.            |
@@ -460,6 +467,9 @@ namespace mdl
         }
 
         friend struct InspectorRoot;
+        friend struct   Game1Player;
+        friend struct   Game2Player;
+        friend struct         IGame;
     };
 }
 

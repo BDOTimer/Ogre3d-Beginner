@@ -28,9 +28,12 @@
     <ClInclude Include="sources\config-game.h" />
     <ClInclude Include="sources\effects.h" />
     <ClInclude Include="sources\figure.h" />
+    <ClInclude Include="sources\game.h" />
     <ClInclude Include="sources\inspector.h" />
+    <ClInclude Include="sources\intro.h" />
     <ClInclude Include="sources\physics.h" />
     <ClInclude Include="sources\primitives.h" />
+    <ClInclude Include="sources\sky.h" />
     <ClInclude Include="sources\sound.h" />
     <ClInclude Include="sources\ui.h" />
     <ClInclude Include="sources\well.h" />

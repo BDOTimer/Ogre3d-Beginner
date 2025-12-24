@@ -8,6 +8,8 @@
 ---
  
 <img src="doc/6.jpg"/>
+
+[![IMAGE ALT TEXT HERE](http://img.youtube.com/vi/Z6axinM3CpI/0.jpg)](https://www.youtube.com/watch?v=Z6axinM3CpI)
  
 ### :snowflake: Что тут:
 - Солушен VS-2022 с проектами Ogre3d ---> ВСЁ ВКЛЮЧЕНО!

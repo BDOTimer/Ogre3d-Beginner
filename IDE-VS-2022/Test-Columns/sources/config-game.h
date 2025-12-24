@@ -108,14 +108,17 @@ namespace mdl
     /// Glob.
     ///------------------------------------------------------------------- Glob:
     struct  InspectorRoot;
+    struct  UI;
     struct  Glob
     {   inline static InspectorRoot     * pInspectorRoot;
         inline static ApplicationContext* ctx           ;
         inline static InputListener     * pIListener    ;
         inline static Ogre::SceneManager* scnMgr        ;
         inline static Ogre::SceneNode   * nodeBase      ;
-        inline static float               deltaTime;
-        inline static unsigned            cntGame{0};
+        inline static                 UI* pUI           ;
+        inline static float               deltaTime     ;
+        inline static unsigned            cntGame{0}    ;
+        
     };
 }
 

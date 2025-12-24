@@ -65,8 +65,8 @@ int main([[maybe_unused]] int    argc,
 
     ConfigGame  cfgHard {11, 15, 5, 6};
     ConfigGame  cfgDemo {11, 15, 4, 5};
-    ConfigGame  cfgDebug{ 7, 15, 4, 2};
-    ConfigGame::get().configGame = &cfgDemo;
+    ConfigGame  cfgDebug{20, 15, 5, 6};
+    ConfigGame::get().configGame = &cfgDebug;
 
     ///-----------------|
     /// Запуск тестов.  |

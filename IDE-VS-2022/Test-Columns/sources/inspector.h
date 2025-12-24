@@ -3,8 +3,9 @@
 ///----------------------------------------------------------------------------:
 #ifndef INSPECTOR_H
 #define INSPECTOR_H
-#include "well.h"
-#include "ui.h"
+#include "intro.h"
+#include "game.h"
+#include "sky.h"
 
 
 ///---------|
@@ -39,8 +40,10 @@ namespace mdl
         Ground            ground;
     /// BlackCylinder2 cylinders;
         Effects          effects;
-        Cube2              cube2;
     /// SkyDome*         skyDome;
+        Intro              intro;
+        GameMain        gameMain;
+        Sky*                 sky;
 
         ///---------------------------------------|
         /// Игра...                               |
@@ -83,6 +86,7 @@ namespace mdl
 
             Glob::scnMgr   = scnMgr;
             Glob::nodeBase = nodeBase;
+            Glob::pUI      = &ui;
 
             addResourcePath();
 
@@ -102,13 +106,12 @@ namespace mdl
             tree     .setup();
             ground   .setup();
             ui       .setup();
-        /// cylinders.setup(ground.node);
             effects  .setup();
-            cube2    .setup();
+            intro    .setup();
 
-            //skyDome = new SkyDome(scnMgr);
+            sky = new Sky;
 
-            createNewGame  ();
+            //createNewGame  ();////////////////////////////////////////////////
 
             ///-----------------------------------|
             /// Сохраняем ориентацию мира.        |
@@ -121,14 +124,28 @@ namespace mdl
         ///---------------------------------------:
         bool keyPressed(const KeyboardEvent& evt)
         {   
+            if(this->isGameOver)
+            switch(evt.keysym.sym)
+            {   case OgreBites::SDLK_ESCAPE:
+                    getRoot()->queueEndRendering();
+                    return true;
+                case '1':
+                    gameMain.setup(1); gameStart();
+                    return true;
+                case '2':
+                    gameMain.setup(2); gameStart();
+                    return true;
+                case '3':
+                    createNewGame();  gameStart();
+                    return true;
+                default:;
+            }
+
             switch(evt.keysym.sym)
             {
                 case OgreBites::SDLK_ESCAPE:
-                    getRoot()->queueEndRendering();
+                    fooGameOver();
                     return true;
-                case OgreBites::SDLK_F4:
-                    createNewGame();
-                    break;
                 case OgreBites::SDLK_F8:
                 /// PrintNodeHierarchy(Glob::nodeBase);
                     break;
@@ -155,9 +172,12 @@ namespace mdl
             }
 
             bool    b{false};
-                    b |= ui   .keyPressed(evt);
+                    b |= ui      .keyPressed(evt);
+
             if(!isPause || !isGameOver)
-                    b |= well->keyPressed(evt);
+            {       if(well) b |= well->   keyPressed(evt);
+                    b |= gameMain.keyPressed(evt);
+            }
             return  b;
         }
 
@@ -170,7 +190,7 @@ namespace mdl
         float    isSpeedRotWold  { 0};  // Нет вращения Мира.
         const float speedRotWold {30};  // Нет вращения Мира.
         bool     isPause      {false};
-        bool     isGameOver   {false};
+        bool     isGameOver   {true };
         float    seconds          {0};
 
         ///---------------------------------------|
@@ -202,7 +222,8 @@ namespace mdl
             {
             }
             else
-            {   well->update();
+            {   if(well) well->update();
+                gameMain.update();//////////////////////////////////////////////
             }
 
             if(isSpeedRotWold != 0)
@@ -237,7 +258,14 @@ namespace mdl
 
         void fooGameOver()
         {   isGameOver     = true;
-            isSpeedRotWold = true;
+            isSpeedRotWold = 20.f * (rand()%3-1);
+        }
+
+        void gameStart()
+        {   isSpeedRotWold = 0;
+            isPause    = false;
+            isGameOver = false;
+            camera2StartGame();
         }
 
         void createNewGame()
@@ -261,9 +289,7 @@ namespace mdl
                 {   this->setScore(score);
                 }
             );
-            well->setup     ();
-            camera2StartGame();
-            isSpeedRotWold = 0;
+            well->setup();
         }
 
         void safeRemoveNode(Ogre::SceneNode* node)
