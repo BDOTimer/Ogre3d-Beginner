@@ -36,7 +36,7 @@ namespace mdl
     
         void setup(SceneNode*  node)
         {
-            wallNode = node->createChildSceneNode("3Walls");
+            wallNode = node->createChildSceneNode();
 
             const auto& cfg{ConfigGame::get()};
 
@@ -215,8 +215,6 @@ namespace mdl
 
         bool add(Figure& fig)///-///////////////////////////////////////////////
         {   
-            /// return true;
-
             const Ogre::Vector3& posFig{fig.node->getPosition()};
 
             for(auto& gem : fig.gems)
@@ -283,8 +281,7 @@ namespace mdl
                     "|      Чувак, геймовер!       |\n"
                     "|-----------------------------.\n\n";
 
-            /// figure.setVisibleGems(false);
-                fooGameOver();
+                Glob::events.call("UserOver");
                 return  false;
             }
 
@@ -293,7 +290,7 @@ namespace mdl
             allocator.back().igm = --allocator.end();
 
             cell = &allocator.back();
-            cell->setupGravitate(new phs::Stepper);
+            cell->setupGravitate(new phs::Stepper(posGemF.y));
             cell->pwellLogic = this;
 
             gem.reset();
@@ -321,11 +318,6 @@ namespace mdl
         }
 
         ///---------------------------------|
-        /// Повесь сюда делегат!            |
-        ///---------------------------------:
-        std::function<void()> fooGameOver{[](){}};
-
-        ///---------------------------------|
         /// Ищем где совпало. [box.cpp]     |
         ///---------------------------------:
         int                  findMatchGems();
@@ -337,11 +329,11 @@ namespace mdl
         {       RepeatMatch(WellLogic* wl) : wl(wl) {}
 
             void tick(bool t) /// Вызвается на сигнале покоя в колодце.
-            {   if((tt ^ t) )
-                {   tt = t;
-                    wl->findMatchGems();
+            {   if  ((tt ^ t) )
+                {     tt = t;
+                      wl->findMatchGems();
 
-                    /// l1("RepeatMatch:tick(.) run findMatchGems().\n")
+                    //l1("RepeatMatch:tick(.) run findMatchGems().\n")
                 }
             }
 
@@ -360,10 +352,8 @@ namespace mdl
 
                 isActive |= it->update();
 
-                if(isActive) SIG("isActive1")
-
                 if(   !it->isLive())
-                {   gm[it->pos2gm[1]][it->pos2gm[0]] = nullptr;///-//////////!!!
+                {   gm[it->pos2gm[1]][it->pos2gm[0]] = nullptr;
                        it = allocator.erase(it);
                 }
                 else ++it;
@@ -422,7 +412,9 @@ namespace mdl
             ///------------------------|
             /// Нод корзины!           |
             ///------------------------:
-            node = nodeBase->createChildSceneNode("Well");
+            node = nodeBase->createChildSceneNode(
+                std::format("Well{}", idPlayer)
+            );
 
             figure   .setup(node); 
             well3Wall.setup(node); 
@@ -437,10 +429,6 @@ namespace mdl
             /// Делегируем.            |
             ///------------------------:
             figure.delegate4Well = [this](Figure* figure){ logic.add(*figure);};
-        }
-
-        void setDelegateGameOver(std::function<void()> foo)
-        {   logic.fooGameOver = foo;
         }
 
         ///-------------------------------------------|

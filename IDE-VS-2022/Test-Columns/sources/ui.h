@@ -49,7 +49,7 @@ namespace mdl
         int mWidthS      = 110;
         int mWidthL      = 360;
         int mShortHeight =  34;
-        int mLongHeight  = 250;
+        int mLongHeight  = 230;
  
         bool mIsLongText = false;
 
@@ -77,7 +77,7 @@ namespace mdl
 
         void toggleText()
         {   if (mTextBox == nullptr) return;
-            mIsLongText = !mIsLongText;
+            mIsLongText  = !mIsLongText;
             destroyTextbox();
             createTextBox();
         }
@@ -244,9 +244,8 @@ namespace mdl
             ctb = std::make_unique<ClickableTextBox>(trayMgr);
             ctb->setText(
                 "",
-                "'1'    : xНовая игра - 1 игрок\n"
-                "'2'    : xНовая игра - 2 игрока\n"
-                "'3'    : Новая игра...\n"
+                "'1'    : Новая игра - 1 игрок\n"
+                "[x]    : Новая игра - 2 игрока\n"
                 "CURSOR : LEFT, RIGHT\n"
                 "UP     : Рофлить жемчуг\n"
                 "DOWN   : Бросить жемчуг\n"

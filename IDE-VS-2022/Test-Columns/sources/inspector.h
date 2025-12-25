@@ -32,23 +32,21 @@ namespace mdl
         SceneNode*        nodeBase;
         SceneNode*        nodeUser;
 
-        Camera            camera;
-        Lights            lights;
-        Ninja              ninja;
-        UI                    ui;
-        Tree                tree;
-        Ground            ground;
-    /// BlackCylinder2 cylinders;
-        Effects          effects;
-    /// SkyDome*         skyDome;
-        Intro              intro;
-        GameMain        gameMain;
-        Sky*                 sky;
+        Camera              camera;
+        Lights              lights;
+        Ninja                ninja;
+        UI                      ui;
+        Tree                  tree;
+        Ground              ground;
+        Effects            effects;
+    /// SkyDome*           skyDome;
+        Intro                intro;
+        Sky*                   sky;
 
         ///---------------------------------------|
         /// Игра...                               |
         ///---------------------------------------:
-        Well*    well{ nullptr };
+        GameMain games;
 
         Ogre::RTShader::ShaderGenerator* shadergen;
 
@@ -95,6 +93,11 @@ namespace mdl
             setWindowIcon      (window);
             ////////////////////////////////////////////////////////////////////
 
+            ///-----------------------------------|
+            /// Регистрация обработчиков событий. |
+            ///-----------------------------------:
+            addEvent(gameOver);
+
         /// root->loadPlugin("OgreAssimp");
 
             shadergen = RTShader::ShaderGenerator::getSingletonPtr();
@@ -110,8 +113,6 @@ namespace mdl
             intro    .setup();
 
             sky = new Sky;
-
-            //createNewGame  ();////////////////////////////////////////////////
 
             ///-----------------------------------|
             /// Сохраняем ориентацию мира.        |
@@ -130,13 +131,10 @@ namespace mdl
                     getRoot()->queueEndRendering();
                     return true;
                 case '1':
-                    gameMain.setup(1); gameStart();
+                    games.setup(1); gameStart();
                     return true;
                 case '2':
-                    gameMain.setup(2); gameStart();
-                    return true;
-                case '3':
-                    createNewGame();  gameStart();
+                    games.setup(2); gameStart();
                     return true;
                 default:;
             }
@@ -144,7 +142,7 @@ namespace mdl
             switch(evt.keysym.sym)
             {
                 case OgreBites::SDLK_ESCAPE:
-                    fooGameOver();
+                    gameOver({});
                     return true;
                 case OgreBites::SDLK_F8:
                 /// PrintNodeHierarchy(Glob::nodeBase);
@@ -172,11 +170,9 @@ namespace mdl
             }
 
             bool    b{false};
-                    b |= ui      .keyPressed(evt);
-
+                    b |= ui   .keyPressed(evt);
             if(!isPause || !isGameOver)
-            {       if(well) b |= well->   keyPressed(evt);
-                    b |= gameMain.keyPressed(evt);
+            {       b |= games.keyPressed(evt);
             }
             return  b;
         }
@@ -222,8 +218,7 @@ namespace mdl
             {
             }
             else
-            {   if(well) well->update();
-                gameMain.update();//////////////////////////////////////////////
+            {   games.update();
             }
 
             if(isSpeedRotWold != 0)
@@ -256,9 +251,9 @@ namespace mdl
             //rgm.initialiseAllResourceGroups();
         }
 
-        void fooGameOver()
+        void gameOver(Args_t)
         {   isGameOver     = true;
-            isSpeedRotWold = 20.f * (rand()%3-1);
+            isSpeedRotWold = 20.f * (1 - (rand()%2)*2);
         }
 
         void gameStart()
@@ -266,43 +261,6 @@ namespace mdl
             isPause    = false;
             isGameOver = false;
             camera2StartGame();
-        }
-
-        void createNewGame()
-        {   
-            Glob::  cntGame++;
-            isGameOver = false;
-
-            if (well)
-            {   safeRemoveNode(well->node);
-                delete(well);
-            }
-
-            well = new Well();
-            well->setDelegateGameOver(
-                [this]()
-                {   this->fooGameOver(); 
-                }
-            );
-            well->logic.setDelegateSetScore(
-                [this](int score)
-                {   this->setScore(score);
-                }
-            );
-            well->setup();
-        }
-
-        void safeRemoveNode(Ogre::SceneNode* node)
-        {
-            while (node->numAttachedObjects())
-            {   node->detachObject(node->getAttachedObject(0));
-            }
-
-            while (node->numChildren())
-            {   safeRemoveNode(static_cast<Ogre::SceneNode*>(node->getChild(0)));
-            }
-    
-            node->getCreator()->destroySceneNode(node);
         }
 
         void setScore(int score)

@@ -196,6 +196,9 @@ namespace phs
     {       Stepper() : Distance(cln.CellSizeFloat)
             {   
             }
+            Stepper(float val) : Distance(cln.CellSizeFloat), pos(val)
+            {   
+            }
 
         ///-------------------------------------|
         /// Координата фигуры: x или y          |

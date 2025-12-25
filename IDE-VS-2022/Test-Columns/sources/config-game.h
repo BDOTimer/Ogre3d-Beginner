@@ -28,10 +28,15 @@ struct  ConfigGame
         //{   W += (W+1)%2;
         //}
 
-    unsigned W{ 7}; /// Ширина (кол-во ячеек) корзины(Well).
-    unsigned H{11}; /// Выстота(кол-во ячеек) корзины(Well).
-    unsigned N{ 5}; /// Количество элементов(Gems) в фигуре(Column).
-    unsigned T{ 5}; /// Количество типов элементов(Gems) в фигуре(Column).
+    const unsigned W{ 7}; /// Ширина (кол-во ячеек) корзины(Well).
+    const unsigned H{11}; /// Выстота(кол-во ячеек) корзины(Well).
+    const unsigned N{ 5}; /// Количество элементов(Gems) в фигуре(Column).
+    const unsigned T{ 5}; /// Количество типов элементов(Gems) в фигуре(Column).
+
+    ///------------------------------|
+    /// Сколько нужно для match?     |
+    ///------------------------------:
+    const uint8_t AMOUNTMATCH{3};
 
     float sizeCell{100}; /// Размер ячейки корзины.
 
@@ -47,8 +52,8 @@ struct  ConfigGame
     /// Какие бывают жемчужины?           |
     ///-----------------------------------:
     using   DS = DescriptionGem;
-    #define S Ogre::Vector3{0.5f, 0.5f, 0.5f}
-    #define C Ogre::Vector3{0.7f, 0.7f, 0.7f}
+    #define S Ogre::Vector3{0.5f, 0.5f, 0.5f} /// Скейлинг для шаров.
+    #define C Ogre::Vector3{0.7f, 0.7f, 0.7f} /// Скейлинг для кубов.
     
     static constexpr std::array<DescriptionGem, 6> descriptionGems
     {   DS{0, "sphere.mesh", Ogre::ColourValue{ 1.0f , 0.5f , 0.0f}, S},
@@ -80,11 +85,34 @@ struct  ConfigGame
     ///-----------------------------------:
     bool isGemAnimate{true};
     
-    ConfigGame* configGame{nullptr};
+    inline static ConfigGame* pConfigGame {nullptr};
+
+    size_t rndGen() const
+    {   const size_t ND{descriptionGems.size()};
+        const int rndMax = T > ND ? ND : T;
+
+        if(false) return rand() % rndMax;
+
+        static constexpr const size_t R{6};
+            
+        ///-------------------------------|
+        /// Детерминированный ряд id'ов.  |
+        ///-------------------------------:
+        std::array<size_t, R> r
+        {   0, 1, 0,
+            0, 0, 1
+        };
+
+        static size_t i{};
+        return r[ i++%R ];
+    }
 
     static ConfigGame& get()
-    {   static ConfigGame cfg; 
-        return cfg.configGame == nullptr ? cfg : *cfg.configGame;
+    {   static ConfigGame cfgHard {21, 15, 5, 6   };
+        static ConfigGame cfgDemo {11, 15, 5, 3   };
+        static ConfigGame cfgDebug{ 7,  7, 3, 3, 3};
+
+        return pConfigGame ? *pConfigGame : cfgDebug;
     }
 };
 
@@ -95,6 +123,39 @@ inline std::ostream& operator<<(std::ostream& o, const ConfigGame& c)
         << "Размер ячейки  : " << c.sizeCell   << '\n';
     return o;
 }
+
+
+///----------------------------------------------------------------------------|
+/// Events.
+/// events.add("GameOver", [this](Args_t){ this->GameOver(); });
+///--------------------------------------------------------------------- Events:
+using  Args_t = const std::vector<float>&;
+using  Foo_t  = void(Args_t);
+struct Events
+{   
+    void add(const std::string& name, std::function<Foo_t> foo)
+    {   m[name] = foo;
+    }
+
+    void call(const std::string& nameEvent, Args_t args={})
+    {   
+        if(auto it = m.find(nameEvent); it != m.end())
+        {   auto&[name, foo] = *it;
+            foo(args);
+        }
+        else ASSERTM(false,
+             std::format("Незарегистрированное собыитие: \"{}\"", nameEvent))
+    }
+
+private:
+    
+    std::map<std::string, std::function<Foo_t>> m;
+};
+
+///---------|
+/// Объект. |
+///---------:
+#define addEvent(n)    mdl::Glob::events.add(#n,[this](Args_t a){ this->n(a);});
 
 
 ///---------|
@@ -118,9 +179,11 @@ namespace mdl
         inline static                 UI* pUI           ;
         inline static float               deltaTime     ;
         inline static unsigned            cntGame{0}    ;
-        
+        inline static Events              events        ;
     };
 }
+
+
 
 #endif // CONFIG_GAME_H
 

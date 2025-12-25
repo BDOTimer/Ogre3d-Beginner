@@ -39,6 +39,13 @@ namespace mdl
         float       speed{50};
         Vector2i    pos2gm   ;             /// Позиция в зеркале.
 
+        void setupGravitate(phs::Stepper* grav)
+        {   ASSERT(nullptr != node)
+            steperGrav = grav;
+            ASSERT(nullptr != steperGrav)
+            isGrav = true;
+        }
+
         ///------------------------------|
         /// Отвязать камень от фигуры.   |
         ///------------------------------:
@@ -47,11 +54,6 @@ namespace mdl
             Ogre::SceneNode*  parent = node->getParentSceneNode();
             ASSERT(nullptr != parent)
             parent->removeChild(node);
-        }
-
-        void XdeLinkDelete()///-//////////////////////////////////////////////-?
-        {   deLink();
-            node = nullptr;
         }
 
         ///------------------------------|
@@ -66,8 +68,6 @@ namespace mdl
         bool isLive() const
         {   return node != nullptr;
         }
-
-        inline static int cntDead{};////////////////////////////////////////////
 
         ///------------------------------|
         /// Танец жемчужины.             |
@@ -109,18 +109,19 @@ namespace mdl
                         node->scale({S, S, S});
                     }
                     else
-                    {   
-                        ///---------------------------|
+                    {   ///---------------------------|
                         /// Анимация закончилась:     |
                         /// удаление камня из колодца.|
-                        ///---------------------------:-//////////////////////-!
+                        ///---------------------------:
                         match.isMatch = 2;
                     
                         ///-------|
                         /// Debug.|
                         ///-------:
                         if(false)
-                        {   LN
+                        {   
+                            static int cntDead{};
+                            LN
                             l1(std::format("Удалён Cnt: {}\n", ++cntDead))
                             l(pos2gm)
                         }
@@ -136,11 +137,6 @@ namespace mdl
 
             return steperGrav->isActive;
         }
-
-        ///------------------------------|
-        /// Сколько нужно для match?     |
-        ///------------------------------:
-        static constexpr const uint8_t AMOUNTMATCH{3};
 
         enum ETYPEMATCH
         {   LV, /// Линия по вертикали.
@@ -169,11 +165,12 @@ namespace mdl
             int isMatch{0};
 
             bool doIsMatch()
-            {   isMatch
-                =   pp[0]->nType[0] >= AMOUNTMATCH ||
-                    pp[1]->nType[1] >= AMOUNTMATCH ||
-                    pp[2]->nType[2] >= AMOUNTMATCH ||
-                    pp[3]->nType[3] >= AMOUNTMATCH ;
+            {   const unsigned& AM = ConfigGame::get().AMOUNTMATCH;
+                isMatch
+                =   pp[0]->nType[0] >= AM ||
+                    pp[1]->nType[1] >= AM ||
+                    pp[2]->nType[2] >= AM ||
+                    pp[3]->nType[3] >= AM ;
                 return isMatch;
             }
 
@@ -201,14 +198,6 @@ namespace mdl
             }
         }
 
-        void setupGravitate(phs::Stepper* grav)
-        {   ASSERT(nullptr != node)
-            const auto& posFig = node->getPosition();
-            steperGrav = grav;
-            steperGrav->setup(posFig.y);
-            isGrav = true;
-        }
-
     private:
         ///---------------------------------------|
         /// Гравитация.                           |
@@ -226,8 +215,6 @@ namespace mdl
 
             if(steperGrav->isActive)
             {   
-                ASSERT(nullptr != steperGrav)
-                
                 float y = steperGrav->update(Glob::deltaTime * 150.f);
 
                 node->setPosition(posGem.x, y, posGem.z);
@@ -237,16 +224,14 @@ namespace mdl
                 ///---------------------:
                 if(!steperGrav->isActive)
                 {   
-                    isCorrect("Финиш");
+                    checkAssert("Финиш");
                 }
             }
             else if(collisions.isDown(
                         {posGem.x, posGem.y - 50.f, posGem.z}, false))
             {   steperGrav->start(-cfg.sizeCell);
 
-            /// steperGrav->doDebug();//////////////////////////////////////////
-
-                isCorrect("Старт", true);
+                checkAssert("Старт", true);
                 
                 setGem2Well(this);
             }
@@ -256,9 +241,8 @@ namespace mdl
 
         int cntStart{};
 
-        bool isCorrect(const char* mess, bool isStart = false)
+        void checkAssert(const char* mess, bool isStart = false)
         {   
-            /// TODO ... ///////////////////////////////////////////////////////
             const auto& posGem = node->getPosition();
 
             const int x = pos2gm[0];
@@ -293,8 +277,6 @@ namespace mdl
             ASSERTM(_vi_[0] == x, format(sErr, "X"))
             ASSERTM(_vi_[1] == y, format(sErr, "Y"))
             ASSERTM(steperGrav->pos == posGem.y, "steperGrav bad setup")
-
-            return true;
         }
     };
 
@@ -349,7 +331,6 @@ namespace mdl
                 gems(ConfigGame::get().N)
             ,   mat (ConfigGame::get().descriptionGems.size())
             {   
-                rndMax = cfg.T > mat.size() ? unsigned(mat.size()) : cfg.T;
             }
 
         std::vector<Gem>         gems;
@@ -363,8 +344,6 @@ namespace mdl
 
         const ConfigGame& cfg{ConfigGame::get()};
         const float       D2 {cfg.sizeCell  / 2};
-
-        unsigned rndMax;
 
         struct 
         {   float  get() const   { return speedMoveCurr ; }
@@ -385,7 +364,7 @@ namespace mdl
             ///------------------------|
             /// Крепим к корзине.      |
             ///------------------------:
-            node = well->createChildSceneNode("Figure");
+            node = well->createChildSceneNode();
 
             createMaterial();
             reGenerate    ();
@@ -399,7 +378,7 @@ namespace mdl
             
             for(unsigned i{}; i < gems.size( ); ++i)
             {   
-                const size_t rnd{rndGen()};
+                const size_t rnd{cfg.rndGen()};
                 
                 gems[i].setup(i, node, rnd);
                 gems[i].entity->setMaterialName(mat[rnd]->getName());
@@ -411,21 +390,6 @@ namespace mdl
             steperGrav.setup(posStart.y);
 
             node->setVisible(collisions.isHereEmpty(posStart));
-        }
-
-        size_t rndGen() const
-        {   
-            if(false) return rand() % rndMax;/////////////////////////////////-!
-
-            static constexpr const size_t N{6};
-            
-            std::array<size_t, N> r
-            {   0, 1, 0, 1,
-                0, 2
-            };
-
-            static size_t i{};
-            return r[ i++%N ];
         }
 
         ///---------------------------------------|

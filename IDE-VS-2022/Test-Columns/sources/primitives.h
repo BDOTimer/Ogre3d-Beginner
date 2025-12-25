@@ -539,6 +539,4 @@ inline void PrintNodeHierarchy(Ogre::SceneNode* root)
     std::cout << std::endl;
 }
 
-
-
 #endif // PRIMITIVES_H

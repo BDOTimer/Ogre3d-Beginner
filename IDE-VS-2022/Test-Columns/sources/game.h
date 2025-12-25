@@ -7,7 +7,7 @@
 #include "ui.h"
 
 ///---------|
-/// Models. |
+/// Modules.|
 ///---------:
 namespace mdl
 {   
@@ -37,7 +37,7 @@ namespace mdl
         virtual bool keyPressed(const KeyboardEvent& evt) = 0;
         
     protected:
-        Well* createWell(unsigned idPlayer, Well* well)
+        Well* createWell(unsigned idPlayer, Well* well = nullptr)
         {   
             if (well)
             {   safeRemoveNode(well->node);
@@ -46,12 +46,6 @@ namespace mdl
             
             well = new Well();
             well-> idPlayer = idPlayer;
-
-            well->setDelegateGameOver(
-                [this]()
-                {   WARNING(false, "TODO: not init...")
-                }
-            );
 
             well->logic.setDelegateSetScore(
                 [this](int score)
@@ -90,7 +84,8 @@ namespace mdl
     ///------------------------------------------------------------ Game1Player:
     struct  Game1Player : IGame
     {       Game1Player()
-            {   setup  ();
+            {   
+                setup  ();
                 std::cout << "Game1Player::setup()\n";
             }
            ~Game1Player()
@@ -110,7 +105,7 @@ namespace mdl
         /// Динамика.                             |
         ///---------------------------------------:
         void update()
-        {   well->update(); 
+        {   well->update();
         }
 
         ///---------------------------------------|
@@ -120,8 +115,9 @@ namespace mdl
         {   return well->keyPressed(evt);
         }
         
-        private:
-
+    private:
+        
+        friend struct GameMain;
     };
 
 
@@ -130,8 +126,12 @@ namespace mdl
     ///------------------------------------------------------------ Game2Player:
     struct  Game2Player : IGame
     {       Game2Player()
-            {   setup  ();
+            {   
+                setup  ();
                 std::cout << "Game2Player::setup()\n";
+            }
+           ~Game2Player()
+            {   
             }
 
         std::array<mdl::Well*, 2> wells{nullptr, nullptr};
@@ -144,12 +144,6 @@ namespace mdl
             unsigned id{};
             for(auto& w : wells)
             {   w = createWell(id++, w);
-
-                w->setDelegateGameOver(
-                    [this]()
-                    {   this->fooGameOver(); 
-                    }
-                );
             }
         }
 
@@ -171,10 +165,8 @@ namespace mdl
         }
         
     private:
-        void fooGameOver(unsigned idPlayer = 0)
-        {   std::cout << std::format(
-                "Игрок {} закончил игру!\n", idPlayer + 1);
-        }
+
+        friend struct GameMain;
     };
 
     ///------------------------------------------------------------------------|
@@ -196,13 +188,18 @@ namespace mdl
         ///---------------------------------------:
         void setup(unsigned nPlayers)
         {   
+            ///-----------------------------------|
+            /// Регистрация обработчиков событий. |
+            ///-----------------------------------:
+            addEvent(UserOver);
+
             this->amountPlayers = nPlayers;
 
             if(&gameNul != game) delete game;
 
             switch    (nPlayers)
-            {   case  1: game = new Game1Player; break;
-                case  2: game = new Game2Player; break;
+            {   case  1: game = new Game1Player(); break;
+                case  2: game = new Game2Player(); break;
                 default:;
             }
         }
@@ -224,6 +221,13 @@ namespace mdl
         private:
             unsigned amountPlayers{};
             GameNul  gameNul;
+
+        unsigned chtGameOver{};
+        void UserOver(Args_t)
+        {   if(++chtGameOver == amountPlayers)
+            {   events.call("gameOver");
+            }
+        }
     };
 
 }
