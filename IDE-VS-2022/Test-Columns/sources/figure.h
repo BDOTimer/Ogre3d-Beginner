@@ -14,6 +14,7 @@ namespace mdl
     ///------------------------------------------------------------------------|
     /// Данные юзера, которые записываются в нод.
     ///----------------------------------------------------------- UserDataNode:
+    struct WellLogic;
     struct GemData;
 
     using  igm_t = std::list<GemData>::iterator;
@@ -30,7 +31,8 @@ namespace mdl
                 }
             }
         
-        size_t             id   {  NPOS};  /// Масть(тип) жемчужины.
+        WellLogic* pwellLogic   {nullptr};
+        size_t             id   {  NPOS }; /// Масть(тип) жемчужины.
         Ogre::SceneNode* node   {nullptr}; /// Нод на котором висит жемчужена.
         Ogre::Entity*  entity   {nullptr}; /// Геометрия + материал жемчужины.
         igm_t             igm;             /// Место аллокации этих данных.
@@ -65,7 +67,7 @@ namespace mdl
         {   return node != nullptr;
         }
 
-        inline static int cntDead{};
+        inline static int cntDead{};////////////////////////////////////////////
 
         ///------------------------------|
         /// Танец жемчужины.             |
@@ -90,42 +92,46 @@ namespace mdl
         ///------------------------------:
         bool update()
         {   
-            if(match.isMatch == 2) return false;
-
-            if(match.isMatch == 0) updateGravitate();///-///////////////////////
+            ASSERTM(node != nullptr, "Мёртвые с косами стоят...")
 
             animate();
 
-            ///--------------------------|
-            /// Анимация Matching.       |
-            ///--------------------------:
-            if(match.isMatch == 1)
-            {   float S = 1.f - 2.f * deltaTime;
-                if(S > 0.005f && node->getScale().x > 0.1f)
-                {   node->scale({S, S, S});
-                }
-                else
-                {   match.isMatch = 2;
-                /// node->setVisible(false);
-
-                    ///--------------------------------|
-                    /// Удаление камня из колодца.     |
-                    ///--------------------------------:-/////////////////////-!
-                    ASSERTM(node != nullptr, "Мёртвые с косами стоят...")
-                    
-                    ///---------------|
-                    /// Debug.        |
-                    ///---------------:
-                    if(false)
-                    {   LN
-                        l1(std::format("Удалён Cnt: {}\n", ++cntDead))
-                        l(pos2gm)
+            switch(match.isMatch)
+            {   case  0: updateGravitate(); break;
+                case  1:
+                {   
+                    if( float S = 1.f - 2.f * deltaTime;
+                        S > 0.005f && node->getScale().x > 0.1f)
+                    {   
+                        ///---------------------------|
+                        /// Анимация Matching.        |
+                        ///---------------------------:
+                        node->scale({S, S, S});
                     }
+                    else
+                    {   
+                        ///---------------------------|
+                        /// Анимация закончилась:     |
+                        /// удаление камня из колодца.|
+                        ///---------------------------:-//////////////////////-!
+                        match.isMatch = 2;
+                    
+                        ///-------|
+                        /// Debug.|
+                        ///-------:
+                        if(false)
+                        {   LN
+                            l1(std::format("Удалён Cnt: {}\n", ++cntDead))
+                            l(pos2gm)
+                        }
 
-                    deLink();
-                    scnMgr->destroySceneNode(node);
-                    node = nullptr;
+                        deLink();
+                        scnMgr->destroySceneNode(node);
+                        node = nullptr;
+                    }
+                    break;
                 }
+                default: ASSERT(false);
             }
 
             return steperGrav->isActive;
@@ -195,12 +201,6 @@ namespace mdl
             }
         }
 
-        ///---------------------------------------|
-        /// Гравитация.                           |
-        ///---------------------------------------:
-        phs::Stepper* steperGrav{nullptr};
-        bool          isGrav    {false  };
-
         void setupGravitate(phs::Stepper* grav)
         {   ASSERT(nullptr != node)
             const auto& posFig = node->getPosition();
@@ -208,6 +208,13 @@ namespace mdl
             steperGrav->setup(posFig.y);
             isGrav = true;
         }
+
+    private:
+        ///---------------------------------------|
+        /// Гравитация.                           |
+        ///---------------------------------------:
+        phs::Stepper* steperGrav{nullptr};
+        bool          isGrav    {false  };
 
         void updateGravitate()
         {   if(!isGrav) return;
@@ -240,12 +247,11 @@ namespace mdl
             /// steperGrav->doDebug();//////////////////////////////////////////
 
                 isCorrect("Старт", true);
-
+                
                 setGem2Well(this);
             }
         }
 
-    private:
         void setGem2Well(GemData* gem);
 
         int cntStart{};
@@ -409,13 +415,13 @@ namespace mdl
 
         size_t rndGen() const
         {   
-            if(true) return rand() % rndMax;
+            if(false) return rand() % rndMax;/////////////////////////////////-!
 
-            static constexpr const size_t N{8};
+            static constexpr const size_t N{6};
             
             std::array<size_t, N> r
-            {   1, 1, 0, 0,
-                0, 0, 1, 1
+            {   0, 1, 0, 1,
+                0, 2
             };
 
             static size_t i{};

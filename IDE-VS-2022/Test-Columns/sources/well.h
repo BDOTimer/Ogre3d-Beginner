@@ -164,11 +164,9 @@ namespace mdl
         }
 
         void setup(SceneNode*  nodeB)
-        {   
-           node = nodeB->createChildSceneNode("WellLogic");
+        {   node = nodeB->createChildSceneNode("WellLogic");
         }
 
-        
 
     private:
         Figure& figure;
@@ -235,12 +233,7 @@ namespace mdl
                 {   collisions.getIndex3(
                         {posGemF.x, posGemF.y - 50.f, posGemF.z})
                 };
-
-                //LN//////////////////////////////////////////////////////////-?
-                //l(posGemF)
-                //l(posGemI)
                 
-
                 if(posGemI[0] < 0)
                 {   std::cout << "ERROR-[Физика]: Фигура за левым бортом!\n";
                     return false;
@@ -300,9 +293,8 @@ namespace mdl
             allocator.back().igm = --allocator.end();
 
             cell = &allocator.back();
-
             cell->setupGravitate(new phs::Stepper);
-            cell->steperGrav->setup    (posGemF.y);
+            cell->pwellLogic = this;
 
             gem.reset();
             
@@ -364,18 +356,35 @@ namespace mdl
 
             for(auto it = allocator.begin(); it !=  allocator.end(); )
             {
-                ASSERT(it->isLive()) 
+                ASSERT(it->isLive())
 
                 isActive |= it->update();
 
-                if(!it->isLive())
-                {   gm[it->pos2gm[1]][it->pos2gm[0]] = nullptr;
+                if(isActive) SIG("isActive1")
+
+                if(   !it->isLive())
+                {   gm[it->pos2gm[1]][it->pos2gm[0]] = nullptr;///-//////////!!!
                        it = allocator.erase(it);
                 }
                 else ++it;
             }
 
             repeatMatch.tick(isActive);
+        }
+
+    public:
+        void setGem(GemData* gem)
+        {
+            const int x = gem->pos2gm[0];
+            const int y = gem->pos2gm[1];
+
+            gem->pos2gm[1] -= 1;
+
+            ASSERT(gem->pos2gm[1] >= 0)
+            ASSERT(gm[gem->pos2gm[1]][x] == nullptr)
+
+            gm[gem->pos2gm[1]][x] = gem;
+            gm[y             ][x] = nullptr;
         }
 
         friend struct Well;
@@ -440,7 +449,7 @@ namespace mdl
         bool keyPressed(const KeyboardEvent& evt)
         {   
             switch(evt.keysym.sym)
-            {   case '1': ln(logic.gm) break; /// Дебаг.
+            {   case '5': ln(logic.gm) break; /// Дебаг.
                 default:;
             }
             return figure.keyPressed(evt);
@@ -452,19 +461,6 @@ namespace mdl
         }
 
         void infoNewGame2Console() const;
-
-    public:
-
-        void setGem(GemData* gem)
-        {
-            const int x = gem->pos2gm[0];
-            const int y = gem->pos2gm[1];
-
-            gem->pos2gm[1] -= 1;
-
-            logic.gm[y - 1][x] = gem;
-            logic.gm[y    ][x] = nullptr;
-        }
 
         friend struct InspectorRoot;
         friend struct   Game1Player;
