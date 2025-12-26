@@ -35,9 +35,13 @@ namespace mdl
         /// Обработка клавиш.                     |
         ///---------------------------------------:
         virtual bool keyPressed(const KeyboardEvent& evt) = 0;
+
+        ///---------------------------------------|
+        /// Получить имя.                         |
+        ///---------------------------------------:
+        virtual const std::string& getNameUse(unsigned) const = 0;
         
     protected:
-
         Well* createWell(Ogre::SceneNode* nodeGame,
                          unsigned         idPlayer, 
                          Well*      well = nullptr)
@@ -87,6 +91,10 @@ namespace mdl
     {   void setup     (){}
         void update    (){}
         bool keyPressed(const KeyboardEvent&){ return false; }
+        const std::string& getNameUse(unsigned) const
+        {   return z;
+        }
+        const std::string z{""};
     };
 
 
@@ -105,9 +113,10 @@ namespace mdl
                 safeRemoveNode(well->node);
                 delete(well);
 
-                destroyNode("Game1Player");
+                destroyNode(nameUser);
             }
 
+        std::string             nameUser{"Game1Player"};
         Ogre::SceneNode* nodePl{nullptr};
         mdl ::Well*      well  {nullptr};
 
@@ -115,7 +124,8 @@ namespace mdl
         /// Инициализация.                        |
         ///---------------------------------------:
         void setup()
-        {   nodePl = nodeBase->createChildSceneNode("Game1Player");
+        {   
+            nodePl = nodeBase->createChildSceneNode(nameUser);
             well   = createWell(nodePl, 0, well); ASSERT(well != nullptr)
         }
 
@@ -131,6 +141,10 @@ namespace mdl
         ///---------------------------------------:
         bool keyPressed(const KeyboardEvent& evt)
         {   return well->keyPressed(evt);
+        }
+
+        const std::string& getNameUse(unsigned) const
+        {   return nameUser;
         }
         
     private:
@@ -217,6 +231,10 @@ namespace mdl
             for(auto w : wells) b |= w->keyPressed(evt);
             return              b;
         }
+
+        const std::string& getNameUse(unsigned i) const
+        {   return names[i];
+        }
         
     private:
         void setupDecor()
@@ -261,6 +279,7 @@ namespace mdl
         void setup(unsigned nPlayers)
         {   
             ++Glob::cntGame;
+            chtGameOver = 0;
 
             ///-----------------------------------|
             /// Регистрация обработчиков событий. |
@@ -296,9 +315,14 @@ namespace mdl
             unsigned amountPlayers{};
             GameNul  gameNul;
 
-        unsigned chtGameOver{};
-        void UserOver(Args_t)
-        {   if(++chtGameOver == amountPlayers)
+        unsigned chtGameOver;
+        void UserOver(Args_t a)
+        {   
+            unsigned i{unsigned(a[0])};
+            std::cout << std::format(
+                "Игрок {} закочил ...\n", game->getNameUse(i));
+            
+            if(++chtGameOver == amountPlayers)
             {   events.call("gameOver");
             }
         }

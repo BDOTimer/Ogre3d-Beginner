@@ -67,6 +67,10 @@ namespace mdl
         void play(sf::Sound& snd)
         {   snd.play();
         }
+
+        void stop()
+        {   drop1.stop();
+        }
     };
 }
 

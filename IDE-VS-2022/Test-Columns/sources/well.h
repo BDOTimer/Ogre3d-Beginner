@@ -216,13 +216,15 @@ namespace mdl
 
             if( 0 > w || w >= (int)W  ||
                 0 > h || h >= (int)H) return false;
-                
-            if( nullptr != gm[h][w])  return false;
+            if( nullptr != gm [h][w]) return false;
 
             return true;
         };
 
-        bool add(Figure& fig)///-///////////////////////////////////////////////
+        ///---------------------------------|
+        /// Добавить фигуру в колодец.      |
+        ///---------------------------------:
+        bool add(Figure& fig)
         {   
             const Ogre::Vector3& posFig{fig.node->getPosition()};
 
@@ -256,7 +258,9 @@ namespace mdl
                     return false;
                 }
 
-                if(!addOne(gem, posGemI, posGemF)) break;
+                if(isGameOver = !addOne(gem, posGemI, posGemF); isGameOver) 
+                {   return false;
+                }
             }
 
             findMatchGems();
@@ -284,13 +288,16 @@ namespace mdl
             /// Ячейка занята.               |
             ///------------------------------:
             if(nullptr != cell)
-            {   std::cout << "ERROR-[Физика]: Ячейка занята! ---> "; l(posGemI)
+            {   
+            /// std::cout << "ERROR-[Физика]: Ячейка занята! ---> "; l(posGemI)
                 std::cout << '\n' <<
                     "|-----------------------------|\n"
                     "|      Чувак, геймовер!       |\n"
                     "|-----------------------------.\n\n";
 
-                Glob::events.call("UserOver");
+                Sound::get().stop();
+
+                Glob::events.call("UserOver", {(float)figure.id});
                 return  false;
             }
 
@@ -338,7 +345,7 @@ namespace mdl
         {       RepeatMatch(WellLogic* wl) : wl(wl) {}
 
             void tick(bool t) /// Вызвается на сигнале покоя в колодце.
-            {   if  ((tt ^ t) )
+            {   if  ((tt ^ t))
                 {     tt = t;
                       wl->findMatchGems();
 
@@ -442,7 +449,8 @@ namespace mdl
         /// Обработка клавиш.                         |
         ///-------------------------------------------:
         bool keyPressed(const KeyboardEvent& evt)
-        {   
+        {   if(logic.isGameOver) return false;
+
             switch(evt.keysym.sym)
             {   case '5': ln(logic.gm) break; /// Дебаг.
                 default:;
@@ -453,7 +461,9 @@ namespace mdl
         }
 
         void update()
-        {   figure.update();
+        {   if(logic.isGameOver) return;
+            
+            figure.update();
             logic .update();
         }
 

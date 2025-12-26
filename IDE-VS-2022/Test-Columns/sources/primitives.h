@@ -103,24 +103,17 @@ namespace mdl
 
             set2Start();
 
-            events.add("setCam", [this](Args_t a)
-                {   this->setCam(a[0]);
-                }
-            );
-
-            events.add("set2Start", [this](Args_t)
-                {   this->set2Start();
-                }
-            );
+            addEvent(set2Start);
+            addEvent(setCam   );
         }
 
-        void set2Start()
+        void set2Start([[maybe_unused]]Args_t a = {})
         {   man->setYawPitchDist(Ogre::Degree(0), Ogre::Degree(10), val);
         }
 
-        void setCam(float d)
-        {   val = d;
-            man->setYawPitchDist(Ogre::Degree(0), Ogre::Degree(10), d);
+        void setCam(Args_t d)
+        {   val = d[0];
+            man->setYawPitchDist(Ogre::Degree(0), Ogre::Degree(10), val);
         }
     };
 

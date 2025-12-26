@@ -114,7 +114,7 @@ struct  ConfigGame
         static ConfigGame cfgDemo {0, 11, 15, 5, 5   };
         static ConfigGame cfgDebg {1,  7,  7, 3, 3, 3};
 
-        return pConfigGame ? *pConfigGame : cfgHard;
+        return pConfigGame ? *pConfigGame : cfgDemo;
     }
 };
 
