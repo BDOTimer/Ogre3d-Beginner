@@ -115,7 +115,7 @@ namespace mdl
         }
 
         void destroy()
-        {
+        {   
             if (!wallNode) return;
 
             Ogre::SceneManager* ScnMgr = wallNode->getCreator();

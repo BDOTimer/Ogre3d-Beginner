@@ -24,7 +24,7 @@ namespace mdl
     {       InspectorRoot( ) : 
                 OgreBites::ApplicationContext("")
             ,   autoCotrollerSin( camera.val,
-                                  [this](){this->camera.set2Start();})
+                                  [this](){ this->camera.set2Start(); })
             {}
 
         Ogre::Root*           root;
@@ -34,10 +34,8 @@ namespace mdl
 
         Camera              camera;
         Lights              lights;
-        Ninja                ninja;
+
         UI                      ui;
-        Tree                  tree;
-        Ground              ground;
         Effects            effects;
     /// SkyDome*           skyDome;
         Intro                intro;
@@ -105,16 +103,12 @@ namespace mdl
 
             camera   .setup(nodeUser);
             lights   .setup(camera.camNode);
-            ninja    .setup();
-            tree     .setup();
-            ground   .setup();
+            decor    .setup();
             ui       .setup();
             effects  .setup();
             intro    .setup();
 
             sky = new Sky;
-
-            Glob::ninja = ninja.node;
 
             ///-----------------------------------|
             /// Сохраняем ориентацию мира.        |
@@ -133,10 +127,10 @@ namespace mdl
                     getRoot()->queueEndRendering();
                     return true;
                 case '1':
-                    games.setup(1); gameStart();
+                     gameStart(); games.setup(1);
                     return true;
                 case '2':
-                    games.setup(2); gameStart();
+                     gameStart(); games.setup(2);
                     return true;
                 default:;
             }

@@ -178,7 +178,6 @@ namespace mdl
         inline static InputListener     * pIListener    ;
         inline static Ogre::SceneManager* scnMgr        ;
         inline static Ogre::SceneNode   * nodeBase      ;
-        inline static Ogre::SceneNode   * ninja         ;
         inline static                 UI* pUI           ;
         inline static float               deltaTime     ;
         inline static unsigned            cntGame{0}    ;

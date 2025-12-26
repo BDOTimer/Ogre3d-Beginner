@@ -42,20 +42,15 @@ namespace mdl
                          unsigned         idPlayer, 
                          Well*      well = nullptr)
         {   
-            if (well)
-            {   safeRemoveNode(well->node);
-                delete(well);
-            }
-            
             well = new Well(idPlayer);
+            well->setup    (nodeGame);
 
             well->logic.setDelegateSetScore(
                 [this](int score)
                 {   Glob::pUI->score->set(score);
                 }
             );
-            well->setup(nodeGame);
-            return   well;
+            return well;
         }
 
         static void safeRemoveNode(Ogre::SceneNode* node)
@@ -67,6 +62,18 @@ namespace mdl
             {   safeRemoveNode(static_cast<Ogre::SceneNode*>(node->getChild(0)));
             }
             node->getCreator()->destroySceneNode(node);
+        }
+
+        void destroyNode(const std::string& name)
+        {   if (Glob::scnMgr->hasSceneNode(name)) 
+            {   
+               //nodePl->removeAndDestroyAllChildren();
+               //scnMgr->destroySceneNode(nodePl);
+
+                Ogre::SceneNode* node = scnMgr->getSceneNode(name);
+                scnMgr->destroySceneNode(node);
+            }
+            else ASSERT(false)
         }
 
         void infoNewGame2Console(std::string_view) const;
@@ -88,29 +95,28 @@ namespace mdl
     ///------------------------------------------------------------ Game1Player:
     struct  Game1Player : IGame
     {       Game1Player()
-            {   setup  ();
+            {   
                 infoNewGame2Console("Game1Player::setup()\n");
-
-                auto X{ConfigGame::get().getWellW() / 2 + 100};
-                Glob::ninja->setPosition(X, 0, 100);
-
-                Ogre::Degree     angle(160);
-                Ogre::Quaternion rot(angle, Ogre::Vector3::UNIT_Y);
-                Glob::ninja->setOrientation(rot);
+                setup     ();
+                setupDecor();
             }
            ~Game1Player()
             {   
+                safeRemoveNode(well->node);
+                delete(well);
+
+                destroyNode("Game1Player");
             }
 
-        Ogre::SceneNode*   nodePl;
-        mdl::Well*  well{nullptr};
+        Ogre::SceneNode* nodePl{nullptr};
+        mdl ::Well*      well  {nullptr};
 
         ///---------------------------------------|
         /// Инициализация.                        |
         ///---------------------------------------:
         void setup()
         {   nodePl = nodeBase->createChildSceneNode("Game1Player");
-            well = createWell(nodePl, 0, well); ASSERT(well != nullptr)
+            well   = createWell(nodePl, 0, well); ASSERT(well != nullptr)
         }
 
         ///---------------------------------------|
@@ -128,7 +134,23 @@ namespace mdl
         }
         
     private:
-        
+        void setupDecor()
+        {   
+            const ConfigGame& cfg{ConfigGame::get()};
+
+            auto X{cfg.getWellW() / 2 + 100};
+            decor.ninja.node->setPosition(X, 0, 100);
+
+            Ogre::Degree     angle(160);
+            Ogre::Quaternion rot(angle, Ogre::Vector3::UNIT_Y);
+            decor.ninja.node->setOrientation(rot);
+
+            decor.ground.node->setScale(3.0, 3.0, 3.0);
+            decor.tree.node->setPosition(-cfg.getWellW()/2 -200, 0, -600);
+
+            events.call("setCam", {2200});
+        }
+
         friend struct GameMain;
     };
 
@@ -138,18 +160,25 @@ namespace mdl
     ///------------------------------------------------------------ Game2Player:
     struct  Game2Player : IGame
     {       Game2Player()
-            {   setup  ();
+            {   
                 infoNewGame2Console("Game2Player::setup()\n");
-                Glob::ninja->setPosition(0, 0, 100);
-
-                Ogre::Degree     angle(180);
-                Ogre::Quaternion rot(angle, Ogre::Vector3::UNIT_Y);
-                Glob::ninja->setOrientation(rot);
+                setup     ();
+                setupDecor();
             }
            ~Game2Player()
             {   
+                unsigned id{};
+                for(auto& w : wells)
+                {   safeRemoveNode(w->node);
+                    delete(w);
+                    destroyNode(names[id++]);
+                }
             }
 
+        std::array<std::string, 2> names
+        {   "Game2Player0",
+            "Game2Player1"
+        };
         std::array<Ogre::SceneNode*, 2>          nodePl;
         std::array<mdl::Well*, 2> wells{nullptr, nullptr};
 
@@ -157,11 +186,12 @@ namespace mdl
         /// Инициализация.                        |
         ///---------------------------------------:
         void setup()
-        {   nodePl[0] = nodeBase->createChildSceneNode("Game2Player0");
-            nodePl[1] = nodeBase->createChildSceneNode("Game2Player1");
-            unsigned id{};
-            for(auto& w : wells)
-            {   w = createWell(nodePl[id], id, w); id++;
+        {   
+            unsigned   id{};
+            for(auto&  w : wells)
+            {   nodePl[id] = nodeBase->createChildSceneNode(names[id]);
+                       w   = createWell(nodePl[id], id, w);
+                       id++;
             }
 
             const auto x{ConfigGame::get().getWellW() / 2 + 100};
@@ -189,6 +219,24 @@ namespace mdl
         }
         
     private:
+        void setupDecor()
+        {   
+            decor.ninja.node->setPosition(0, 0, 100);
+
+            Ogre::Degree     angle(180);
+            Ogre::Quaternion rot(angle, Ogre::Vector3::UNIT_Y);
+            decor.ninja.node->setOrientation(rot);
+
+            decor.ground.node->setScale(3.0, 1.0, 3.0);
+
+            nodePl[0]->yaw(Ogre::Degree(-10));
+            nodePl[1]->yaw(Ogre::Degree( 10));
+
+            decor.tree.node->setPosition(0, 0, -600);
+            decor.tree.node->setScale(8, 12, 8);
+
+            events.call("setCam", {3300});
+        }
 
         friend struct GameMain;
     };

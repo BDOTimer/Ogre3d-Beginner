@@ -69,10 +69,6 @@ namespace mdl
 
         float val{2200.0f};
 
-        void reset()
-        {   val = 2200.0f;
-        }
-
         void setup(SceneNode* nodeUser)
         {   
             cam = scnMgr->createCamera("myCam");
@@ -106,11 +102,25 @@ namespace mdl
             ctx->addInputListener(man.get());
 
             set2Start();
+
+            events.add("setCam", [this](Args_t a)
+                {   this->setCam(a[0]);
+                }
+            );
+
+            events.add("set2Start", [this](Args_t)
+                {   this->set2Start();
+                }
+            );
         }
 
         void set2Start()
         {   man->setYawPitchDist(Ogre::Degree(0), Ogre::Degree(10), val);
-            reset();
+        }
+
+        void setCam(float d)
+        {   val = d;
+            man->setYawPitchDist(Ogre::Degree(0), Ogre::Degree(10), d);
         }
     };
 
@@ -535,6 +545,23 @@ inline void PrintNodeHierarchy(Ogre::SceneNode* root)
     std::cout << root->getName() << '\n';
     PrintNodeHierarchy2(root);
     std::cout << std::endl;
+}
+
+namespace mdl
+{
+    struct Decor : Glob
+    {   Ninja    ninja;
+        Tree      tree;
+        Ground  ground;
+
+        void setup()
+        {   ninja    .setup();
+            tree     .setup();
+            ground   .setup();
+        }
+    };
+
+    inline Decor decor;
 }
 
 #endif // PRIMITIVES_H
