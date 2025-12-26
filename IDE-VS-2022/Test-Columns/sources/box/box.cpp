@@ -127,11 +127,11 @@ namespace mdl
         return  o;
     }
 
-    void Well::infoNewGame2Console() const
-    {   std::cout << '\n' << std::format("{}\n{}{:2}{}\n{}\n",
+    void IGame::infoNewGame2Console(std::string_view a) const
+    {   std::cout << '\n' << std::format("{}\n{}{:2}{}\n{}\n{}\n",
         "|----------------------------------|",
         "|     Новая игра  - ", Glob::cntGame," создана!    |",
-        "|----------------------------------|");
+        "|----------------------------------|",a);
     }
 
     ///---------------------------------|

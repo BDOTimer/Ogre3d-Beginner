@@ -49,7 +49,7 @@ namespace mdl
         int mWidthS      = 110;
         int mWidthL      = 360;
         int mShortHeight =  34;
-        int mLongHeight  = 230;
+        int mLongHeight  = 250;
  
         bool mIsLongText = false;
 
@@ -244,15 +244,16 @@ namespace mdl
             ctb = std::make_unique<ClickableTextBox>(trayMgr);
             ctb->setText(
                 "",
-                "'1'    : Новая игра - 1 игрок\n"
-                "[x]    : Новая игра - 2 игрока\n"
-                "CURSOR : LEFT, RIGHT\n"
-                "UP     : Рофлить жемчуг\n"
-                "DOWN   : Бросить жемчуг\n"
-                "F5, F6 : Вращение сцены\n"
-                "SPACE  : Пауза\n"
-                "'0'    : Cбросить камеру\n"
-                "ESCAPE : Выход из игры\n"
+                "'1'      : Новая игра - 1 игрок\n"
+                "'2'      : Новая игра - 2 игрока\n"
+                "CURSOR   : LEFT/'A', RIGHT/'D'\n"
+                "UP  /'W' : Рофлить жемчуг\n"
+                "DOWN/'S' : Бросить жемчуг\n"
+                " -----------------\n"
+                "F5, F6   : Вращение сцены\n"
+                "SPACE    : Пауза\n"
+                "'0'      : Cбросить камеру\n"
+                "ESCAPE   : Выход из игры\n"
             );
             ctb->setCaption("F1::Help");
 

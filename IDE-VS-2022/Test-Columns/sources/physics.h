@@ -78,8 +78,6 @@ namespace phs
     ///------------------------------------------------------------- Collisions:
     struct Collisions : Test$f2i
     {
-        static Collisions& get(){ static Collisions cln; return cln; }
-
         ///-------------------------------------|
         /// Путь свободен?                      |
         /// Нужна отдельная инициализация!      |
@@ -193,10 +191,10 @@ namespace phs
     ///     }
     ///---------------------------------------------------------------- Stepper:
     struct  Stepper
-    {       Stepper() : Distance(cln.CellSizeFloat)
+    {       Stepper() : Distance(ConfigGame::get().sizeCell)
             {   
             }
-            Stepper(float val) : Distance(cln.CellSizeFloat), pos(val)
+            Stepper(float val) : Distance(ConfigGame::get().sizeCell), pos(val)
             {   
             }
 
@@ -209,8 +207,6 @@ namespace phs
         {   pos = xy;
             tmp =  0;
         }
-
-        const Collisions& cln{ Collisions::get() };
 
         void start(const float val)
         {   if(isActive) return;
@@ -245,7 +241,7 @@ namespace phs
         }
 
         float getSpeed(float dt) const
-        {   return dt <= cln.CellSizeFloat  ? dt : cln.CellSizeFloat + 1;
+        {   return dt <= Distance  ? dt : Distance + 1;
         }
 
         const float Distance   ; /// Шаг движения.

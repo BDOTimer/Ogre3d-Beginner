@@ -37,22 +37,24 @@ namespace mdl
         virtual bool keyPressed(const KeyboardEvent& evt) = 0;
         
     protected:
-        Well* createWell(unsigned idPlayer, Well* well = nullptr)
+
+        Well* createWell(Ogre::SceneNode* nodeGame,
+                         unsigned         idPlayer, 
+                         Well*      well = nullptr)
         {   
             if (well)
             {   safeRemoveNode(well->node);
                 delete(well);
             }
             
-            well = new Well();
-            well-> idPlayer = idPlayer;
+            well = new Well(idPlayer);
 
             well->logic.setDelegateSetScore(
                 [this](int score)
                 {   Glob::pUI->score->set(score);
                 }
             );
-            well->setup();
+            well->setup(nodeGame);
             return   well;
         }
 
@@ -66,6 +68,8 @@ namespace mdl
             }
             node->getCreator()->destroySceneNode(node);
         }
+
+        void infoNewGame2Console(std::string_view) const;
     };
 
 
@@ -84,21 +88,29 @@ namespace mdl
     ///------------------------------------------------------------ Game1Player:
     struct  Game1Player : IGame
     {       Game1Player()
-            {   
-                setup  ();
-                std::cout << "Game1Player::setup()\n";
+            {   setup  ();
+                infoNewGame2Console("Game1Player::setup()\n");
+
+                auto X{ConfigGame::get().getWellW() / 2 + 100};
+                Glob::ninja->setPosition(X, 0, 100);
+
+                Ogre::Degree     angle(160);
+                Ogre::Quaternion rot(angle, Ogre::Vector3::UNIT_Y);
+                Glob::ninja->setOrientation(rot);
             }
            ~Game1Player()
             {   
             }
 
-        mdl::Well* well{nullptr};
+        Ogre::SceneNode*   nodePl;
+        mdl::Well*  well{nullptr};
 
         ///---------------------------------------|
         /// Инициализация.                        |
         ///---------------------------------------:
         void setup()
-        {   well = createWell(0, well); ASSERT(well != nullptr)
+        {   nodePl = nodeBase->createChildSceneNode("Game1Player");
+            well = createWell(nodePl, 0, well); ASSERT(well != nullptr)
         }
 
         ///---------------------------------------|
@@ -126,25 +138,37 @@ namespace mdl
     ///------------------------------------------------------------ Game2Player:
     struct  Game2Player : IGame
     {       Game2Player()
-            {   
-                setup  ();
-                std::cout << "Game2Player::setup()\n";
+            {   setup  ();
+                infoNewGame2Console("Game2Player::setup()\n");
+                Glob::ninja->setPosition(0, 0, 100);
+
+                Ogre::Degree     angle(180);
+                Ogre::Quaternion rot(angle, Ogre::Vector3::UNIT_Y);
+                Glob::ninja->setOrientation(rot);
             }
            ~Game2Player()
             {   
             }
 
+        std::array<Ogre::SceneNode*, 2>          nodePl;
         std::array<mdl::Well*, 2> wells{nullptr, nullptr};
 
         ///---------------------------------------|
         /// Инициализация.                        |
         ///---------------------------------------:
         void setup()
-        {   
+        {   nodePl[0] = nodeBase->createChildSceneNode("Game2Player0");
+            nodePl[1] = nodeBase->createChildSceneNode("Game2Player1");
             unsigned id{};
             for(auto& w : wells)
-            {   w = createWell(id++, w);
+            {   w = createWell(nodePl[id], id, w); id++;
             }
+
+            const auto x{ConfigGame::get().getWellW() / 2 + 100};
+
+            nodePl[0]->translate( x, 0, 0, Ogre::Node::TS_LOCAL);
+            nodePl[1]->translate(-x, 0, 0, Ogre::Node::TS_LOCAL);
+
         }
 
         ///---------------------------------------|
@@ -188,6 +212,8 @@ namespace mdl
         ///---------------------------------------:
         void setup(unsigned nPlayers)
         {   
+            ++Glob::cntGame;
+
             ///-----------------------------------|
             /// Регистрация обработчиков событий. |
             ///-----------------------------------:

@@ -39,11 +39,13 @@ namespace mdl
         float       speed{50};
         Vector2i    pos2gm   ;             /// Позиция в зеркале.
 
-        void setupGravitate(phs::Stepper* grav)
+        void setupGravitate(phs::Stepper* grav, phs::Collisions* cln)
         {   ASSERT(nullptr != node)
             steperGrav = grav;
             ASSERT(nullptr != steperGrav)
             isGrav = true;
+
+            collisions = cln;
         }
 
         ///------------------------------|
@@ -202,15 +204,15 @@ namespace mdl
         ///---------------------------------------|
         /// Гравитация.                           |
         ///---------------------------------------:
-        phs::Stepper* steperGrav{nullptr};
-        bool          isGrav    {false  };
+        phs::Collisions* collisions{nullptr};
+        phs::Stepper*    steperGrav{nullptr};
+        bool             isGrav    {false  };
 
         void updateGravitate()
         {   if(!isGrav) return;
 
-            const    ::ConfigGame& cfg       {   ::ConfigGame::get()};
-            const phs::Collisions& collisions{phs::Collisions::get()};
-
+            const ::ConfigGame& cfg{ ::ConfigGame::get() };
+            
             const auto& posGem = node->getPosition();
 
             if(steperGrav->isActive)
@@ -227,7 +229,7 @@ namespace mdl
                     checkAssert("Финиш");
                 }
             }
-            else if(collisions.isDown(
+            else if(collisions->isDown(
                         {posGem.x, posGem.y - 50.f, posGem.z}, false))
             {   steperGrav->start(-cfg.sizeCell);
 
@@ -248,7 +250,7 @@ namespace mdl
             const int x = pos2gm[0];
             const int y = pos2gm[1];
 
-            Ogre::Vector3i _vi_{phs::Collisions::get().getIndex3(
+            Ogre::Vector3i _vi_{collisions->getIndex3(
                 {   posGem.x,
                     posGem.y - 50.f,
                     posGem.z
@@ -326,13 +328,15 @@ namespace mdl
     ///------------------------------------------------------------------------|
     /// Figure
     ///----------------------------------------------------------------- Figure:
-    struct  Figure   : Glob
-    {       Figure() : 
-                gems(ConfigGame::get().N)
+    struct  Figure              : Glob
+    {       Figure(unsigned id) : 
+                id         (id)
+            ,   gems(ConfigGame::get().N)
             ,   mat (ConfigGame::get().descriptionGems.size())
             {   
             }
 
+        unsigned                 id  ;
         std::vector<Gem>         gems;
         std::vector<MaterialPtr> mat ;
         SceneNode*               node; /// Нод фигуры!
@@ -359,8 +363,10 @@ namespace mdl
         ///---------------------------------------|
         /// Стартовая инициализация.              |
         ///---------------------------------------:
-        void setup(SceneNode* well)
+        void setup(SceneNode* well, phs::Collisions* cln)
         {   
+            collisions = cln;
+
             ///------------------------|
             /// Крепим к корзине.      |
             ///------------------------:
@@ -389,7 +395,7 @@ namespace mdl
             steperLR  .setup(posStart.x);
             steperGrav.setup(posStart.y);
 
-            node->setVisible(collisions.isHereEmpty(posStart));
+            node->setVisible(collisions->isHereEmpty(posStart));
         }
 
         ///---------------------------------------|
@@ -398,7 +404,7 @@ namespace mdl
         bool  isFalling{true};
         float speedLR{200.0f};
 
-        const phs::Collisions& collisions{phs::Collisions::get()};
+        phs::Collisions* collisions{nullptr};
         
         ///---------------------------------------|
         /// Вызывается для каждого фрейма(кадра). |
@@ -427,7 +433,7 @@ namespace mdl
                 node->setPosition(posFig.x, y, posFig.z);
             }
             else if(isFalling &&
-                    collisions.isDown(posFig, steperLR.isActive))
+                    collisions->isDown(posFig, steperLR.isActive))
             {   
                 steperGrav.start(-cfg.sizeCell);
                 antiBugInjectionY();
@@ -449,51 +455,57 @@ namespace mdl
         }
 
         ///---------------------------------------|
-        /// Обработка клавиш.                     |
+        /// Карта управления.                     |
         ///---------------------------------------:
-        bool  keyPressed (const KeyboardEvent& evt)
+        inline static constexpr std::array<size_t, 4> userKeys[2]
+        {
+            {   OgreBites::SDLK_UP, 
+                OgreBites::SDLK_DOWN, 
+                OgreBites::SDLK_LEFT,
+                OgreBites::SDLK_RIGHT
+            },
+            { 'w', 's', 'a', 'd'}
+        };
+
+        void  keyPressed (const KeyboardEvent& evt)
         {   
-            switch(evt.keysym.sym)
-            {
-            case OgreBites::SDLK_UP:
+            const auto& K{evt.keysym.sym};
+
+            if(K == userKeys[id][0])
+            {   
                 reShuffleGems();
                 SNDPLAY(sony2);
-                break;
+            }
                 
-            case OgreBites::SDLK_DOWN:
+            else if(K == userKeys[id][1])
+            {
                 speedFall.up();
                 SNDPLAY(drop1);
-                break;
+            }
                 
-            case OgreBites::SDLK_LEFT:
-            {   
+            else if(K == userKeys[id][2])
+            {
                 const auto& p = node->getPosition();
 
-                if(collisions.isLeft(p))
+                if(collisions->isLeft(p))
                 {   steperLR .start (-cfg.sizeCell);
                     antiBugInjectionX();
                     MUSPLAY(dart);
                 }
                 else MUSPLAY(wow1);
-                break;
             }
-            case OgreBites::SDLK_RIGHT:
-            {   const auto& p = node->getPosition();
 
-                if(collisions.isRight(p))
+            else if(K == userKeys[id][3])
+            {
+                const auto& p = node->getPosition();
+
+                if(collisions->isRight(p))
                 {   steperLR .start (cfg.sizeCell);
                     antiBugInjectionX();
                     MUSPLAY(dart);
                 }
                 else MUSPLAY(wow1);
-                break;
-            } 
-            default:
-            /// l(evt.keysym.sym)
-                return true; // Другие клавиши не обрабатываем
             }
-
-            return false;
         }
         
         ///---------------------------------------|

@@ -167,15 +167,13 @@ namespace mdl
 
         void setup()
         {   
-            auto X{ConfigGame::get().getWellW() / 2 + 100};
-
             entity = scnMgr->createEntity("ninja.mesh");
             entity ->setCastShadows(true);
 
             node = nodeBase->createChildSceneNode("Ninja");
             node->attachObject   (entity);
-            node->yaw(Ogre::Degree (160));
-            node->setPosition (X, 0, 100);
+            node->yaw(Ogre::Degree (180));
+            node->setPosition (0, 0, 0);
             node->setScale(3.0, 3.0, 3.0);
         }
     };

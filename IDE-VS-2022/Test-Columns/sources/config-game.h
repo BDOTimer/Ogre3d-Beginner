@@ -28,6 +28,8 @@ struct  ConfigGame
         //{   W += (W+1)%2;
         //}
 
+    const bool isDebug{false};
+
     const unsigned W{ 7}; /// Ширина (кол-во ячеек) корзины(Well).
     const unsigned H{11}; /// Выстота(кол-во ячеек) корзины(Well).
     const unsigned N{ 5}; /// Количество элементов(Gems) в фигуре(Column).
@@ -91,7 +93,7 @@ struct  ConfigGame
     {   const size_t ND{descriptionGems.size()};
         const int rndMax = T > ND ? ND : T;
 
-        if(false) return rand() % rndMax;
+        if(!isDebug) return rand() % rndMax;
 
         static constexpr const size_t R{6};
             
@@ -108,11 +110,11 @@ struct  ConfigGame
     }
 
     static ConfigGame& get()
-    {   static ConfigGame cfgHard {21, 15, 5, 6   };
-        static ConfigGame cfgDemo {11, 15, 5, 3   };
-        static ConfigGame cfgDebug{ 7,  7, 3, 3, 3};
+    {   static ConfigGame cfgHard {0, 21, 15, 5, 6   };
+        static ConfigGame cfgDemo {0, 11, 15, 5, 5   };
+        static ConfigGame cfgDebg {1,  7,  7, 3, 3, 3};
 
-        return pConfigGame ? *pConfigGame : cfgDebug;
+        return pConfigGame ? *pConfigGame : cfgHard;
     }
 };
 
@@ -176,6 +178,7 @@ namespace mdl
         inline static InputListener     * pIListener    ;
         inline static Ogre::SceneManager* scnMgr        ;
         inline static Ogre::SceneNode   * nodeBase      ;
+        inline static Ogre::SceneNode   * ninja         ;
         inline static                 UI* pUI           ;
         inline static float               deltaTime     ;
         inline static unsigned            cntGame{0}    ;
