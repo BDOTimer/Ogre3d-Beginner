@@ -218,7 +218,11 @@ namespace mdl
             }
         }
 
-        SetScore(statisticScore += cnt);
+        events.call("setScore", 
+            {   float(figure.id),
+                float(statisticScore += cnt)
+            }
+        );
 
         return cnt;
     }

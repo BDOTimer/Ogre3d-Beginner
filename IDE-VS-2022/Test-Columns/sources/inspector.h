@@ -177,7 +177,7 @@ namespace mdl
         {   return ui.mousePressed(evt);
         }
 
-        float    accumulatedTime { 0};  // Накопленное время
+        float    accumulatedTime { 0};  // Накопленное время.
         float    intervalTime    { 1};  // Интервал (1 секунда)
         float    isSpeedRotWold  { 0};  // Нет вращения Мира.
         const float speedRotWold {30};  // Нет вращения Мира.
@@ -257,10 +257,6 @@ namespace mdl
             isPause    = false;
             isGameOver = false;
             camera2StartGame();
-        }
-
-        void setScore(int score)
-        {   ui.score->set(score);
         }
 
         void camera2StartGame()

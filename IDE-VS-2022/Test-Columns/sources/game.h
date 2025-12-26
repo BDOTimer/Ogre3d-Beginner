@@ -48,12 +48,6 @@ namespace mdl
         {   
             well = new Well(idPlayer);
             well->setup    (nodeGame);
-
-            well->logic.setDelegateSetScore(
-                [this](int score)
-                {   Glob::pUI->score->set(score);
-                }
-            );
             return well;
         }
 

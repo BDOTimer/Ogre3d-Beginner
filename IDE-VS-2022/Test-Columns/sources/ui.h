@@ -161,11 +161,12 @@ namespace mdl
 	    int		        mScore{0};
 		Label*  mLabel{ nullptr };
 	
-	    void createScoreLabel()
-	    {
+	    void createScoreLabel(TrayManager* tmg, std::string name)
+	    {   mTrayMgr = tmg;
+
 	        mLabel = mTrayMgr->createLabel(
 	            TrayLocation::TL_TOPRIGHT,
-	            "ScoreLabel",
+	            name,
 	            std::to_string(mScore),
 				110.0f // same width as mWidthS in ClickableTextBox
 	        );
@@ -176,10 +177,10 @@ namespace mdl
 	        mLabel->setCaption(std::to_string(mScore));
 		}
 	public:
+        ScoreLabel() = default;
 	    ScoreLabel(TrayManager* trayManager)
 	        : mTrayMgr(trayManager)
 	    {
-	        createScoreLabel();
 	    }
 	    ~ScoreLabel()
 	    {
@@ -203,7 +204,30 @@ namespace mdl
 	    {
 	        return mScore;
 	    }
+
+        friend struct ScoreLabels;
 	};
+
+    struct  ScoreLabels
+	{       ScoreLabels()
+            {
+            }
+
+        std::array<ScoreLabel, 2> labels;
+
+        void setup(      TrayManager* trayManager)
+        {   labels[0].createScoreLabel(trayManager, "ScoreLabel1");
+            labels[1].createScoreLabel(trayManager, "ScoreLabel2");
+
+            addEvent(setScore);
+        }
+
+        void setScore(Args_t a)
+        {   const auto& id    = (unsigned)a[0] ^ 1;
+            const auto& score = (unsigned)a[1];
+            labels[id].set(score);
+        }
+    };
 
     ///------------------------------------------------------------------------|
     /// UI
@@ -218,7 +242,8 @@ namespace mdl
     
         OgreBites::TrayManager*       trayMgr;
         std::unique_ptr<ClickableTextBox> ctb;
-		std::unique_ptr<ScoreLabel>     score;
+    /// std::unique_ptr<ScoreLabel>     score;
+        ScoreLabels               scoreLabels;
 
         bool keyPressed(const KeyboardEvent& evt)
         {   return ctb->keyPressed(evt);
@@ -257,7 +282,9 @@ namespace mdl
             );
             ctb->setCaption("F1::Help");
 
-			score = std::make_unique<ScoreLabel>(trayMgr);
+		/// score = std::make_unique<ScoreLabel>(trayMgr);
+
+            scoreLabels.setup(trayMgr);
         }
     };
 }
