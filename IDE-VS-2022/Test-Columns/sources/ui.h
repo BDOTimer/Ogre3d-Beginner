@@ -6,8 +6,67 @@
 #ifndef UI_H
 #define UI_H
 #include "config-game.h"
-//#include "OgreBites/SdkTray.h"
-#include "OgreTrays.h"
+
+
+namespace myl
+{
+    using namespace ::Ogre;
+    using namespace ::OgreBites;
+
+    struct ToolFonts
+    {
+        inline static const char* NAMEFONT{"JetBrainsMonoFont"};
+
+        static void setFont(Ogre::OverlayElement* elem,
+                      const Ogre::String& fontName, 
+                      const ColourValue&  color = ColourValue{0, 0, 0.2f})
+        {
+            if (elem->getTypeName() == "TextArea")
+            {
+                Ogre::TextAreaOverlayElement* textElem = 
+                    static_cast<Ogre::TextAreaOverlayElement*>(elem);
+                textElem->setFontName(fontName);
+                textElem->setCharHeight(18);
+                textElem->setColour(color);
+                return;
+            }
+        
+            Ogre::OverlayContainer* container
+                = dynamic_cast<Ogre::OverlayContainer*>(elem);
+            Ogre::OverlayContainer::ChildMap children
+                = container->getChildren();
+
+            for (auto& child : children)
+            {
+                Ogre::OverlayElement* oe = child.second;
+        
+                if (oe->getTypeName() == "TextArea")
+                {   setFont(oe, fontName);
+                }
+            }
+        }
+
+        static void createTextElement()///-///////////////////////////////////-?
+        {   Ogre::OverlayManager& om = Ogre::OverlayManager::getSingleton();
+            Ogre::OverlayElement* text
+                = om.createOverlayElement("TextArea", "TestText");
+
+            Ogre::TextAreaOverlayElement* textElem = 
+                    static_cast<Ogre::TextAreaOverlayElement*>(text);
+            textElem->setFontName("JetBrainsMonoFont");
+            textElem->setCharHeight(16);
+            textElem->setCaption("Привет, мир!");
+            textElem->setColour(Ogre::ColourValue(1, 1, 1, 1));
+            textElem->setPosition(100, 100);
+            textElem->setDimensions(300, 50);
+
+            //Ogre::Overlay* overlay = om.create("MyOverlay");
+            //overlay->add2D(textElem);  // Добавляем элемент как 2D слой
+            //overlay->show(); 
+        }
+    };
+}
+
 
 /*  
 	Mods for TextBox
@@ -238,6 +297,7 @@ namespace mdl
         friend struct UI;
     };
 
+
     using namespace OgreBites;
     /// trayMgr->showOkDialog("Внимание", "Сообщение");
     ///------------------------------------------------------------------------|
@@ -252,31 +312,44 @@ namespace mdl
             createMyMaterials   ();
             createCustomTemplate();
 
+            Button* bt;
+            Label*  lb;
+
+            const char* NAMEFONT{myl::ToolFonts::NAMEFONT};
+
             tM->createDecorWidget(
                 T::TL_CENTER, "wdMS1", "MyTemplates/FancyFrame"
             );
 
-            tM->createLabel(
-                T::TL_CENTER, "lbMS1", "START MENU", 150
+            lb = tM->createLabel(
+                T::TL_CENTER, "lbMS1", "СТАРТ ИГРЫ", 150
             );
-            tM->createSeparator(
-                T::TL_CENTER, "sp1"
+            myl::ToolFonts::setFont(lb->
+                getOverlayElement(), NAMEFONT, ColourValue{1,1,0});
+
+            tM->createSeparator(T::TL_CENTER, "sp1");
+
+            bt = tM->createButton(
+                T::TL_CENTER, "btStart1", "Один Игрок", 150
             );
-            tM->createButton(
-                T::TL_CENTER, "btStart1", "1 Player", 150
+            myl::ToolFonts::setFont(bt->getOverlayElement(), NAMEFONT);
+
+            bt = tM->createButton(
+                T::TL_CENTER, "btStart2", "Два Игрока", 150
             );
-            tM->createButton(
-                T::TL_CENTER, "btStart2", "2 Player", 150
+            myl::ToolFonts::setFont(bt->getOverlayElement(), NAMEFONT);
+
+            bt = tM->createButton(
+                T::TL_CENTER, "btTuning", "Настройки", 150
             );
-            tM->createButton(
-                T::TL_CENTER, "btTuning", "Tuningя", 150
+            myl::ToolFonts::setFont(bt->getOverlayElement(), NAMEFONT);
+
+            tM->createSeparator(T::TL_CENTER, "sp2");
+            
+            bt = tM->createButton(
+                T::TL_CENTER, "btExit", "Выход в ОС", 150
             );
-            tM->createSeparator(
-                T::TL_CENTER, "sp2"
-            );
-            tM->createButton(
-                T::TL_CENTER, "btExit", "Exit", 150
-            );
+            myl::ToolFonts::setFont(bt->getOverlayElement(), NAMEFONT);
 
             tM->createDecorWidget(
                 T::TL_CENTER, "wdMS2", "MyTemplates/FancyFrame"
@@ -330,14 +403,79 @@ namespace mdl
             }
             catch (...) { return false; }
         }
+    };
 
-        void setFont()///-////////////////////////////////////////////////////-?
-        {   Ogre::OverlayManager& om = Ogre::OverlayManager::getSingleton();
-            Ogre::OverlayElement* text
-                = om.createOverlayElement("TextArea", "TestText");
-    
-            //text->set("JetBrainsMonoFont");  // Имя из .fontdef файла
-            //text->setCharHeight(16);
+
+    ///------------------------------------------------------------------------|
+    /// Help
+    ///------------------------------------------------------------------- Help:
+    struct Help
+    {
+        OgreBites::TrayManager* trayMgr;
+        Button*                  btHelp;
+        Button*                    btSM;
+
+        void setup(OgreBites::TrayManager* tM)
+        {   
+            trayMgr = tM;
+
+            using T = TrayLocation;
+            const char* NAMEFONT{myl::ToolFonts::NAMEFONT};
+
+            btHelp = tM->createButton(
+                T::TL_TOPLEFT, "btHelp", "F1::Help", 100
+            );
+            myl::ToolFonts::setFont(btHelp->getOverlayElement(), NAMEFONT);
+
+            btSM = tM->createButton(
+                T::TL_TOPLEFT, "bt", "Старт-Меню"
+            );
+            myl::ToolFonts::setFont(btSM->getOverlayElement(), NAMEFONT);
+        }
+
+        void keyPressed(const KeyboardEvent& evt)
+        {   switch(evt.keysym.sym)
+            {   case OgreBites::SDLK_F1:
+                {   showHelp();
+                }
+            }
+        }
+
+        void buttonHit(OgreBites::Button* button) 
+        {   if (button->getName() == "btHelp")
+            {   showHelp();
+            }
+        }
+
+        void showHelp()
+        {   
+            /*
+            trayMgr->showOkDialog("Help",
+                "'1'      : Новая игра - 1 игрок\n"
+                "'2'      : Новая игра - 2 игрока\n"
+                "CURSOR   : LEFT/'A', RIGHT/'D'\n"
+                "UP  /'W' : Рофлить жемчуг\n"
+                "DOWN/'S' : Бросить жемчуг\n"
+                " -----------------\n"
+                "F5, F6   : Авто-вращение сцены\n"
+                "SPACE    : Пауза\n"
+                "'0'      : Cбросить камеру\n"
+                "ESCAPE   : Выход из игры\n"
+            );
+            */
+
+            trayMgr->showOkDialog("Help",
+                "'1'     : New Game - 1 player\n"
+                "'2'     : New game - 2 players\n"
+                "CURSOR  : LEFT/'A', RIGHT/'D'\n"
+                "UP /'W' : Roll the pearls\n"
+                "DOWN/'S': Throw the pearls\n"
+                " -----------------\n"
+                "F5, F6 : Auto-rotation of the scene\n"
+                "SPACE   : Pause\n"
+                "'0'     : Reset camera\n "
+                "ESCAPE  : Exit the game \n"
+            );
         }
     };
 
@@ -354,16 +492,17 @@ namespace mdl
             }
     
         OgreBites::TrayManager*       trayMgr;
-        std::unique_ptr<ClickableTextBox> ctb;
         ScoreLabels               scoreLabels;
         MenuStart                   menuStart;
+        Help                             help;
 
         bool keyPressed(const KeyboardEvent& evt)
-        {   return ctb->keyPressed(evt);
+        {   help.keyPressed(evt);
+            return true;
         }
 
-        bool mousePressed(const OgreBites::MouseButtonEvent& evt)
-        {   return ctb->mousePressed(evt);
+        void buttonHit(OgreBites::Button* button) 
+        {   help.buttonHit(button);
         }
 
         void setup(OgreBites::TrayManager* tM)
@@ -375,27 +514,12 @@ namespace mdl
 
             ctx->addInputListener(trayMgr);
             trayMgr->hideCursor();
- 
-            ctb = std::make_unique<ClickableTextBox>(trayMgr);
-            ctb->setText(
-                "",
-                "'1'      : Новая игра - 1 игрок\n"
-                "'2'      : Новая игра - 2 игрока\n"
-                "CURSOR   : LEFT/'A', RIGHT/'D'\n"
-                "UP  /'W' : Рофлить жемчуг\n"
-                "DOWN/'S' : Бросить жемчуг\n"
-                " -----------------\n"
-                "F5, F6   : Авто-вращение сцены\n"
-                "SPACE    : Пауза\n"
-                "'0'      : Cбросить камеру\n"
-                "ESCAPE   : Выход из игры\n"
-            );
-            ctb->setCaption("F1::Help");
 
 		/// score = std::make_unique<ScoreLabel>(trayMgr);
 
             scoreLabels.setup(trayMgr);
             menuStart  .setup(trayMgr);
+            help       .setup(trayMgr);
         }
     };
 }

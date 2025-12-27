@@ -183,8 +183,10 @@ namespace mdl
             return  b;
         }
 
-        bool mousePressed(const OgreBites::MouseButtonEvent& evt)
-        {   return ui.mousePressed(evt);
+        bool mousePressed(
+            [[maybe_unused]]
+            const OgreBites::MouseButtonEvent& evt)
+        {   return true;
         }
 
         float    accumulatedTime { 0};  // Накопленное время.
@@ -248,6 +250,8 @@ namespace mdl
             else if (button->getName() == "btExit")
             {   getRoot()->queueEndRendering();
             }
+
+            ui.buttonHit(button);
         }
 
         ///---------------------------------------|
