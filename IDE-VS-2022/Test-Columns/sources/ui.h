@@ -413,6 +413,7 @@ namespace mdl
     {
         OgreBites::TrayManager* trayMgr;
         Button*                  btHelp;
+        TextBox*                   tbIH{nullptr};
         Button*                    btSM;
 
         void setup(OgreBites::TrayManager* tM)
@@ -428,7 +429,7 @@ namespace mdl
             myl::ToolFonts::setFont(btHelp->getOverlayElement(), NAMEFONT);
 
             btSM = tM->createButton(
-                T::TL_TOPLEFT, "bt", "Старт-Меню"
+                T::TL_TOPLEFT, "btSM", "Меню"
             );
             myl::ToolFonts::setFont(btSM->getOverlayElement(), NAMEFONT);
         }
@@ -442,40 +443,56 @@ namespace mdl
         }
 
         void buttonHit(OgreBites::Button* button) 
-        {   if (button->getName() == "btHelp")
+        {   if      (button == btHelp)
             {   showHelp();
+            }
+            else if (button == btSM)
+            {   
+                auto b =
+                this->trayMgr
+                    ->getTrayContainer(TrayLocation::TL_CENTER)->isVisible();
+                this->trayMgr
+                    ->getTrayContainer(TrayLocation::TL_CENTER)
+                    ->setVisible(!b);
             }
         }
 
+        DisplayString strIH
+        {   "'1'      : Новая игра - 1 игрок\n"
+            "'2'      : Новая игра - 2 игрока\n"
+            "CURSOR   : LEFT/'A', RIGHT/'D'\n"
+            "UP  /'W' : Рофлить жемчуг\n"
+            "DOWN/'S' : Бросить жемчуг\n"
+            " -----------------\n"
+            "F5, F6   : Авто-вращение сцены\n"
+            "SPACE    : Пауза\n"
+            "'0'      : Cбросить камеру\n"
+            "ESCAPE   : Выход из игры\n"
+        };
+
         void showHelp()
         {   
-            /*
-            trayMgr->showOkDialog("Help",
-                "'1'      : Новая игра - 1 игрок\n"
-                "'2'      : Новая игра - 2 игрока\n"
-                "CURSOR   : LEFT/'A', RIGHT/'D'\n"
-                "UP  /'W' : Рофлить жемчуг\n"
-                "DOWN/'S' : Бросить жемчуг\n"
-                " -----------------\n"
-                "F5, F6   : Авто-вращение сцены\n"
-                "SPACE    : Пауза\n"
-                "'0'      : Cбросить камеру\n"
-                "ESCAPE   : Выход из игры\n"
-            );
-            */
+            if(!tbIH)
+            {   
+                tbIH = trayMgr->createTextBox(
+                    TrayLocation::TL_TOPLEFT, "tbIH", "", 360, 270
+                );
 
-            trayMgr->showOkDialog("Help",
-                "'1'     : New Game - 1 player\n"
-                "'2'     : New game - 2 players\n"
-                "CURSOR  : LEFT/'A', RIGHT/'D'\n"
-                "UP /'W' : Roll the pearls\n"
-                "DOWN/'S': Throw the pearls\n"
-                " -----------------\n"
-                "F5, F6 : Auto-rotation of the scene\n"
-                "SPACE   : Pause\n"
-                "'0'     : Reset camera\n "
-                "ESCAPE  : Exit the game \n"
-            );
+                tbIH->setText(strIH);
+
+                myl::ToolFonts::setFont(
+                    tbIH->getOverlayElement(), myl::ToolFonts::NAMEFONT);
+
+                applyTextBoxMods(tbIH);
+            }
+            else
+            {   trayMgr->destroyWidget(tbIH);
+                tbIH = nullptr;
+            }
+
+            this->trayMgr
+                ->getTrayContainer(TrayLocation::TL_CENTER)
+                ->setVisible(false);
         }
     };
 
