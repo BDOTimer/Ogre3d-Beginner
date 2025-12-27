@@ -6,6 +6,8 @@
 #ifndef UI_H
 #define UI_H
 #include "config-game.h"
+//#include "OgreBites/SdkTray.h"
+#include "OgreTrays.h"
 
 /*  
 	Mods for TextBox
@@ -208,26 +210,40 @@ namespace mdl
         friend struct ScoreLabels;
 	};
 
+
+    ///------------------------------------------------------------------------|
+    /// ScoreLabels
+    ///------------------------------------------------------------ ScoreLabels:
     struct  ScoreLabels
 	{       ScoreLabels()
             {
             }
-
-        std::array<ScoreLabel, 2> labels;
-
-        void setup(      TrayManager* trayManager)
-        {   labels[0].createScoreLabel(trayManager, "ScoreLabel1");
-            labels[1].createScoreLabel(trayManager, "ScoreLabel2");
-
-            addEvent(setScore);
-        }
 
         void setScore(Args_t a)
         {   const auto& id    = (unsigned)a[0] ^ 1;
             const auto& score = (unsigned)a[1];
             labels[id].set(score);
         }
+
+    private:
+        std::array<ScoreLabel, 2> labels;
+
+        void setup(       TrayManager* tM)
+        {   labels[0].createScoreLabel(tM, "ScoreLabel1");
+            labels[1].createScoreLabel(tM, "ScoreLabel2");
+
+            addEvent(setScore);
+        }
+
+        friend struct UI;
     };
+
+    using namespace OgreBites;
+    ///------------------------------------------------------------------------|
+    /// MenuStart
+    ///-------------------------------------------------------------- MenuStart:
+    /// ...
+
 
     ///------------------------------------------------------------------------|
     /// UI
@@ -242,8 +258,8 @@ namespace mdl
     
         OgreBites::TrayManager*       trayMgr;
         std::unique_ptr<ClickableTextBox> ctb;
-    /// std::unique_ptr<ScoreLabel>     score;
         ScoreLabels               scoreLabels;
+        //MenuStart                   menuStart;
 
         bool keyPressed(const KeyboardEvent& evt)
         {   return ctb->keyPressed(evt);
@@ -285,9 +301,106 @@ namespace mdl
 		/// score = std::make_unique<ScoreLabel>(trayMgr);
 
             scoreLabels.setup(trayMgr);
+            //menuStart  .setup(trayMgr);
         }
     };
 }
+
+
+#include <imgui.h>
+#include <OgreRenderWindow.h>
+
+class MenuStart
+{
+public:
+    explicit MenuStart(Ogre::RenderWindow* window)
+        : mWindow(window), mVisible(true)
+    {}
+
+    void show()  { mVisible = true; }
+    void hide()  { mVisible = false; }
+    bool visible() const { return mVisible; }
+
+    // Возвращает true, если нужно завершить приложение
+    bool update()
+    {
+        if (!mVisible) return false;
+
+        ImGui::SetNextWindowPos(
+            ImVec2(mWindow->getWidth() * 0.5f, mWindow->getHeight() * 0.5f),
+            ImGuiCond_FirstUseEver,
+            ImVec2(0.5f, 0.5f)
+        );
+
+        ImGui::Begin("MenuStart", nullptr,
+            ImGuiWindowFlags_NoTitleBar |
+            ImGuiWindowFlags_NoResize |
+            ImGuiWindowFlags_NoMove |
+            ImGuiWindowFlags_NoCollapse |
+            ImGuiWindowFlags_AlwaysAutoResize
+        );
+
+        ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.15f, 0.25f, 0.4f, 0.92f));
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(8, 6));
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 8));
+
+        ImGui::Text("🚀 SPACE RACER");
+        ImGui::Separator();
+
+        bool start1 = ImGui::Button("1 Player", ImVec2(120, 32));
+        bool start2 = ImGui::Button("2 Players", ImVec2(120, 32));
+        bool tuning = ImGui::Button("Tuning", ImVec2(120, 32));
+        ImGui::Separator();
+        bool quit   = ImGui::Button("Exit", ImVec2(120, 32));
+
+        ImGui::PopStyleVar(2);
+        ImGui::PopStyleColor();
+
+        ImGui::End();
+
+        // Обработка действий
+        if (start1) {
+            std::cout << "[MenuStart] → 1 Player selected\n";
+            hide();
+            mAction = Action::Start1Player;
+        }
+        else if (start2) {
+            std::cout << "[MenuStart] → 2 Players selected\n";
+            hide();
+            mAction = Action::Start2Players;
+        }
+        else if (tuning) {
+            std::cout << "[MenuStart] → Tuning\n";
+            hide();
+            mAction = Action::OpenTuning;
+        }
+        else if (quit) {
+            std::cout << "[MenuStart] → Exit\n";
+            mAction = Action::Quit;
+        }
+
+        return mAction == Action::Quit;
+    }
+
+    enum class Action {
+        None,
+        Start1Player,
+        Start2Players,
+        OpenTuning,
+        Quit
+    };
+
+    Action popAction() {
+        Action a = mAction;
+        mAction = Action::None;
+        return a;
+    }
+
+private:
+    Ogre::RenderWindow* mWindow = nullptr;
+    bool mVisible = false;
+    Action mAction = Action::None;
+};
  
  
 #endif // UI_H

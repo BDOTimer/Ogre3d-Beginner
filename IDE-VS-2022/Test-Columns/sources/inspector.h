@@ -7,6 +7,8 @@
 #include "game.h"
 #include "sky.h"
 
+#include "OgreTrays.h"
+
 
 ///---------|
 /// Models. |
@@ -25,7 +27,8 @@ namespace mdl
                 OgreBites::ApplicationContext("")
             ,   autoCotrollerSin( camera.val,
                                   [this](){ this->camera.set2Start(); })
-            {}
+            {
+            }
 
         Ogre::Root*           root;
         Ogre::SceneManager* scnMgr;
@@ -64,8 +67,11 @@ namespace mdl
         void setup() override
         {   
             OgreBites::ApplicationContext::setup();
+            //OgreBites::ApplicationContextSDL::setup();
+            addInputListener      (this);
 
-            addInputListener(this);
+            //mMenu = std::make_unique<MenuStart>(getRenderWindow());
+            //mMenu->show(); // сразу показываем
 
             Glob::pInspectorRoot = this;
             Glob::ctx            = this;
@@ -85,6 +91,8 @@ namespace mdl
             Glob::pUI      = &ui;
 
             addResourcePath();
+
+            //OgreBites::InputListener::mousePressed
 
             ////////////////////////////////////////////////////////////////////
             Ogre::RenderWindow* window = getRenderWindow();
@@ -109,6 +117,8 @@ namespace mdl
             intro    .setup();
 
             sky = new Sky;
+
+            //addInputListener(ui.trayMgr);
 
             ///-----------------------------------|
             /// Сохраняем ориентацию мира.        |
@@ -223,6 +233,30 @@ namespace mdl
             }
         }
 
+        bool cframeRenderingQueued(const Ogre::FrameEvent&) //override
+        {
+        
+            //if (mMenu->update())
+            {   //getRoot()->queueEndRendering();
+                //return false;
+            }
+        /*
+            switch (mMenu->popAction())
+            {   case MenuStart::Action::Start1Player:
+                    //startGame(1);
+                    break;
+                case MenuStart::Action::Start2Players:
+                    //startGame(2);
+                    break;
+                case MenuStart::Action::OpenTuning:
+                    //openTuning();
+                    break;
+                default: break;
+            }
+        */
+            return ApplicationContext::frameRenderingQueued({});
+        }
+
         ///---------------------------------------|
         /// Установка иконки на окно.             |
         ///---------------------------------------:
@@ -263,6 +297,21 @@ namespace mdl
         {   camera.set2Start ();
             nodeBase->setOrientation(orientationWorldStart);
         }
+
+
+    private:
+        void startGame(int players)
+        {   std::cout << "▶ Starting game with " << players << " player(s)...\n";
+            // Здесь: загрузка уровня, камера, игроки...
+        }
+
+        void openTuning() 
+        {   std::cout << "⚙ Opening tuning menu...\n";
+            // Можно показать другой меню-класс
+        }
+
+        Ogre::SceneManager* mSceneMgr = nullptr;
+        std::unique_ptr<MenuStart> mMenu;
 
     }; // struct InspectorRoot
 }      // namespace mdl

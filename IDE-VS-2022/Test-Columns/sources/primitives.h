@@ -557,4 +557,33 @@ namespace mdl
     inline Decor decor;
 }
 
+
+struct App : public OgreBites::ApplicationContextSDL
+{
+    App() : ApplicationContextSDL("ImGui Demo") {}
+
+    void setup() override
+    {
+        ApplicationContextSDL::setup();
+        getRoot()->createSceneManager(); // обязательно
+    }
+
+    bool frameRenderingQueued(const Ogre::FrameEvent&) override
+    {
+        ImGui::Begin("Demo", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize);
+
+        ImGui::End();
+        return true;
+    }
+};
+
+inline int xmain()
+{
+    App app;
+    app.initApp();
+    app.getRoot()->startRendering(); // ← запускает окно + цикл
+    return 0;
+}
+
+
 #endif // PRIMITIVES_H

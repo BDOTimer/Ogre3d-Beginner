@@ -20,6 +20,9 @@
 
 #include "OgreApplicationContext.h"
 #include "OgreTrays.h"
+
+#include <OgreImGuiInputListener.h>
+#include "OgreImGuiOverlay.h"
 #pragma warning(pop)
 
 #ifdef _MSC_VER

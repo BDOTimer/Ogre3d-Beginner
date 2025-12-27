@@ -60,6 +60,8 @@ int main([[maybe_unused]] int    argc,
 {
     std::system("chcp 65001>nul");
 
+    //xmain();
+
     unsigned int RANDSEED{false ? (unsigned int)time(NULL) : 2025}; 
     srand       (RANDSEED); l(RANDSEED)
 
