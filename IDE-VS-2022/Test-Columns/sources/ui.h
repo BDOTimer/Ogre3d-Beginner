@@ -239,10 +239,107 @@ namespace mdl
     };
 
     using namespace OgreBites;
+    /// trayMgr->showOkDialog("Внимание", "Сообщение");
     ///------------------------------------------------------------------------|
     /// MenuStart
     ///-------------------------------------------------------------- MenuStart:
-    /// ...
+    struct MenuStart
+    {
+        void setup(OgreBites::TrayManager* tM)
+        {   
+            using T = TrayLocation;
+
+            createMyMaterials   ();
+            createCustomTemplate();
+
+            tM->createDecorWidget(
+                T::TL_CENTER, "wdMS1", "MyTemplates/FancyFrame"
+            );
+
+            tM->createLabel(
+                T::TL_CENTER, "lbMS1", "START MENU", 150
+            );
+            tM->createSeparator(
+                T::TL_CENTER, "sp1"
+            );
+            tM->createButton(
+                T::TL_CENTER, "btStart1", "1 Player", 150
+            );
+            tM->createButton(
+                T::TL_CENTER, "btStart2", "2 Player", 150
+            );
+            tM->createButton(
+                T::TL_CENTER, "btTuning", "Tuningя", 150
+            );
+            tM->createSeparator(
+                T::TL_CENTER, "sp2"
+            );
+            tM->createButton(
+                T::TL_CENTER, "btExit", "Exit", 150
+            );
+
+            tM->createDecorWidget(
+                T::TL_CENTER, "wdMS2", "MyTemplates/FancyFrame"
+            );
+        }
+
+        void createCustomTemplate()
+        {
+            Ogre::OverlayManager& om = Ogre::OverlayManager::getSingleton();
+    
+            // 1. Создаем шаблон Overlay элемента (не материал!)
+            Ogre::OverlayContainer* fancyFrame =   
+                static_cast<Ogre::OverlayContainer*>(
+                    om.createOverlayElement("Panel", "MyTemplates/FancyFrame")
+            );
+
+            // 2. Присваиваем материал (реальное имя материала)
+            fancyFrame->setMaterialName("MyMaterials/FancyBorder");
+            fancyFrame->setColour(Ogre::ColourValue(0.2f, 0.4f, 0.8f, 0.7f));
+            fancyFrame->setDimensions(100, 100);
+        }
+
+        void createMyMaterials()
+        {
+            Ogre::MaterialPtr mat = Ogre::MaterialManager::getSingleton()
+                .create(
+                "MyMaterials/FancyBorder", // Имя материала
+                Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME
+            );
+    
+            Ogre::Pass* pass = mat->getTechnique(0)->getPass(0);
+    
+            pass->setLightingEnabled  (false);
+            pass->setDepthCheckEnabled(false);
+            pass->setDepthWriteEnabled(false);
+            pass->setDiffuse(ColourValue(0.0f, 0.0f, 0.6f, 0.6f));
+            pass->setAmbient(ColourValue(0.0f, 0.0f, 0.8f, 1.0f));
+    
+            // ИЛИ использовать текстуру
+            // pass->createTextureUnitState("my_texture.png");
+        }
+
+        bool isMaterialExist(const Ogre::String& name)
+        {   return Ogre::MaterialManager::getSingleton().resourceExists(name);
+        }
+
+        bool isTemplateExist(const Ogre::String& name)
+        {   try
+            {   return Ogre::OverlayManager
+                           ::getSingleton().getOverlayElement(name) != nullptr;
+            }
+            catch (...) { return false; }
+        }
+
+        void setFont()///-////////////////////////////////////////////////////-?
+        {   Ogre::OverlayManager& om = Ogre::OverlayManager::getSingleton();
+            Ogre::OverlayElement* text
+                = om.createOverlayElement("TextArea", "TestText");
+    
+            //text->set("JetBrainsMonoFont");  // Имя из .fontdef файла
+            //text->setCharHeight(16);
+        }
+    };
 
 
     ///------------------------------------------------------------------------|
@@ -259,7 +356,7 @@ namespace mdl
         OgreBites::TrayManager*       trayMgr;
         std::unique_ptr<ClickableTextBox> ctb;
         ScoreLabels               scoreLabels;
-        //MenuStart                   menuStart;
+        MenuStart                   menuStart;
 
         bool keyPressed(const KeyboardEvent& evt)
         {   return ctb->keyPressed(evt);
@@ -269,15 +366,12 @@ namespace mdl
         {   return ctb->mousePressed(evt);
         }
 
-        void setup()
+        void setup(OgreBites::TrayManager* tM)
         {   
+            trayMgr = tM;
+
             OverlaySystem*  overlaySystem = ctx->getOverlaySystem();
-
             scnMgr->addRenderQueueListener(overlaySystem);
- 
-            Ogre::RenderWindow* mWindow = ctx->getRenderWindow();
-
-            trayMgr = new OgreBites::TrayManager("UI", mWindow);
 
             ctx->addInputListener(trayMgr);
             trayMgr->hideCursor();
@@ -301,106 +395,10 @@ namespace mdl
 		/// score = std::make_unique<ScoreLabel>(trayMgr);
 
             scoreLabels.setup(trayMgr);
-            //menuStart  .setup(trayMgr);
+            menuStart  .setup(trayMgr);
         }
     };
 }
-
-
-#include <imgui.h>
-#include <OgreRenderWindow.h>
-
-class MenuStart
-{
-public:
-    explicit MenuStart(Ogre::RenderWindow* window)
-        : mWindow(window), mVisible(true)
-    {}
-
-    void show()  { mVisible = true; }
-    void hide()  { mVisible = false; }
-    bool visible() const { return mVisible; }
-
-    // Возвращает true, если нужно завершить приложение
-    bool update()
-    {
-        if (!mVisible) return false;
-
-        ImGui::SetNextWindowPos(
-            ImVec2(mWindow->getWidth() * 0.5f, mWindow->getHeight() * 0.5f),
-            ImGuiCond_FirstUseEver,
-            ImVec2(0.5f, 0.5f)
-        );
-
-        ImGui::Begin("MenuStart", nullptr,
-            ImGuiWindowFlags_NoTitleBar |
-            ImGuiWindowFlags_NoResize |
-            ImGuiWindowFlags_NoMove |
-            ImGuiWindowFlags_NoCollapse |
-            ImGuiWindowFlags_AlwaysAutoResize
-        );
-
-        ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.15f, 0.25f, 0.4f, 0.92f));
-        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(8, 6));
-        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 8));
-
-        ImGui::Text("🚀 SPACE RACER");
-        ImGui::Separator();
-
-        bool start1 = ImGui::Button("1 Player", ImVec2(120, 32));
-        bool start2 = ImGui::Button("2 Players", ImVec2(120, 32));
-        bool tuning = ImGui::Button("Tuning", ImVec2(120, 32));
-        ImGui::Separator();
-        bool quit   = ImGui::Button("Exit", ImVec2(120, 32));
-
-        ImGui::PopStyleVar(2);
-        ImGui::PopStyleColor();
-
-        ImGui::End();
-
-        // Обработка действий
-        if (start1) {
-            std::cout << "[MenuStart] → 1 Player selected\n";
-            hide();
-            mAction = Action::Start1Player;
-        }
-        else if (start2) {
-            std::cout << "[MenuStart] → 2 Players selected\n";
-            hide();
-            mAction = Action::Start2Players;
-        }
-        else if (tuning) {
-            std::cout << "[MenuStart] → Tuning\n";
-            hide();
-            mAction = Action::OpenTuning;
-        }
-        else if (quit) {
-            std::cout << "[MenuStart] → Exit\n";
-            mAction = Action::Quit;
-        }
-
-        return mAction == Action::Quit;
-    }
-
-    enum class Action {
-        None,
-        Start1Player,
-        Start2Players,
-        OpenTuning,
-        Quit
-    };
-
-    Action popAction() {
-        Action a = mAction;
-        mAction = Action::None;
-        return a;
-    }
-
-private:
-    Ogre::RenderWindow* mWindow = nullptr;
-    bool mVisible = false;
-    Action mAction = Action::None;
-};
  
  
 #endif // UI_H

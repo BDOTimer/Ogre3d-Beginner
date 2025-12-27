@@ -7,8 +7,6 @@
 #include "game.h"
 #include "sky.h"
 
-#include "OgreTrays.h"
-
 
 ///---------|
 /// Models. |
@@ -22,6 +20,7 @@ namespace mdl
             :   Glob
             ,   OgreBites::ApplicationContext
             ,   OgreBites::InputListener
+            ,   OgreBites::TrayListener
 
     {       InspectorRoot( ) : 
                 OgreBites::ApplicationContext("")
@@ -29,6 +28,8 @@ namespace mdl
                                   [this](){ this->camera.set2Start(); })
             {
             }
+
+        OgreBites::TrayManager* trayMgr{nullptr};
 
         Ogre::Root*           root;
         Ogre::SceneManager* scnMgr;
@@ -66,12 +67,15 @@ namespace mdl
 
         void setup() override
         {   
+
             OgreBites::ApplicationContext::setup();
             //OgreBites::ApplicationContextSDL::setup();
             addInputListener      (this);
 
-            //mMenu = std::make_unique<MenuStart>(getRenderWindow());
-            //mMenu->show(); // сразу показываем
+            trayMgr = new OgreBites::TrayManager(
+                "UI", getRenderWindow(), this
+            );
+
 
             Glob::pInspectorRoot = this;
             Glob::ctx            = this;
@@ -112,7 +116,7 @@ namespace mdl
             camera   .setup(nodeUser);
             lights   .setup(camera.camNode);
             decor    .setup();
-            ui       .setup();
+            ui       .setup(trayMgr);
             effects  .setup();
             intro    .setup();
 
@@ -134,14 +138,10 @@ namespace mdl
             if(this->isGameOver)
             switch(evt.keysym.sym)
             {   case OgreBites::SDLK_ESCAPE:
-                    getRoot()->queueEndRendering();
+                    trayMgr->showOkDialog("!!!", "Exit");
                     return true;
-                case '1':
-                     gameStart(); games.setup(1);
-                    return true;
-                case '2':
-                     gameStart(); games.setup(2);
-                    return true;
+                case '1': startGame(1); return true;
+                case '2': startGame(2); return true;
                 default:;
             }
 
@@ -233,28 +233,31 @@ namespace mdl
             }
         }
 
-        bool cframeRenderingQueued(const Ogre::FrameEvent&) //override
+        void buttonHit(OgreBites::Button* button) override
         {
-        
-            //if (mMenu->update())
-            {   //getRoot()->queueEndRendering();
-                //return false;
+            if (button->getName() == "btStart1")
+            {   startGame(1);
             }
-        /*
-            switch (mMenu->popAction())
-            {   case MenuStart::Action::Start1Player:
-                    //startGame(1);
-                    break;
-                case MenuStart::Action::Start2Players:
-                    //startGame(2);
-                    break;
-                case MenuStart::Action::OpenTuning:
-                    //openTuning();
-                    break;
-                default: break;
+            else if (button->getName() == "btStart2")
+            {   startGame(2);
             }
-        */
-            return ApplicationContext::frameRenderingQueued({});
+            else if (button->getName() == "btTuning")
+            {   trayMgr->showOkDialog(NAMEGAME,"...");
+                openTuning();
+            }
+            else if (button->getName() == "btExit")
+            {   getRoot()->queueEndRendering();
+            }
+        }
+
+        ///---------------------------------------|
+        /// Диалог выхода из игры.                |
+        ///---------------------------------------:
+        void okDialogClosed(const Ogre::DisplayString& message) override
+        {   std::cout << "OK-диалог закрыт: " + Ogre::String(message);
+
+            if(message == "Exit") getRoot()->queueEndRendering();
+
         }
 
         ///---------------------------------------|
@@ -284,6 +287,10 @@ namespace mdl
         void gameOver(Args_t)
         {   isGameOver     = true;
             isSpeedRotWold = 20.f * (1 - (rand()%2)*2);
+
+            this->trayMgr
+                ->getTrayContainer(TrayLocation::TL_CENTER)
+                ->setVisible(true);
         }
 
         void gameStart()
@@ -301,13 +308,20 @@ namespace mdl
 
     private:
         void startGame(int players)
-        {   std::cout << "▶ Starting game with " << players << " player(s)...\n";
-            // Здесь: загрузка уровня, камера, игроки...
+        {   
+            std::cout << std::format(
+                "▶ Starting game with {} player(s)...\n", players);
+
+            gameStart();
+            games.setup(players);
+
+            this->trayMgr
+                ->getTrayContainer(TrayLocation::TL_CENTER)
+                ->setVisible(false);
         }
 
         void openTuning() 
         {   std::cout << "⚙ Opening tuning menu...\n";
-            // Можно показать другой меню-класс
         }
 
         Ogre::SceneManager* mSceneMgr = nullptr;
