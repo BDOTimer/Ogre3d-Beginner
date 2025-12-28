@@ -7,6 +7,8 @@
 #include "game.h"
 #include "sky.h"
 
+#include <windows.h>
+
 
 ///---------|
 /// Models. |
@@ -74,6 +76,11 @@ namespace mdl
                 "UI", getRenderWindow(), this
             );
 
+            createCustomCursor();
+        
+            // Показываем курсор по умолчанию
+            //trayMgr->showCursor();
+
 
             Glob::pInspectorRoot = this;
             Glob::ctx            = this;
@@ -94,12 +101,14 @@ namespace mdl
 
             addResourcePath();
 
-            //OgreBites::InputListener::mousePressed
-
             ////////////////////////////////////////////////////////////////////
             Ogre::RenderWindow* window = getRenderWindow();
             setWindowIcon      (window);
             ////////////////////////////////////////////////////////////////////
+
+            #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
+            ShowCursor(FALSE);
+            #endif
 
             ///-----------------------------------|
             /// Регистрация обработчиков событий. |
@@ -331,6 +340,19 @@ namespace mdl
 
         void openTuning() 
         {   std::cout << "⚙ Opening tuning menu...\n";
+        }
+
+        Ogre::Overlay* mCursorOverlay;
+        void createCustomCursor();
+        void toggleCursor      ();
+
+        bool mouseMoved(const OgreBites::MouseMotionEvent& evt) override
+        {
+            Ogre::OverlayElement* cursor = Ogre::OverlayManager::getSingleton()
+                .getOverlayElement("CustomCursor");
+            cursor->setPosition((float)evt.x, (float)evt.y);
+        
+            return true;
         }
 
         std::unique_ptr<MenuStart> mMenu;

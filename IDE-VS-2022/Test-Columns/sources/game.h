@@ -275,6 +275,14 @@ namespace mdl
             ++Glob::cntGame;
             chtGameOver = 0;
 
+            static ConfigGame cfgHard {0, 21, 15, 5, 6   };
+            static ConfigGame cfgDemo {0, 11, 15, 5, 5   };
+
+            switch(nPlayers)
+            {   case 1: ConfigGame::get().pConfigGame = &cfgDemo; break;
+                case 2: ConfigGame::get().pConfigGame = &cfgHard; break;
+            }
+
             ///-----------------------------------|
             /// Регистрация обработчиков событий. |
             ///-----------------------------------:

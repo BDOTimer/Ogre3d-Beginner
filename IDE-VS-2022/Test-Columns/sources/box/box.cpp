@@ -232,5 +232,49 @@ namespace mdl
         pwellLogic->setGem(gem);
     }
 
+    void InspectorRoot::createCustomCursor()
+    {
+        Ogre::OverlayManager& overlayMgr 
+            = Ogre::OverlayManager::getSingleton();
+        
+        Ogre::OverlayElement* cursorElement
+            = overlayMgr.createOverlayElement("Panel", "CustomCursor");
+
+        cursorElement->setMetricsMode(Ogre::GMM_PIXELS);
+        cursorElement->setDimensions(32, 32);
+        
+        Ogre::MaterialPtr cursorMat
+            = Ogre::MaterialManager::getSingleton().create(
+                "CursorMaterial", 
+                Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+        
+        Ogre::TextureUnitState* texUnit
+            = cursorMat->getTechnique(0)->getPass(0)
+                ->createTextureUnitState("cursor.png");
+
+        texUnit->setTextureScale(1, 1);
+        
+        cursorMat->getTechnique(0)->getPass(0)
+            ->setSceneBlending(Ogre::SBT_TRANSPARENT_ALPHA);
+        
+        cursorElement->setMaterialName("CursorMaterial");
+        
+        mCursorOverlay = overlayMgr.create("CursorOverlay");
+        mCursorOverlay->add2D(
+            static_cast<Ogre::OverlayContainer*>(cursorElement));
+        mCursorOverlay->setZOrder(650); // Поверх всего
+        mCursorOverlay->show();
+    }
+
+    void InspectorRoot::toggleCursor()
+    {   Ogre::Overlay* cursorOverlay = Ogre::OverlayManager::getSingleton()
+            .getByName("CursorOverlay");
+    
+        if(cursorOverlay->isVisible())
+            cursorOverlay->hide();
+        else
+            cursorOverlay->show();
+    }
+
 } // namespace mdl
 
