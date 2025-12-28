@@ -250,7 +250,7 @@ namespace mdl
         
         Ogre::TextureUnitState* texUnit
             = cursorMat->getTechnique(0)->getPass(0)
-                ->createTextureUnitState("cursor.png");
+                ->createTextureUnitState("cursor1.png");
 
         texUnit->setTextureScale(1, 1);
         
