@@ -445,7 +445,7 @@ namespace mdl
             ///-------------------:
             if(!isFalling && !steperLR.isActive)
             {   onGroundCollision();
-                SNDSTOP(drop1);
+                Sound::get().drop1s[id]->stop();
             }
             
             ///-------------------|
@@ -480,7 +480,7 @@ namespace mdl
             else if(K == userKeys[id][1])
             {
                 speedFall.up();
-                SNDPLAY(drop1);
+                Sound::get().drop1s[id]->play();
             }
                 
             else if(K == userKeys[id][2])
@@ -543,7 +543,7 @@ namespace mdl
             reGenerate     ();
 
             isFalling = true;
-            MUSPLAY(wu);
+            Sound::get().wus[id]->play();
         }
 
         ///----------------------------------------|

@@ -25,7 +25,7 @@ namespace mdl
     {
     /// const sf::SoundBuffer buffer{"resources/uw.mp3"};
 
-        sf::Music wu   {"sound/wu.mp3"  };
+        sf::Music _wu   {"sound/wu.mp3"  };
         sf::Music wow1 {"sound/wow1.mp3"};
         sf::Music dart {"sound/dart.mp3"};
 
@@ -47,15 +47,24 @@ namespace mdl
     ///------------------------------------------------------------------------:
     struct  Sound
     {       Sound()
-            {   drop1.setLooping(true );
-                drop1.setVolume (10.0f);
+            {   drop1a.setLooping(true );
+                drop1a.setVolume (10.0f);
+
+                drop1b.setLooping(true );
+                drop1b.setVolume (10.0f);
             }
 
         const sf::SoundBuffer _wu{"sound/wu.mp3"};
-              sf::Sound    wu{_wu};
+              sf::Sound    wua{_wu};
+              sf::Sound    wub{_wu};
+
+        std::array<sf::Sound*, 2> wus{&wua, &wub};
 
         const sf::SoundBuffer _drop1{"sound/drop1.mp3"};
-              sf::Sound drop1{_drop1};
+              sf::Sound drop1a{_drop1};
+              sf::Sound drop1b{_drop1};
+
+        std::array<sf::Sound*, 2> drop1s{&drop1a, &drop1b};
 
         const sf::SoundBuffer _sony2{"sound/sony2.mp3"};
               sf::Sound sony2{_sony2};
@@ -69,7 +78,8 @@ namespace mdl
         }
 
         void stop()
-        {   drop1.stop();
+        {   drop1a.stop();
+            drop1b.stop();
         }
     };
 }

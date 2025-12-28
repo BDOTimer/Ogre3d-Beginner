@@ -43,7 +43,7 @@ namespace mdl
         Effects            effects;
     /// SkyDome*           skyDome;
         Intro                intro;
-        Sky*                   sky;
+        Sky                    sky;
 
         ///---------------------------------------|
         /// Игра...                               |
@@ -67,9 +67,7 @@ namespace mdl
 
         void setup() override
         {   
-
             OgreBites::ApplicationContext::setup();
-            //OgreBites::ApplicationContextSDL::setup();
             addInputListener      (this);
 
             trayMgr = new OgreBites::TrayManager(
@@ -113,14 +111,16 @@ namespace mdl
             shadergen = RTShader::ShaderGenerator::getSingletonPtr();
             shadergen-> addSceneManager(scnMgr);
 
+           //scnMgr->setSkyBox(true, "Examples/StormySkyBox8");
+
             camera   .setup(nodeUser);
             lights   .setup(camera.camNode);
             decor    .setup();
             ui       .setup(trayMgr);
             effects  .setup();
-            intro    .setup();
+        /// intro    .setup();
+            sky      .setup();
 
-            sky = new Sky;
 
             //addInputListener(ui.trayMgr);
 
@@ -145,6 +145,8 @@ namespace mdl
                 default:;
             }
 
+            static unsigned iSky{};
+
             switch(evt.keysym.sym)
             {
                 case OgreBites::SDLK_ESCAPE:
@@ -152,6 +154,9 @@ namespace mdl
                     return true;
                 case OgreBites::SDLK_F8:
                 /// PrintNodeHierarchy(Glob::nodeBase);
+                    break;
+                case OgreBites::SDLK_F4:
+                    sky.setup(++iSky);
                     break;
                 case OgreBites::SDLK_F5:
                     isSpeedRotWold = isSpeedRotWold ? 0 :  speedRotWold;
@@ -223,7 +228,7 @@ namespace mdl
             /// myl::Fps::get().update(deltaTime);
 
             if(isPause || isGameOver)
-            {
+            {   sky.update();
             }
             else
             {   games.update();
@@ -328,7 +333,6 @@ namespace mdl
         {   std::cout << "⚙ Opening tuning menu...\n";
         }
 
-        Ogre::SceneManager* mSceneMgr = nullptr;
         std::unique_ptr<MenuStart> mMenu;
 
     }; // struct InspectorRoot

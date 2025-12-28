@@ -18,6 +18,9 @@
 #include "OgreInput.h"
 #include "Ogre.h"
 
+#include <OgreInstancedEntity.h>
+#include <OgreInstanceManager.h>
+
 #include "OgreApplicationContext.h"
 #include "OgreTrays.h"
 

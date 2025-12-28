@@ -88,6 +88,25 @@ material Examples/SpaceSkyBox
 	}
 }
 
+////////////////////////////////////////////////////////////////////////////////
+material Examples/SpaceSkyBox8
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+			depth_write off
+
+			texture_unit
+			{
+				texture stevecube.jpg cubic
+				tex_address_mode clamp
+			}
+		}
+	}
+}
+
 material Examples/SceneSkyBox2
 {
 	technique
@@ -135,7 +154,7 @@ material Examples/StormySkyBox
 
 			texture_unit
 			{
-				texture stormy.jpg cubic
+				texture stormy.jpg cubic duskstormy
 				tex_address_mode clamp
 			}
 		}
@@ -702,6 +721,9 @@ material Examples/Robot
 	{
 		pass
 		{
+            ambient 0.3 0.3 0.3
+            diffuse 0.8 0.6 0.4 1.0
+            specular 0.1 0.1 0.1 1.0 12.5
 
 			texture_unit
 			{

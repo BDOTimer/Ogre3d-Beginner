@@ -424,12 +424,12 @@ namespace mdl
             const char* NAMEFONT{myl::ToolFonts::NAMEFONT};
 
             btHelp = tM->createButton(
-                T::TL_TOPLEFT, "btHelp", "F1::Help", 100
+                T::TL_TOPLEFT, "btHelp", "F1::Help", 90
             );
             myl::ToolFonts::setFont(btHelp->getOverlayElement(), NAMEFONT);
 
             btSM = tM->createButton(
-                T::TL_TOPLEFT, "btSM", "Меню"
+                T::TL_TOPLEFT, "btSM", "Меню", 90
             );
             myl::ToolFonts::setFont(btSM->getOverlayElement(), NAMEFONT);
         }
