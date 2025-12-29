@@ -15,6 +15,8 @@ namespace mdl
 
     ///------------------------------------------------------------------------|
     /// Небо.
+    /// https://rigmodels.com/?searchkeyword=skybox
+    /// https://sketchfab.com/feed
     ///-------------------------------------------------------------------- Sky:
     struct  Sky : Glob
     {       Sky()
