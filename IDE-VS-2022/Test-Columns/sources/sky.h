@@ -22,7 +22,8 @@ namespace mdl
             }
 
         inline static std::array<const char*, 6> nameSky
-        {   "Examples/SpaceSkyBox" ,
+        {   ""
+            "Examples/SpaceSkyBox" ,
             "Examples/TrippySkyBox",
             "Examples/CloudyNoonSkyBox",
             "Examples/StormySkyBox",
@@ -30,25 +31,54 @@ namespace mdl
             "Examples/CloudySky"
         };
 
-        void setup(unsigned i = 2) // 2
+        void setup()
         {   
+            box      .setup("T_Skybox_day_7_D_proc");
+            box.node->scale(6000.f, 6000.f, 6000.f);
+            box.node->pitch(Degree(-90));
+            box.node->setVisible(true);
+
             Glob::scnMgr->setSkyBox(
                 true,
-                nameSky[i % nameSky.size()],
-                5000,
+                nameSky[1],
+                7000,
                 true,                 // отрисовывать первым
                 Quaternion::IDENTITY, // ориентация
                 "General"
             );
+            nd = Glob::scnMgr->getSkyNode();
         }
 
         void update()
-        {   SceneNode*  nd = Glob::scnMgr->getSkyNode();
-                        nd->yaw(Radian(0.1f * deltaTime));
+        {   nd->yaw(Radian(0.1f  * deltaTime));
+            box.node->roll(Radian(0.03f * deltaTime));
+        }
+
+        void toggle()
+        {   
+            if(j)
+            {
+                Glob::scnMgr->setSkyBox(
+                        true,
+                        nameSky[j],
+                        7000,
+                        true,                 // отрисовывать первым
+                        Quaternion::IDENTITY, // ориентация
+                        "General"
+                    );
+
+                nd = Glob::scnMgr->getSkyNode();
+                box.node->setVisible(false);
+            }
+            else box.node->setVisible(true);
+
+            j = ++j < nameSky.size() ? j : 0;
         }
         
-        private:
-
+    private:
+        Model     box;
+        SceneNode* nd{nullptr};
+        unsigned j{1};
     };
 
 }

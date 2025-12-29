@@ -22,9 +22,7 @@ namespace mdl
             }
  
         void setup()
-        {   
-            createSnowEffect();
-
+        {   createSnowEffect();
         }
  
         void createSnowEffect()
@@ -39,8 +37,8 @@ namespace mdl
         
                 if (ParticleEmitter* emitter = snowPS->getEmitter(0))
                 {
-                    emitter->setParameter("width", "2500");
-                    emitter->setParameter("height", "2500");
+                    emitter->setParameter("width" , "4000");
+                    emitter->setParameter("height", "4000");
                     emitter->setParameter("time_to_live", "8");
                     emitter->setParameter("velocity", "200");
                     emitter->setParameter("emission_rate", "1");
@@ -66,7 +64,7 @@ namespace mdl
         
         void destroySnowEffect()
         {
-            if (snowPS != nullptr) 
+            if (snowPS != nullptr)
             {
                 SceneNode* snowNode = snowPS->getParentSceneNode();
                 if (snowNode) snowNode->detachObject(snowPS);

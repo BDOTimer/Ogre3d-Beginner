@@ -130,9 +130,6 @@ namespace mdl
         /// intro    .setup();
             sky      .setup();
 
-
-            //addInputListener(ui.trayMgr);
-
             ///-----------------------------------|
             /// Сохраняем ориентацию мира.        |
             ///-----------------------------------:
@@ -165,7 +162,7 @@ namespace mdl
                 /// PrintNodeHierarchy(Glob::nodeBase);
                     break;
                 case OgreBites::SDLK_F4:
-                    sky.setup(++iSky);
+                    sky.toggle();
                     break;
                 case OgreBites::SDLK_F5:
                     isSpeedRotWold = isSpeedRotWold ? 0 :  speedRotWold;

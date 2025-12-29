@@ -182,6 +182,23 @@ namespace mdl
     };
 
     ///------------------------------------------------------------------------|
+    /// Модель.
+    ///------------------------------------------------------------------ Model:
+    struct  Model : Glob
+    {       
+        Ogre::Entity*  entity;
+        SceneNode*     node  {nullptr};
+
+        void setup(const std::string& nameMesh)
+        {   entity = scnMgr->createEntity(nameMesh + ".mesh");
+            entity ->setCastShadows(true);
+
+            node = nodeBase->createChildSceneNode(nameMesh);
+            node->attachObject(entity);
+        }
+    };
+
+    ///------------------------------------------------------------------------|
     /// Sphere.
     ///----------------------------------------------------------------- Sphere:
     struct  Sphere : Glob

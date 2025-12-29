@@ -323,7 +323,7 @@ namespace mdl
             unsigned i{unsigned(a[0])};
             std::cout << std::format(
                 "Игрок {} закочил ...\n", game->getNameUse(i));
-            
+
             if(++chtGameOver == amountPlayers)
             {   events.call("gameOver");
             }

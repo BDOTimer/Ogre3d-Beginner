@@ -39,7 +39,6 @@ namespace mdl
         void setup(SceneNode* node, unsigned id)
         {
             idPlayer = id;
-
             wallNode = node->createChildSceneNode();
 
             const auto& cfg{ConfigGame::get()};
@@ -289,7 +288,7 @@ namespace mdl
                     "|      Чувак, геймовер!       |\n"
                     "|-----------------------------.\n\n";
 
-                Sound::get().stop();
+                Sound::get().wus[figure.id]->stop();
 
                 Glob::events.call("UserOver", {(float)figure.id});
                 return  false;
