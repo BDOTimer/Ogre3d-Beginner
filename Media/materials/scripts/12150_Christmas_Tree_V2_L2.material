@@ -1,20 +1,20 @@
 
 material 12150_Christmas_Tree_V2_L2.objChristmas_Tree
 {
-    //receive_shadows on
+    receive_shadows on
 	technique
 	{
 		pass 
 		{
 			lighting on
-            scene_blend alpha_blend
-            depth_write off
+            //scene_blend alpha_blend
+            //depth_write off
             
-            cull_hardware none
-            cull_software none
+            //cull_hardware none
+            //cull_software none
             
-            ambient 0.2 0.2 0.3 0.5
-            diffuse 0.5 0.5 0.8 0.8  // синеватое стекло
+            ambient 0.2 0.2 0.3 1
+            diffuse 0.5 0.5 0.8 1  // синеватое стекло
             specular 1.0 1.0 1.0 1.0 50
 
 			texture_unit
@@ -35,11 +35,11 @@ material X12150_Christmas_Tree_V2_L2.objChristmas_Tree
 		pass 
 		{
 			lighting on
-            scene_blend alpha_blend
-            depth_write off
+            //scene_blend alpha_blend
+            //depth_write off
             //scene_blend off
             
-            cull_hardware none
+            //cull_hardware none
             //cull_software none
             
             ambient 0.2 0.2 0.3 0.2

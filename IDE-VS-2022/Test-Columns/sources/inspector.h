@@ -82,12 +82,12 @@ namespace mdl
 
             root   = getRoot();
             scnMgr = root->createSceneManager();
-            scnMgr->setAmbientLight(ColourValue(0.03f, 0.03f, 0.03f));
+            scnMgr->setAmbientLight(ColourValue(0.3f, 0.3f, 0.3f));
 
             shadergen = RTShader::ShaderGenerator::getSingletonPtr();
             shadergen-> addSceneManager(scnMgr);
 
-            if(const bool isStensil{1})
+            if(const bool isStensil{0})
             {   scnMgr->setShadowTechnique(
                     ShadowTechnique::SHADOWTYPE_STENCIL_ADDITIVE);
             }
@@ -96,8 +96,8 @@ namespace mdl
                     ShadowTechnique::SHADOWTYPE_TEXTURE_MODULATIVE);
 
                 scnMgr->setShadowTechnique(SHADOWTYPE_TEXTURE_MODULATIVE);
-                scnMgr->setShadowTextureSettings(4096, 4);
-                scnMgr->setShadowFarDistance(5000);
+                scnMgr->setShadowTextureSettings(2048, 2);
+                scnMgr->setShadowFarDistance(4000);
                 scnMgr->setShadowDirectionalLightExtrusionDistance(1000);
                 scnMgr->setShadowTextureSelfShadow(true);
             }

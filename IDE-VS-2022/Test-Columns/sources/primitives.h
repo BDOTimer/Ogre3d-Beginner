@@ -91,7 +91,7 @@ namespace mdl
             cam->setAutoAspectRatio(true);
 
             cam->setNearClipDistance(1.0f);
-            cam->setFarClipDistance(5000.0f);
+            cam->setFarClipDistance(600000.0f);
 
             ///------------------|
             /// Manager.         |
@@ -132,14 +132,14 @@ namespace mdl
         {   
             using namespace Ogre;
 
-            const ColourValue colourValue0(1.0f, 1.0f, 1.0f);
+            const ColourValue colourValue0(ColourValue::White);
             const ColourValue colourValue1(0.5f, 0.5f, 0.5f);
             const ColourValue colourValue2(0.2f, 0.2f, 0.2f);
 
             ///------------|
             /// SpotLight  |
             ///------------:
-            if(0)
+            if(1)
             {
                 Light* spotLight = scnMgr->createLight("SpotLight");
 
@@ -152,7 +152,8 @@ namespace mdl
                     = scnMgr->getRootSceneNode()->createChildSceneNode();
                 spotLightNode->attachObject(spotLight);
                 spotLightNode->setDirection(0, -1, -1);
-                spotLightNode->setPosition (Vector3(200, 200, 0));
+                spotLightNode->setPosition (
+                    Vector3(0, 200, 500).normalisedCopy());
 
                 spotLight->setSpotlightRange(Degree(35), Degree(50));
             }
@@ -166,18 +167,19 @@ namespace mdl
                 directionalLight->setType(Light::LT_DIRECTIONAL);
 
                 directionalLight->setDiffuseColour (ColourValue(colourValue0));
-                directionalLight->setSpecularColour(ColourValue(colourValue2));
+                directionalLight->setSpecularColour(ColourValue(colourValue1));
 
                 SceneNode* directionalLightNode
                     = scnMgr->getRootSceneNode()->createChildSceneNode();
                 directionalLightNode->attachObject(directionalLight);
-                directionalLightNode->setDirection(Vector3(0, -1, -1));
+                directionalLightNode->setDirection(
+                    Vector3(0, -1, -1).normalisedCopy());
             }
 
             ///------------|
             /// PointLight |
             ///------------:
-            if(0)
+            if(1)
             {
                 Light* pointLight = scnMgr->createLight("PointLight");
                 pointLight->setType(Light::LT_POINT);
@@ -188,7 +190,7 @@ namespace mdl
                 SceneNode* pointLightNode
                     = nodeUser->createChildSceneNode();
                 pointLightNode->attachObject(pointLight);
-                pointLightNode->setPosition(Vector3(0, 150, 250));
+                pointLightNode->setPosition(Vector3(0, 600, 250));
             }
         }
     };

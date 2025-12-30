@@ -37,12 +37,12 @@ namespace mdl
         void setup()
         {   
             box[0]      .setup("T_Skybox_day_7_D_proc");
-            box[0].node->scale(6000.f, 6000.f, 6000.f);
+            //box[0].node->scale(1000.f, 1000.f, 1000.f);
             box[0].node->pitch(Degree(-90));
             box[0].node->setVisible(true);
 
             box[1]  .setup("Cartoon_Desert_Skybox_2");
-            box[1].node->setScale(1000.f, 1000.f, 1000.f);
+            box[1].node->setScale(100.f, 100.f, 100.f);
             box[1].node->setVisible(false);
 
         /// Glob::scnMgr->setSkyDome(
@@ -57,6 +57,7 @@ namespace mdl
                 "General"
             );
             nd = Glob::scnMgr->getSkyNode();
+            nd->setVisible(false);
         }
 
         void update()
@@ -88,6 +89,8 @@ namespace mdl
                     );
 
                     nd = Glob::scnMgr->getSkyNode();
+                    //nd->setVisible(false);////////////////////////////////////
+
                 }
                 
                 box[0].node->setVisible(false);
