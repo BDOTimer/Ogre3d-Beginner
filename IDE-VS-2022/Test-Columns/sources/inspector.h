@@ -44,8 +44,7 @@ namespace mdl
 
         UI                      ui;
         Effects            effects;
-    /// SkyDome*           skyDome;
-        Intro                intro;
+    /// Intro                intro;
         Sky                    sky;
 
         ///---------------------------------------|
@@ -83,10 +82,26 @@ namespace mdl
 
             root   = getRoot();
             scnMgr = root->createSceneManager();
-            scnMgr->setAmbientLight(ColourValue(0, 0, 0));
-            scnMgr->setShadowTechnique(
-               ShadowTechnique::SHADOWTYPE_STENCIL_ADDITIVE);
+            scnMgr->setAmbientLight(ColourValue(0.03f, 0.03f, 0.03f));
 
+            shadergen = RTShader::ShaderGenerator::getSingletonPtr();
+            shadergen-> addSceneManager(scnMgr);
+
+            if(const bool isStensil{1})
+            {   scnMgr->setShadowTechnique(
+                    ShadowTechnique::SHADOWTYPE_STENCIL_ADDITIVE);
+            }
+            else
+            {   scnMgr->setShadowTechnique(
+                    ShadowTechnique::SHADOWTYPE_TEXTURE_MODULATIVE);
+
+                scnMgr->setShadowTechnique(SHADOWTYPE_TEXTURE_MODULATIVE);
+                scnMgr->setShadowTextureSettings(4096, 4);
+                scnMgr->setShadowFarDistance(5000);
+                scnMgr->setShadowDirectionalLightExtrusionDistance(1000);
+                scnMgr->setShadowTextureSelfShadow(true);
+            }
+            
             nodeBase = scnMgr->getRootSceneNode()->createChildSceneNode("Glob");
             nodeUser = scnMgr->getRootSceneNode()->createChildSceneNode();
 
@@ -109,13 +124,6 @@ namespace mdl
             /// Регистрация обработчиков событий. |
             ///-----------------------------------:
             addEvent(gameOver);
-
-        /// root->loadPlugin("OgreAssimp");
-
-            shadergen = RTShader::ShaderGenerator::getSingletonPtr();
-            shadergen-> addSceneManager(scnMgr);
-
-           //scnMgr->setSkyBox(true, "Examples/StormySkyBox8");
 
             cursor   .setup();
             camera   .setup(nodeUser);

@@ -90,6 +90,9 @@ namespace mdl
 
             cam->setAutoAspectRatio(true);
 
+            cam->setNearClipDistance(1.0f);
+            cam->setFarClipDistance(5000.0f);
+
             ///------------------|
             /// Manager.         |
             ///------------------:
@@ -117,16 +120,79 @@ namespace mdl
         }
     };
 
+
     ///------------------------------------------------------------------------|
-    /// Текст.
-    ///--------------------------------------------------------------- TextTest:
-    struct  TextTest : Glob
-    {
-        void setup()
+    /// Свет.
+    ///----------------------------------------------------------------- Lights:
+    struct  Lights : Glob
+    {       
+        Ogre::Entity*  entity;
+
+        void setup(SceneNode*  nodeUser)
         {   
-            
+            using namespace Ogre;
+
+            const ColourValue colourValue0(1.0f, 1.0f, 1.0f);
+            const ColourValue colourValue1(0.5f, 0.5f, 0.5f);
+            const ColourValue colourValue2(0.2f, 0.2f, 0.2f);
+
+            ///------------|
+            /// SpotLight  |
+            ///------------:
+            if(0)
+            {
+                Light* spotLight = scnMgr->createLight("SpotLight");
+
+                spotLight->setDiffuseColour (colourValue1);
+                spotLight->setSpecularColour(colourValue2);
+
+                spotLight->setType(Light::LT_SPOTLIGHT);
+
+                SceneNode* spotLightNode
+                    = scnMgr->getRootSceneNode()->createChildSceneNode();
+                spotLightNode->attachObject(spotLight);
+                spotLightNode->setDirection(0, -1, -1);
+                spotLightNode->setPosition (Vector3(200, 200, 0));
+
+                spotLight->setSpotlightRange(Degree(35), Degree(50));
+            }
+
+            ///------------|
+            /// DirLight   |
+            ///------------:
+            if(1)
+            {
+                Light* directionalLight = scnMgr->createLight("DirectionalLight");
+                directionalLight->setType(Light::LT_DIRECTIONAL);
+
+                directionalLight->setDiffuseColour (ColourValue(colourValue0));
+                directionalLight->setSpecularColour(ColourValue(colourValue2));
+
+                SceneNode* directionalLightNode
+                    = scnMgr->getRootSceneNode()->createChildSceneNode();
+                directionalLightNode->attachObject(directionalLight);
+                directionalLightNode->setDirection(Vector3(0, -1, -1));
+            }
+
+            ///------------|
+            /// PointLight |
+            ///------------:
+            if(0)
+            {
+                Light* pointLight = scnMgr->createLight("PointLight");
+                pointLight->setType(Light::LT_POINT);
+
+                pointLight->setDiffuseColour (colourValue1);
+                pointLight->setSpecularColour(colourValue2);
+
+                SceneNode* pointLightNode
+                    = nodeUser->createChildSceneNode();
+                pointLightNode->attachObject(pointLight);
+                pointLightNode->setPosition(Vector3(0, 150, 250));
+            }
         }
     };
+
 
     ///------------------------------------------------------------------------|
     /// Грунт.
@@ -252,67 +318,6 @@ namespace mdl
         }
     };
 
-    ///------------------------------------------------------------------------|
-    /// Свет.
-    ///----------------------------------------------------------------- Lights:
-    struct  Lights : Glob
-    {       
-        Ogre::Entity*  entity;
-
-        void setup(SceneNode*  nodeUser)
-        {   
-            using namespace Ogre;
-
-            ColourValue colourValue(0.5f, 0.5f, 0.5f);
-
-            ///------------------|
-            /// directionalLight |
-            ///------------------:
-            Light* directionalLight = scnMgr->createLight("DirectionalLight");
-            directionalLight->setType(Light::LT_DIRECTIONAL);
-            directionalLight->setDiffuseColour (colourValue);
-            directionalLight->setSpecularColour(colourValue);
-
-            SceneNode* directionalLightNode
-                = nodeUser->createChildSceneNode();
-            directionalLightNode->attachObject(directionalLight);
-            directionalLightNode->setDirection(Vector3(0, -1, -1));
-
-            ///------------------|
-            /// pointLight       |
-            ///------------------:
-            Light* pointLight = scnMgr->createLight("PointLight");
-            pointLight->setType(Light::LT_POINT);
-
-            pointLight->setDiffuseColour (0.3f, 0.3f, 0.3f);
-            pointLight->setSpecularColour(0.3f, 0.3f, 0.3f);
-
-            SceneNode* pointLightNode
-                = nodeUser->createChildSceneNode();
-            pointLightNode->attachObject(pointLight);
-            pointLightNode->setPosition(Vector3(0, 300, 600));
-
-            //return;
-
-            ///------------------|
-            /// spotLight        |
-            ///------------------:
-            Light* spotLight = scnMgr->createLight("SpotLight");
-            spotLight->setDiffuseColour (1, 1, 1.0);
-            spotLight->setSpecularColour(1, 1, 1.0);
-            spotLight->setType(Light::LT_SPOTLIGHT);
-
-            SceneNode* spotLightNode
-                = nodeUser->createChildSceneNode();
-            spotLightNode->attachObject(spotLight);
-            spotLightNode->setDirection(0, 0, 1);
-            spotLightNode->setPosition(Vector3(0, 300, 600));
-
-            spotLight->setSpotlightRange(Degree(100), Degree(100));
-
-            spotLight->setVisible(false);
-        }
-    };
 
     ///------------------------------------------------------------------------|
     /// Нидзя.
@@ -571,8 +576,8 @@ namespace mdl
             
             tree .setup();
             
-            tree2        .setup  ("Christmas_Tree");
-            tree2.node  ->setPosition(200, 0, -200);
+        /// tree2        .setup  ("Christmas_Tree");
+        /// tree2.node  ->setPosition(200, 0, -200);
 
             tree3        .setup     ("SnowyPineTree");
             tree3.node  ->setPosition(1000, 0, -1000);
@@ -605,8 +610,8 @@ namespace mdl
             Technique* tech = shadowMat->createTechnique();
             Pass* pass = tech->createPass();
             pass->setLightingEnabled(true);
-            pass->setAmbient(0.5, 0.5, 0.5);
-            pass->setDiffuse(0.8, 0.8, 0.8, 1.0);
+            pass->setAmbient(0.5f, 0.5f, 0.5f);
+            pass->setDiffuse(0.8f, 0.8f, 0.8f, 1.f);
         
             for(unsigned short i = 0; i < entTree->getNumSubEntities(); i++)
             {

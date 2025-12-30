@@ -66,7 +66,7 @@ namespace mdl
         {
             if (snowPS != nullptr)
             {
-                SceneNode* snowNode = snowPS->getParentSceneNode();
+                SceneNode*    snowNode = snowPS->getParentSceneNode();
                 if (snowNode) snowNode->detachObject(snowPS);
 
                 scnMgr->destroyParticleSystem(snowPS);

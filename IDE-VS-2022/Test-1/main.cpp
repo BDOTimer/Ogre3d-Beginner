@@ -12,8 +12,8 @@
 using namespace Ogre;
 using namespace OgreBites;
 
-SceneManager*    scnMgr;
-ApplicationContext* ctx;
+SceneManager*      scnMgr;
+ApplicationContext*   ctx;
 
 namespace mdl
 {
@@ -49,10 +49,10 @@ namespace mdl
             vp = ctx->getRenderWindow()->addViewport(cam);
             vp->setBackgroundColour(ColourValue(0, 0, 0.02f));
 
-            cam->setAspectRatio(Real(vp->getActualWidth ()) / 
+            cam->setAspectRatio(Real(vp->getActualWidth ()) /
                                 Real(vp->getActualHeight()));
 
-            cam->setAutoAspectRatio(true);
+            cam->setAutoAspectRatio (true);
 
             ///------------------|
             /// Manager.         |
@@ -81,6 +81,7 @@ namespace mdl
             node->attachObject(entity);
 
             node->setPosition(-260, 0, -100);
+            node->setScale   (   5, 5,    5);
         }
     };
 }
@@ -112,7 +113,6 @@ TutorialApplication::~TutorialApplication()
 {
 }
 
-
 void TutorialApplication::setup()
 {
     ApplicationContext::setup();
@@ -127,7 +127,14 @@ void TutorialApplication::setup()
     shadergen->addSceneManager(scnMgr);
 
     scnMgr->setAmbientLight(ColourValue(0.1, 0.1, 0.1));
-    scnMgr->setShadowTechnique(ShadowTechnique::SHADOWTYPE_STENCIL_ADDITIVE);
+    //scnMgr->setShadowTechnique(ShadowTechnique::SHADOWTYPE_STENCIL_ADDITIVE);
+
+    //scnMgr->setAmbientLight(ColourValue(0.1, 0.1, 0.1));
+    scnMgr->setShadowTechnique(SHADOWTYPE_TEXTURE_MODULATIVE);
+    scnMgr->setShadowTextureSettings(2048, 2);  // Высокое качество
+    scnMgr->setShadowFarDistance(3000);
+    scnMgr->setShadowDirectionalLightExtrusionDistance(2000);
+    scnMgr->setShadowTextureSelfShadow(true);
 
     SceneNode* camNode = scnMgr->getRootSceneNode()->createChildSceneNode();
     mdl::camera.setup(camNode);
@@ -135,7 +142,7 @@ void TutorialApplication::setup()
     SceneNode* baseNode = scnMgr->getRootSceneNode()->createChildSceneNode();
     mdl::Tree tree; tree.setup(baseNode);
 
-    Entity* ninjaEntity = scnMgr->createEntity("SnowyPineTree.mesh");
+    Entity* ninjaEntity = scnMgr->createEntity("ninja.mesh");
     ninjaEntity->setCastShadows(true);
 
     scnMgr->getRootSceneNode()->createChildSceneNode()->attachObject(ninjaEntity);
@@ -151,54 +158,62 @@ void TutorialApplication::setup()
             Vector3::UNIT_Z);
 
     Entity* groundEntity = scnMgr->createEntity("ground");
-    scnMgr->getRootSceneNode()->createChildSceneNode()->attachObject(groundEntity);
-
+    scnMgr->getRootSceneNode()->createChildSceneNode()
+          ->attachObject (groundEntity);
     groundEntity->setCastShadows(false);
-
     groundEntity->setMaterialName("Examples/Rockwall");
 
     ///------------|
     /// SpotLight  |
     ///------------:
-    Light* spotLight = scnMgr->createLight("SpotLight");
+    if(0)
+    {
+        Light* spotLight = scnMgr->createLight("SpotLight");
 
-    spotLight->setDiffuseColour (0.8, 0.8, 0.8);
-    spotLight->setSpecularColour(0.8, 0.8, 0.8);
+        spotLight->setDiffuseColour (0.7, 0.7, 0.7);
+        spotLight->setSpecularColour(0.3, 0.3, 0.3);
 
-    spotLight->setType(Light::LT_SPOTLIGHT);
+        spotLight->setType(Light::LT_SPOTLIGHT);
 
-    SceneNode* spotLightNode = scnMgr->getRootSceneNode()->createChildSceneNode();
-    spotLightNode->attachObject(spotLight);
-    spotLightNode->setDirection(-1, -1, 0);
-    spotLightNode->setPosition(Vector3(200, 200, 0));
+        SceneNode* spotLightNode = scnMgr->getRootSceneNode()->createChildSceneNode();
+        spotLightNode->attachObject(spotLight);
+        spotLightNode->setDirection(-1, -1, 0);
+        spotLightNode->setPosition(Vector3(200, 200, 0));
 
-    spotLight->setSpotlightRange(Degree(35), Degree(50));
+        spotLight->setSpotlightRange(Degree(35), Degree(50));
+    }
 
     ///------------|
     /// DirLight   |
     ///------------:
-    Light* directionalLight = scnMgr->createLight("DirectionalLight");
-    directionalLight->setType(Light::LT_DIRECTIONAL);
+    if(1)
+    {
+        Light* directionalLight = scnMgr->createLight("DirectionalLight");
+        directionalLight->setType(Light::LT_DIRECTIONAL);
 
-    directionalLight->setDiffuseColour (ColourValue(0.4, 0.4, 0.4));
-    directionalLight->setSpecularColour(ColourValue(0.4, 0.4, 0.4));
+        directionalLight->setDiffuseColour (ColourValue(0.7, 0.7, 0.7));
+        directionalLight->setSpecularColour(ColourValue(0.4, 0.4, 0.3));
 
-    SceneNode* directionalLightNode = scnMgr->getRootSceneNode()->createChildSceneNode();
-    directionalLightNode->attachObject(directionalLight);
-    directionalLightNode->setDirection(Vector3(0, -1, 1));
+        SceneNode* directionalLightNode = scnMgr->getRootSceneNode()->createChildSceneNode();
+        directionalLightNode->attachObject(directionalLight);
+        directionalLightNode->setDirection(Vector3(0, -1, 1));
+    }
 
     ///------------|
     /// PointLight |
     ///------------:
-    Light* pointLight = scnMgr->createLight("PointLight");
-    pointLight->setType(Light::LT_POINT);
+    if(0)
+    {
+        Light* pointLight = scnMgr->createLight("PointLight");
+        pointLight->setType(Light::LT_POINT);
 
-    pointLight->setDiffuseColour (0.3, 0.3, 0.3);
-    pointLight->setSpecularColour(0.3, 0.3, 0.3);
+        pointLight->setDiffuseColour (0.7, 0.7, 0.7);
+        pointLight->setSpecularColour(0.3, 0.3, 0.3);
 
-    SceneNode* pointLightNode = scnMgr->getRootSceneNode()->createChildSceneNode();
-    pointLightNode->attachObject(pointLight);
-    pointLightNode->setPosition(Vector3(0, 150, 250));
+        SceneNode* pointLightNode = scnMgr->getRootSceneNode()->createChildSceneNode();
+        pointLightNode->attachObject(pointLight);
+        pointLightNode->setPosition(Vector3(0, 150, 250));
+    }
 }
 
 
