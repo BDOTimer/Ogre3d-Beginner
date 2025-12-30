@@ -1,0 +1,46 @@
+
+material Cartoon_Desert_Skybox_2.fbxCartoon_Desert2 
+{
+	technique
+	{
+		pass 
+		{
+            lighting off
+			depth_write off
+            
+            cull_hardware none  // Отключаем отсечение задних граней
+            cull_software none
+            
+			ambient 0.2 0.2 0.2 1
+			diffuse 0.8 0.8 0.8 1
+			specular 1 1 1 1 0.5
+
+			texture_unit
+			{
+				texture Cartoon_Desert_6x-2.jpg
+				//colour_op_ex add src_texture src_current
+				//colour_op_multipass_fallback one one
+                
+                //tex_address_mode clamp
+                //filtering anisotropic
+			}
+		}
+
+	}
+
+}
+
+material Cartoon_Desert_Skybox_2.fbxMaterial
+{
+	technique
+	{
+		pass 
+		{
+			ambient 0.2 0.2 0.2 1
+			diffuse 0.8 0.8 0.8 1
+			specular 1 1 1 1 0
+		}
+
+	}
+
+}

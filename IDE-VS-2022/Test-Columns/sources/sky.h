@@ -23,8 +23,9 @@ namespace mdl
             {   
             }
 
-        inline static std::array<const char*, 6> nameSky
-        {   ""
+        inline static std::array<const char*, 8> nameSky
+        {   "",
+            "",
             "Examples/SpaceSkyBox" ,
             "Examples/TrippySkyBox",
             "Examples/CloudyNoonSkyBox",
@@ -35,14 +36,21 @@ namespace mdl
 
         void setup()
         {   
-            box      .setup("T_Skybox_day_7_D_proc");
-            box.node->scale(6000.f, 6000.f, 6000.f);
-            box.node->pitch(Degree(-90));
-            box.node->setVisible(true);
+            box[0]      .setup("T_Skybox_day_7_D_proc");
+            box[0].node->scale(6000.f, 6000.f, 6000.f);
+            box[0].node->pitch(Degree(-90));
+            box[0].node->setVisible(true);
+
+            box[1]  .setup("Cartoon_Desert_Skybox_2");
+            box[1].node->setScale(1000.f, 1000.f, 1000.f);
+            box[1].node->setVisible(false);
+
+        /// Glob::scnMgr->setSkyDome(
+        ///    true, "Examples/CloudySky", 5, 8, 5000);
 
             Glob::scnMgr->setSkyBox(
                 true,
-                nameSky[1],
+                nameSky[2],
                 7000,
                 true,                 // отрисовывать первым
                 Quaternion::IDENTITY, // ориентация
@@ -53,14 +61,24 @@ namespace mdl
 
         void update()
         {   nd->yaw(Radian(0.1f  * deltaTime));
-            box.node->roll(Radian(0.03f * deltaTime));
+            if(n == 0 ) box[0].node->roll(Radian( 0.03f * deltaTime));
+            if(n == 1 ) box[1].node->yaw (Radian(-0.03f * deltaTime));
         }
 
         void toggle()
         {   
             if(j)
             {
-                Glob::scnMgr->setSkyBox(
+                if(1 == j)
+                {
+                    box[1].node->setVisible(true);
+                    n = 1;
+                }
+                else box[1].node->setVisible(false);
+
+                if(j > 1)
+                {
+                    Glob::scnMgr->setSkyBox(
                         true,
                         nameSky[j],
                         7000,
@@ -69,18 +87,21 @@ namespace mdl
                         "General"
                     );
 
-                nd = Glob::scnMgr->getSkyNode();
-                box.node->setVisible(false);
+                    nd = Glob::scnMgr->getSkyNode();
+                }
+                
+                box[0].node->setVisible(false);
             }
-            else box.node->setVisible(true);
+            else {box[0].node->setVisible(true); n = 0; }
 
             j = ++j < nameSky.size() ? j : 0;
         }
         
     private:
-        Model     box;
+        Model     box[2];
         SceneNode* nd{nullptr};
         unsigned j{1};
+        unsigned n{0};
     };
 
 }
