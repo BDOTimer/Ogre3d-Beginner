@@ -574,33 +574,60 @@ namespace mdl
     inline Decor decor;
 }
 
-
-struct App : public OgreBites::ApplicationContextSDL
+namespace mdl
 {
-    App() : ApplicationContextSDL("ImGui Demo") {}
+    struct  Cursor : Glob
+    {       Cursor()
+            {   
+            }
 
-    void setup() override
-    {
-        ApplicationContextSDL::setup();
-        getRoot()->createSceneManager(); // обязательно
-    }
+        void setup()
+        {
+            createCustomCursor();
 
-    bool frameRenderingQueued(const Ogre::FrameEvent&) override
-    {
-        ImGui::Begin("Demo", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize);
+            manT.oel = Ogre::OverlayManager::getSingleton()
+                     .getOverlayElement("CustomCursor");
+        }
 
-        ImGui::End();
-        return true;
-    }
-};
+        bool mouseMoved(const OgreBites::MouseMotionEvent& evt)
+        {   manT.on();
+            manT.oel->setPosition((float)evt.x, (float)evt.y);
+            return true;
+        }
 
-inline int xmain()
-{
-    App app;
-    app.initApp();
-    app.getRoot()->startRendering(); // ← запускает окно + цикл
-    return 0;
+        void tick(){ manT.tick(); }
+
+    private:
+        Ogre::Overlay* mCursorOverlay;
+        
+        void createCustomCursor();
+        void toggleCursor      ();
+
+        struct
+        {   
+            Ogre::OverlayElement* oel;
+
+            ///--------------------------------|
+            /// Вызывать на метрономе.         |
+            ///--------------------------------:
+            void tick()
+            {   timeStart += 1;
+                if(timeStart > timeMax)
+                {   off();
+                }
+            }
+
+            void off(){ if( oel->isVisible()) oel->hide(); timeStart = 0;}
+            void on (){ if(!oel->isVisible()) oel->show(); }
+
+        private:
+            int timeMax  {3};
+            int timeStart{0};
+        }manT;
+    };
 }
+
+
 
 
 #endif // PRIMITIVES_H

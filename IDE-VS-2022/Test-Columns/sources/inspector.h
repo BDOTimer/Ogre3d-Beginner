@@ -38,6 +38,7 @@ namespace mdl
         SceneNode*        nodeBase;
         SceneNode*        nodeUser;
 
+        Cursor              cursor;
         Camera              camera;
         Lights              lights;
 
@@ -75,8 +76,6 @@ namespace mdl
             trayMgr = new OgreBites::TrayManager(
                 "UI", getRenderWindow(), this
             );
-
-            createCustomCursor();
         
             // Показываем курсор по умолчанию
             //trayMgr->showCursor();
@@ -122,6 +121,7 @@ namespace mdl
 
            //scnMgr->setSkyBox(true, "Examples/StormySkyBox8");
 
+            cursor   .setup();
             camera   .setup(nodeUser);
             lights   .setup(camera.camNode);
             decor    .setup();
@@ -215,6 +215,9 @@ namespace mdl
         {
             Glob::deltaTime = evt.timeSinceLastFrame;
 
+            ///-----------------------------------|
+            /// Метроном.                         |
+            ///-----------------------------------:
             accumulatedTime += evt.timeSinceLastFrame;
        
             if(accumulatedTime >= intervalTime)
@@ -226,6 +229,7 @@ namespace mdl
                 seconds++;
 
                 effects.update(seconds);
+                cursor .tick();
             }
 
             ///-----------------------------------|
@@ -339,17 +343,8 @@ namespace mdl
         {   std::cout << "⚙ Opening tuning menu...\n";
         }
 
-        Ogre::Overlay* mCursorOverlay;
-        void createCustomCursor();
-        void toggleCursor      ();
-
         bool mouseMoved(const OgreBites::MouseMotionEvent& evt) override
-        {
-            Ogre::OverlayElement* cursor = Ogre::OverlayManager::getSingleton()
-                .getOverlayElement("CustomCursor");
-            cursor->setPosition((float)evt.x, (float)evt.y);
-        
-            return true;
+        {   return cursor.mouseMoved(evt);
         }
 
         std::unique_ptr<MenuStart> mMenu;

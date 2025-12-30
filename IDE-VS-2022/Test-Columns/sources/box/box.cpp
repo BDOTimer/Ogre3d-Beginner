@@ -232,7 +232,7 @@ namespace mdl
         pwellLogic->setGem(gem);
     }
 
-    void InspectorRoot::createCustomCursor()
+    void Cursor::createCustomCursor()
     {
         Ogre::OverlayManager& overlayMgr 
             = Ogre::OverlayManager::getSingleton();
@@ -250,7 +250,7 @@ namespace mdl
         
         Ogre::TextureUnitState* texUnit
             = cursorMat->getTechnique(0)->getPass(0)
-                ->createTextureUnitState("cursor1.png");
+                ->createTextureUnitState("cursor-mouse.png");
 
         texUnit->setTextureScale(1, 1);
         
@@ -266,7 +266,7 @@ namespace mdl
         mCursorOverlay->show();
     }
 
-    void InspectorRoot::toggleCursor()
+    void Cursor::toggleCursor()
     {   Ogre::Overlay* cursorOverlay = Ogre::OverlayManager::getSingleton()
             .getByName("CursorOverlay");
     
