@@ -1,0 +1,155 @@
+
+material Christmas_Tree.fbxBark_mtl
+{
+
+    receive_shadows on
+
+	technique
+	{
+		pass 
+		{
+            lighting on
+            ambient 0.5 0.5 0.5 1.0
+            diffuse 1.0 1.0 1.0 1.0
+            specular 0.5 0.5 0.5 1.0 64
+
+			texture_unit
+			{
+				texture bark.png
+			}
+		}
+
+	}
+
+}
+
+material Christmas_Tree.fbxBauble_mtl
+{
+    receive_shadows on
+    
+	technique
+	{
+		pass 
+		{
+            lighting on
+            ambient 0.5 0.5 0.5 1.0
+            diffuse 1.0 1.0 1.0 1.0
+            specular 0.5 0.5 0.5 1.0 64
+
+			texture_unit
+			{
+				texture ballballs_c.png
+			}
+		}
+
+	}
+
+}
+
+material Christmas_Tree.fbxChristmas_Lights_Wire_mtl
+{
+    receive_shadows on
+    
+	technique
+	{
+		pass 
+		{   lighting on
+            ambient 0.5 0.5 0.5 1.0
+            diffuse 1.0 1.0 1.0 1.0
+            specular 0.5 0.5 0.5 1.0 64
+
+			texture_unit
+			{
+				texture Gold.png
+			}
+		}
+	}
+
+}
+
+material Christmas_Tree.fbxDefault_Material
+{
+    receive_shadows on
+    
+	technique
+	{
+		pass 
+		{
+            lighting on
+            ambient 0.5 0.5 0.5 1.0
+            diffuse 1.0 1.0 1.0 1.0
+            specular 0.5 0.5 0.5 1.0 64
+		}
+
+	}
+
+}
+
+material Christmas_Tree.fbxTinsel_Gold_mtl
+{
+    receive_shadows on
+    
+	technique
+	{
+		pass 
+		{   lighting on
+        
+            ambient 0.5 0.5 0.5 1.0
+            diffuse 1.0 1.0 1.0 1.0
+            specular 0.5 0.5 0.5 1.0 64
+
+			texture_unit
+			{
+				texture GoldTinsel_c.png
+			}
+		}
+
+	}
+
+}
+
+material Christmas_Tree.fbxTinsel_Red_mtl
+{
+    receive_shadows on
+    
+	technique
+	{
+		pass 
+		{   lighting on
+        
+            ambient 0.5 0.5 0.5 1.0
+            diffuse 1.0 1.0 1.0 1.0
+            specular 0.5 0.5 0.5 1.0 64
+
+			texture_unit
+			{
+				texture RedTinsel_c.png
+			}
+		}
+
+	}
+
+}
+
+material Christmas_Tree.fbxTree_Branches_mtl
+{
+    receive_shadows on
+    
+	technique
+	{
+		pass 
+		{   lighting on
+        
+            ambient 0.5 0.5 0.5 1.0
+            diffuse 1.0 1.0 1.0 1.0
+            specular 0.5 0.5 0.5 1.0 64
+        
+			texture_unit
+			{
+				texture SpruceBranch_c.png
+			}
+		}
+
+	}
+
+}

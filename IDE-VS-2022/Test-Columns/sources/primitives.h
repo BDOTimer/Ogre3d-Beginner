@@ -562,12 +562,66 @@ namespace mdl
     struct Decor : Glob
     {   Ninja    ninja;
         Tree      tree;
+        Model    tree2;
+        Model    tree3;
         Ground  ground;
 
         void setup()
-        {   ninja    .setup();
-            tree     .setup();
-            ground   .setup();
+        {   
+            
+            tree .setup();
+            
+            tree2        .setup  ("Christmas_Tree");
+            tree2.node  ->setPosition(200, 0, -200);
+
+            tree3        .setup     ("SnowyPineTree");
+            tree3.node  ->setPosition(1000, 0, -1000);
+            tree3.node  ->setScale(20,20,20);
+
+            ninja .setup();
+            ground.setup();
+
+            //tree.entity = createTreeWithShadowsTest("Christmas_Tree.mesh");
+        }
+
+        static Entity* createTreeWithShadowsTest(const String& nameMesh)
+        {
+            // 1. Загрузите оригинальный меш
+            Entity* entTree = Glob::scnMgr->createEntity(nameMesh);
+        
+            // 2. Принудительно установите большой bounding box
+            MeshPtr mesh = entTree->getMesh();
+            mesh->_setBounds(
+                AxisAlignedBox(-60, 0, -60, 60, 60, 60),
+                false
+            );
+        
+            // 3. Создайте простой материал с тенями
+            MaterialPtr shadowMat = MaterialManager::getSingleton().create(
+                "TreeShadowFixMaterial",
+                ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME
+            );
+        
+            Technique* tech = shadowMat->createTechnique();
+            Pass* pass = tech->createPass();
+            pass->setLightingEnabled(true);
+            pass->setAmbient(0.5, 0.5, 0.5);
+            pass->setDiffuse(0.8, 0.8, 0.8, 1.0);
+        
+            for(unsigned short i = 0; i < entTree->getNumSubEntities(); i++)
+            {
+                entTree->getSubEntity(i)->setMaterialName("TreeShadowFixMaterial");
+            }
+        
+            // 5. Включите тени
+            entTree->setCastShadows(true);
+
+            auto node = nodeBase->createChildSceneNode(nameMesh);
+            node->attachObject(entTree);
+
+            node->setPosition(200, 0, -200);
+        
+            return entTree;
         }
     };
 

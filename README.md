@@ -7,7 +7,7 @@
 ### :hammer: [:arrow_right: Номер билда ...](Counted-building.txt)
 ---
  
-<img src="doc/6.jpg"/>
+<img src="doc/7.jpg"/>
 
 [![IMAGE ALT TEXT HERE](http://img.youtube.com/vi/Z6axinM3CpI/0.jpg)](https://www.youtube.com/watch?v=Z6axinM3CpI)
  

@@ -76,10 +76,6 @@ namespace mdl
             trayMgr = new OgreBites::TrayManager(
                 "UI", getRenderWindow(), this
             );
-        
-            // Показываем курсор по умолчанию
-            //trayMgr->showCursor();
-
 
             Glob::pInspectorRoot = this;
             Glob::ctx            = this;
@@ -89,7 +85,7 @@ namespace mdl
             scnMgr = root->createSceneManager();
             scnMgr->setAmbientLight(ColourValue(0, 0, 0));
             scnMgr->setShadowTechnique(
-                ShadowTechnique::SHADOWTYPE_STENCIL_ADDITIVE);
+               ShadowTechnique::SHADOWTYPE_STENCIL_ADDITIVE);
 
             nodeBase = scnMgr->getRootSceneNode()->createChildSceneNode("Glob");
             nodeUser = scnMgr->getRootSceneNode()->createChildSceneNode();

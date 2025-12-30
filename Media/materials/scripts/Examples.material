@@ -154,7 +154,7 @@ material Examples/StormySkyBox
 
 			texture_unit
 			{
-				texture stormy.jpg cubic duskstormy
+				texture stormy.jpg cubic
 				tex_address_mode clamp
 			}
 		}

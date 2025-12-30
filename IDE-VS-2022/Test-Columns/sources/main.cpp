@@ -82,7 +82,9 @@ int main([[maybe_unused]] int    argc,
         /// Отключаем логи в MeshManager.                  |
         ///------------------------------------------------:
         Ogre::LogManager logMgr;
-        logMgr.createLog("", false, false, false);  // Пустой лог
+        if(const bool isLog = true)
+        {   logMgr.createLog("", false, false, false);  // Пустой лог
+        }
 
         Application app;
     }

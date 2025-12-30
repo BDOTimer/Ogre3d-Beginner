@@ -4,7 +4,6 @@ material 12150_Christmas_Tree_V2_L2.objChristmas_Tree
     //receive_shadows on
 	technique
 	{
-        //receive_shadows on
 		pass 
 		{
 			lighting on
@@ -17,8 +16,6 @@ material 12150_Christmas_Tree_V2_L2.objChristmas_Tree
             ambient 0.2 0.2 0.3 0.5
             diffuse 0.5 0.5 0.8 0.8  // синеватое стекло
             specular 1.0 1.0 1.0 1.0 50
-            
-            shininess 128
 
 			texture_unit
 			{
@@ -35,7 +32,6 @@ material X12150_Christmas_Tree_V2_L2.objChristmas_Tree
     receive_shadows on
 	technique
 	{
-        receive_shadows on
 		pass 
 		{
 			lighting on
@@ -49,8 +45,6 @@ material X12150_Christmas_Tree_V2_L2.objChristmas_Tree
             ambient 0.2 0.2 0.3 0.2
             diffuse 0.5 0.5 0.8 0.3  // синеватое стекло
             specular 1.0 1.0 1.0 1.0 100
-            
-            shininess 128
 
 			texture_unit
 			{
