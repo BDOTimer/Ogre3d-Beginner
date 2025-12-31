@@ -41,6 +41,7 @@ namespace mdl
         Cursor              cursor;
         Camera              camera;
         Lights              lights;
+        ManLights        manLights;
 
         UI                      ui;
         Effects            effects;
@@ -82,7 +83,7 @@ namespace mdl
 
             root   = getRoot();
             scnMgr = root->createSceneManager();
-            scnMgr->setAmbientLight(ColourValue(0.3f, 0.3f, 0.3f));
+            scnMgr->setAmbientLight(ColourValue(0.1f, 0.1f, 0.f));
 
             shadergen = RTShader::ShaderGenerator::getSingletonPtr();
             shadergen-> addSceneManager(scnMgr);
@@ -91,15 +92,38 @@ namespace mdl
             {   scnMgr->setShadowTechnique(
                     ShadowTechnique::SHADOWTYPE_STENCIL_ADDITIVE);
             }
-            else
-            {   scnMgr->setShadowTechnique(
+            else if(const bool isModul{1})
+            {   scnMgr->setShadowTextureSize (2048);
+                scnMgr->setShadowTechnique(
                     ShadowTechnique::SHADOWTYPE_TEXTURE_MODULATIVE);
 
-                scnMgr->setShadowTechnique(SHADOWTYPE_TEXTURE_MODULATIVE);
                 scnMgr->setShadowTextureSettings(2048, 2);
-                scnMgr->setShadowFarDistance(4000);
-                scnMgr->setShadowDirectionalLightExtrusionDistance(1000);
-                scnMgr->setShadowTextureSelfShadow(true);
+                scnMgr->setShadowFarDistance    (6000);
+
+                scnMgr->setShadowTextureCount(3);
+              //scnMgr->setShadowTextureSize (2048);
+              //scnMgr->setShadowPolygonOffsetFactor(1.0f);
+              //scnMgr->setShadowPolygonOffsetUnits(6.0f);
+
+              //scnMgr->setShadowDirectionalLightExtrusionDistance(10000);
+              //scnMgr->setShadowTextureSelfShadow(true);
+            }
+            else
+            {   scnMgr->setShadowTechnique(
+                    ShadowTechnique::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
+
+                scnMgr->setShadowTextureSettings(2048, 2);
+                scnMgr->setShadowFarDistance(10000);
+                scnMgr->setShadowTextureCount(3);
+
+                ResourceGroupManager::getSingleton()
+                    .initialiseAllResourceGroups  ();
+                MaterialPtr casterMat   = MaterialManager::getSingleton()
+                    .getByName("PSSM/shadow_caster");
+
+                ASSERTM(casterMat != nullptr, "PSSM casterMat   not found!")
+
+                scnMgr->setShadowTextureCasterMaterial(casterMat);
             }
             
             nodeBase = scnMgr->getRootSceneNode()->createChildSceneNode("Glob");
@@ -127,7 +151,10 @@ namespace mdl
 
             cursor   .setup();
             camera   .setup(nodeUser);
-            lights   .setup(camera.camNode);
+        /// lights   .setup(camera.camNode);
+            manLights.setup();
+            manLights.doTwoPlayers();
+
             decor    .setup();
             ui       .setup(trayMgr);
             effects  .setup();
@@ -240,9 +267,11 @@ namespace mdl
             /// FPS.                              |
             ///-----------------------------------:
             /// myl::Fps::get().update(deltaTime);
+   
+            sky.update();
 
             if(isPause || isGameOver)
-            {   sky.update();
+            {   //sky.update();
             }
             else
             {   games.update();

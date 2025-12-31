@@ -528,9 +528,12 @@ namespace mdl
 
                 Ogre::Pass* const p = mat[i]->getTechnique(0)->getPass(0);
                         p->setDiffuse (cfg.descriptionGems[i].color);
-                        p->setAmbient (ColourValue(0.3f, 0.15f, 0.0));
-                        p->setSpecular(ColourValue(1.0 , 1.0  , 1.0));
-                        p->setShininess(64.0);
+                        ///p->setAmbient (ColourValue(0.4f));
+                        p->setAmbient (ColourValue(0.6f, 0.5f, 0.5f));
+                        p->setSpecular(ColourValue(0.9f));
+                        p->setShininess(48.0f);
+                    /// p->setEmissive(ColourValue(0.2f,0.1f,0.05f));
+                    /// p->setSelfIllumination(ColourValue(0.1f,0.1f,0.1f,1));
             }
         }
 

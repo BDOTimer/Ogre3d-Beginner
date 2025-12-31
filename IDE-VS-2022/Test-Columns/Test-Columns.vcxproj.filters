@@ -51,6 +51,9 @@
     <ClInclude Include="sources\sky.h">
       <Filter>sources\new</Filter>
     </ClInclude>
+    <ClInclude Include="sources\light.h">
+      <Filter>sources\new</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="sources">

@@ -5,6 +5,7 @@
 #define PRIMITIVES_H
 #include "config-game.h"
 #include "effects.h"
+#include "light.h"
 
 ///---------|
 /// Models. |
@@ -128,13 +129,15 @@ namespace mdl
     {       
         Ogre::Entity*  entity;
 
-        void setup(SceneNode*  nodeUser)
+        void setup([[maybe_unused]] SceneNode*  nodeUser)
         {   
             using namespace Ogre;
 
-            const ColourValue colourValue0(ColourValue::White);
-            const ColourValue colourValue1(0.5f, 0.5f, 0.5f);
+            const ColourValue colourValue1(ColourValue::White);
+            const ColourValue colourValue8(0.8f, 0.8f, 0.8f);
+            const ColourValue colourValue5(0.5f, 0.5f, 0.5f);
             const ColourValue colourValue2(0.2f, 0.2f, 0.2f);
+            const ColourValue colourValue0(0.0f, 0.0f, 0.0f);
 
             ///------------|
             /// SpotLight  |
@@ -143,19 +146,23 @@ namespace mdl
             {
                 Light* spotLight = scnMgr->createLight("SpotLight");
 
-                spotLight->setDiffuseColour (colourValue1);
-                spotLight->setSpecularColour(colourValue2);
+                spotLight->setDiffuseColour (colourValue5);
+                spotLight->setSpecularColour(colourValue8);
 
                 spotLight->setType(Light::LT_SPOTLIGHT);
 
                 SceneNode* spotLightNode
                     = scnMgr->getRootSceneNode()->createChildSceneNode();
+                    //= nodeUser->createChildSceneNode();
                 spotLightNode->attachObject(spotLight);
-                spotLightNode->setDirection(0, -1, -1);
-                spotLightNode->setPosition (
-                    Vector3(0, 200, 500).normalisedCopy());
+                spotLightNode->setDirection(
+                    Vector3(0, -0.5f, -1).normalisedCopy());
+                spotLightNode->setPosition (Vector3(0, 900, 1400));
 
-                spotLight->setSpotlightRange(Degree(35), Degree(50));
+                spotLight->setSpotlightRange(Degree(100), Degree(120));
+
+                spotLight->setCastShadows(true);
+                spotLight->setShadowFarDistance(2000.0f);
             }
 
             ///------------|
@@ -163,37 +170,45 @@ namespace mdl
             ///------------:
             if(1)
             {
-                Light* directionalLight = scnMgr->createLight("DirectionalLight");
-                directionalLight->setType(Light::LT_DIRECTIONAL);
+                Light* dirLight = scnMgr->createLight("dirLight");
+                dirLight->setType(Light::LT_DIRECTIONAL);
 
-                directionalLight->setDiffuseColour (ColourValue(colourValue0));
-                directionalLight->setSpecularColour(ColourValue(colourValue1));
+                dirLight->setDiffuseColour (ColourValue(colourValue5));
+                dirLight->setSpecularColour(ColourValue(colourValue5));
 
                 SceneNode* directionalLightNode
                     = scnMgr->getRootSceneNode()->createChildSceneNode();
-                directionalLightNode->attachObject(directionalLight);
+                directionalLightNode->attachObject(dirLight);
                 directionalLightNode->setDirection(
-                    Vector3(0, -1, -1).normalisedCopy());
+                    Vector3(0.5f, -1, -1).normalisedCopy());
+
+                dirLight->setCastShadows      (true);
+                dirLight->setShadowFarDistance(3000.0f);
             }
 
             ///------------|
             /// PointLight |
             ///------------:
-            if(1)
+            if(0)
             {
                 Light* pointLight = scnMgr->createLight("PointLight");
                 pointLight->setType(Light::LT_POINT);
 
-                pointLight->setDiffuseColour (colourValue1);
-                pointLight->setSpecularColour(colourValue2);
+                pointLight->setDiffuseColour (colourValue8);
+                pointLight->setSpecularColour(colourValue8);
 
                 SceneNode* pointLightNode
-                    = nodeUser->createChildSceneNode();
+                    = scnMgr->getRootSceneNode()->createChildSceneNode();
+                    //= nodeUser->createChildSceneNode();
                 pointLightNode->attachObject(pointLight);
-                pointLightNode->setPosition(Vector3(0, 600, 250));
+                pointLightNode->setPosition(Vector3(0, 1000, 1000));
+
+                pointLight->setCastShadows      (false);
+                pointLight->setShadowFarDistance(5000.0f);
             }
         }
     };
+
 
 
     ///------------------------------------------------------------------------|
@@ -265,6 +280,25 @@ namespace mdl
             node->attachObject(entity);
         }
     };
+
+
+    ///------------------------------------------------------------------------|
+    /// ModelSky.
+    ///--------------------------------------------------------------- ModelSky:
+    struct  ModelSky : Glob
+    {       
+        Ogre::Entity*  entity;
+        SceneNode*     node  {nullptr};
+
+        void setup(const std::string& nameMesh)
+        {   entity = scnMgr->createEntity(nameMesh + ".mesh");
+            entity->setCastShadows       (false); // ← ВАЖНО!
+
+            node = nodeBase->createChildSceneNode(nameMesh);
+            node->attachObject(entity);
+        }
+    };
+
 
     ///------------------------------------------------------------------------|
     /// Sphere.
@@ -533,8 +567,8 @@ namespace mdl
             m[0].setup(node);
             m[1].setup(node);
 
-            m[0].node->setPosition(Ogre::Vector3(-X,-50,0));
-            m[1].node->setPosition(Ogre::Vector3( X,-50,0));
+            m[0].node->setPosition(Ogre::Vector3(-X,-51,0));
+            m[1].node->setPosition(Ogre::Vector3( X,-51,0));
         }
     };
 }
@@ -611,7 +645,7 @@ namespace mdl
         
             Technique* tech = shadowMat->createTechnique();
             Pass* pass = tech->createPass();
-            pass->setLightingEnabled(true);
+            pass->setLightingEnabled (true);
             pass->setAmbient(0.5f, 0.5f, 0.5f);
             pass->setDiffuse(0.8f, 0.8f, 0.8f, 1.f);
         

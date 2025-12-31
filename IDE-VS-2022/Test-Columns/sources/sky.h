@@ -37,7 +37,7 @@ namespace mdl
         void setup()
         {   
             box[0]      .setup("T_Skybox_day_7_D_proc");
-            //box[0].node->scale(1000.f, 1000.f, 1000.f);
+        /// box[0].node->scale(2.f, 2.f, 2.f);
             box[0].node->pitch(Degree(-90));
             box[0].node->setVisible(true);
 
@@ -57,7 +57,6 @@ namespace mdl
                 "General"
             );
             nd = Glob::scnMgr->getSkyNode();
-            nd->setVisible(false);
         }
 
         void update()
@@ -89,10 +88,7 @@ namespace mdl
                     );
 
                     nd = Glob::scnMgr->getSkyNode();
-                    //nd->setVisible(false);////////////////////////////////////
-
                 }
-                
                 box[0].node->setVisible(false);
             }
             else {box[0].node->setVisible(true); n = 0; }
@@ -101,10 +97,10 @@ namespace mdl
         }
         
     private:
-        Model     box[2];
+        ModelSky box[2];
         SceneNode* nd{nullptr};
-        unsigned j{1};
-        unsigned n{0};
+        unsigned   j{1};
+        unsigned   n{0};
     };
 
 }

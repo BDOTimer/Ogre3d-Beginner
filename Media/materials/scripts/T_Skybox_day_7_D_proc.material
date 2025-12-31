@@ -7,15 +7,22 @@ material model.objobject_0
 		pass 
 		{
             lighting off
-			//depth_write off
-            //depth_check off
+			depth_write off
             
-			//diffuse 0.6 0.6 0.6 1
-			//specular 0 0 0 1 9.84916
+            cull_hardware none  // Отключаем отсечение задних граней
+            //cull_software none
+            
+            ambient 1
+            diffuse 1 1 1 1
+            specular 0 0 0 1 0
 
 			texture_unit
 			{
 				texture T_Skybox_day_7_D_proc.jpg
+                
+                //tex_address_mode clamp     // Важно для скайбокса
+                filtering anisotropic      // Качество
+                max_anisotropy 8
 			}
 		}
 

@@ -22,7 +22,7 @@ namespace mdl
         Ogre::SceneNode* wallNode{nullptr};
         Ogre::Entity*    walls[4];
 
-        const char* nameMat1{"Ogre/Skin1"};
+        const char* nameMat1{"Ogre/Skin1"}; /// Ogre/Skin1
         const char* nameMat2{"drbunsen_glasses"};
         const char* nameMat {"Glass/WellWallsSimple"};
     /// const char* nameMat {"Examples/Rockwall"};

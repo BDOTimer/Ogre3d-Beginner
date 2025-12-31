@@ -31,6 +31,7 @@
     <ClInclude Include="sources\game.h" />
     <ClInclude Include="sources\inspector.h" />
     <ClInclude Include="sources\intro.h" />
+    <ClInclude Include="sources\light.h" />
     <ClInclude Include="sources\physics.h" />
     <ClInclude Include="sources\primitives.h" />
     <ClInclude Include="sources\sky.h" />
