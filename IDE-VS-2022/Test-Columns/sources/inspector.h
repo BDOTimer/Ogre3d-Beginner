@@ -83,7 +83,7 @@ namespace mdl
 
             root   = getRoot();
             scnMgr = root->createSceneManager();
-            scnMgr->setAmbientLight(ColourValue(0.1f, 0.1f, 0.f));
+            scnMgr->setAmbientLight(ColourValue(0.1f, 0.1f, 0.1f));
 
             shadergen = RTShader::ShaderGenerator::getSingletonPtr();
             shadergen-> addSceneManager(scnMgr);
@@ -93,7 +93,7 @@ namespace mdl
                     ShadowTechnique::SHADOWTYPE_STENCIL_ADDITIVE);
             }
             else if(const bool isModul{1})
-            {   scnMgr->setShadowTextureSize (2048);
+            { //scnMgr->setShadowTextureSize (2048);
                 scnMgr->setShadowTechnique(
                     ShadowTechnique::SHADOWTYPE_TEXTURE_MODULATIVE);
 
@@ -113,8 +113,8 @@ namespace mdl
                     ShadowTechnique::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
 
                 scnMgr->setShadowTextureSettings(2048, 2);
-                scnMgr->setShadowFarDistance(10000);
-                scnMgr->setShadowTextureCount(3);
+                scnMgr->setShadowFarDistance    (10000);
+                scnMgr->setShadowTextureCount   (3);
 
                 ResourceGroupManager::getSingleton()
                     .initialiseAllResourceGroups  ();
@@ -153,7 +153,7 @@ namespace mdl
             camera   .setup(nodeUser);
         /// lights   .setup(camera.camNode);
             manLights.setup();
-            manLights.doTwoPlayers();
+            manLights.doMenu();
 
             decor    .setup();
             ui       .setup(trayMgr);
@@ -285,17 +285,17 @@ namespace mdl
 
         void buttonHit(OgreBites::Button* button) override
         {
-            if (button->getName() == "btStart1")
+                 if (button == ui.menuStart.btStart1)
             {   startGame(1);
             }
-            else if (button->getName() == "btStart2")
+            else if (button == ui.menuStart.btStart2)
             {   startGame(2);
             }
-            else if (button->getName() == "btTuning")
+            else if (button == ui.menuStart.btTuning)
             {   trayMgr->showOkDialog(NAMEGAME,"...");
                 openTuning();
             }
-            else if (button->getName() == "btExit")
+            else if (button == ui.menuStart.btExit)
             {   getRoot()->queueEndRendering();
             }
 
@@ -309,7 +309,6 @@ namespace mdl
         {   std::cout << "OK-диалог закрыт: " + Ogre::String(message);
 
             if(message == "Exit") getRoot()->queueEndRendering();
-
         }
 
         ///---------------------------------------|
@@ -343,6 +342,8 @@ namespace mdl
             this->trayMgr
                 ->getTrayContainer(TrayLocation::TL_CENTER)
                 ->setVisible(true);
+
+            manLights.doMenu();
         }
 
         void gameStart()
@@ -361,6 +362,18 @@ namespace mdl
     private:
         void startGame(int players)
         {   
+            switch(players)
+            {
+                case 1 : 
+                {   manLights.doOnePlayer();
+                    break;
+                }
+                case 2 : 
+                {   manLights.doTwoPlayers();
+                    break;
+                }
+            }
+
             std::cout << std::format(
                 "▶ Starting game with {} player(s)...\n", players);
 
@@ -372,7 +385,7 @@ namespace mdl
                 ->setVisible(false);
         }
 
-        void openTuning() 
+        void openTuning()
         {   std::cout << "⚙ Opening tuning menu...\n";
         }
 

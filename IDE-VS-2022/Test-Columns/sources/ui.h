@@ -305,6 +305,11 @@ namespace mdl
     ///-------------------------------------------------------------- MenuStart:
     struct MenuStart
     {
+        Button* btStart1;
+        Button* btStart2;
+        Button* btTuning;
+        Button* btExit  ;
+
         void setup(OgreBites::TrayManager* tM)
         {   
             using T = TrayLocation;
@@ -312,7 +317,6 @@ namespace mdl
             createMyMaterials   ();
             createCustomTemplate();
 
-            Button* bt;
             Label*  lb;
 
             const char* NAMEFONT{myl::ToolFonts::NAMEFONT};
@@ -329,27 +333,27 @@ namespace mdl
 
             tM->createSeparator(T::TL_CENTER, "sp1");
 
-            bt = tM->createButton(
+            btStart1 = tM->createButton(
                 T::TL_CENTER, "btStart1", "Один Игрок", 150
             );
-            myl::ToolFonts::setFont(bt->getOverlayElement(), NAMEFONT);
+            myl::ToolFonts::setFont(btStart1->getOverlayElement(), NAMEFONT);
 
-            bt = tM->createButton(
+            btStart2 = tM->createButton(
                 T::TL_CENTER, "btStart2", "Два Игрока", 150
             );
-            myl::ToolFonts::setFont(bt->getOverlayElement(), NAMEFONT);
+            myl::ToolFonts::setFont(btStart2->getOverlayElement(), NAMEFONT);
 
-            bt = tM->createButton(
+            btTuning = tM->createButton(
                 T::TL_CENTER, "btTuning", "Настройки", 150
             );
-            myl::ToolFonts::setFont(bt->getOverlayElement(), NAMEFONT);
+            myl::ToolFonts::setFont(btTuning->getOverlayElement(), NAMEFONT);
 
             tM->createSeparator(T::TL_CENTER, "sp2");
             
-            bt = tM->createButton(
+            btExit = tM->createButton(
                 T::TL_CENTER, "btExit", "Выход в ОС", 150
             );
-            myl::ToolFonts::setFont(bt->getOverlayElement(), NAMEFONT);
+            myl::ToolFonts::setFont(btExit->getOverlayElement(), NAMEFONT);
 
             tM->createDecorWidget(
                 T::TL_CENTER, "wdMS2", "MyTemplates/FancyFrame"
@@ -475,7 +479,7 @@ namespace mdl
             if(!tbIH)
             {   
                 tbIH = trayMgr->createTextBox(
-                    TrayLocation::TL_TOPLEFT, "tbIH", "", 360, 270
+                    TrayLocation::TL_TOPLEFT, "tbIH", "", 390, 260
                 );
 
                 tbIH->setText(strIH);

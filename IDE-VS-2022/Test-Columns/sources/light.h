@@ -118,10 +118,10 @@ namespace mdl
 
             node = scnMgr->getRootSceneNode()->createChildSceneNode();
             node->attachObject(light);
-            node->setDirection(Vector3(0, -0.5f, -1).normalisedCopy());
-            node->setPosition (Vector3(0, 900, 1400));
+            node->setDirection(Vector3(0, -1.0f, -0.3f).normalisedCopy());
+            node->setPosition (Vector3(0, 1700, 400));
 
-            light->setSpotlightRange   (Degree(100), Degree(120));
+            light->setSpotlightRange   (Degree(80), Degree(120));
             light->setCastShadows      (true   );
             light->setShadowFarDistance(2000.0f);
         }
@@ -167,7 +167,7 @@ namespace mdl
             lightSpot.off();
         }
 
-        void doOnePlayer()
+        void doOnePlayer ()
         {   lightDir .off();
             lightSpot.on ();
         }

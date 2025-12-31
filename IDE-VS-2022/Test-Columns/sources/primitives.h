@@ -28,7 +28,7 @@ namespace mdl
 
         void changeOrbitDistance(float delta)
         {   mOrbitDistance += delta;
-            mOrbitDistance = Ogre::Math::Clamp(mOrbitDistance, 10.0f, 500.0f);
+            mOrbitDistance  = Ogre::Math::Clamp(mOrbitDistance, 10.0f, 500.0f);
             updateOrbitCamera();
         }
 
@@ -38,8 +38,8 @@ namespace mdl
         }
 
     private:
-        float mOrbitDistance;
-        Ogre::Vector3 mOrbitTarget;
+        float         mOrbitDistance;
+        Ogre::Vector3 mOrbitTarget  ;
 
         void updateOrbitCamera()
         {   // Получаем текущее направление от камеры к цели
@@ -49,10 +49,11 @@ namespace mdl
 
             // Новая позиция на нужном расстоянии
             Ogre::Vector3 newPos = mOrbitTarget + direction * mOrbitDistance;
-            mCamera->setPosition(newPos);
-        ///mCamera->lookAt(mOrbitTarget);
+            mCamera->setPosition (newPos);
+        /// mCamera->lookAt(mOrbitTarget);
         }
     };
+
 
     ///------------------------------------------------------------------------|
     /// Camera.
@@ -210,7 +211,6 @@ namespace mdl
     };
 
 
-
     ///------------------------------------------------------------------------|
     /// Грунт.
     ///----------------------------------------------------------------- Ground:
@@ -243,6 +243,7 @@ namespace mdl
         }
     };
 
+
     ///------------------------------------------------------------------------|
     /// Нидзя.
     ///------------------------------------------------------------------ Ninja:
@@ -263,6 +264,7 @@ namespace mdl
             node->setScale(3.0, 3.0, 3.0);
         }
     };
+
 
     ///------------------------------------------------------------------------|
     /// Модель.
@@ -383,6 +385,7 @@ namespace mdl
         }
     };
 
+
     ///------------------------------------------------------------------------|
     /// Ёлка.
     ///------------------------------------------------------------------ Ninja:
@@ -407,6 +410,7 @@ namespace mdl
             node->setScale   (7, 7, 7);
         }
     };
+
 
     ///------------------------------------------------------------------------|
     /// Цилиндр.
@@ -444,6 +448,7 @@ namespace mdl
 
     private:
 
+
         Ogre::SceneNode* mNode;
         Ogre::Entity*  mEntity;
 
@@ -480,6 +485,7 @@ namespace mdl
                 Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
         }
     };
+
 
     ///------------------------------------------------------------------------|
     /// Две ножки под корзину.
@@ -548,6 +554,7 @@ namespace mdl
                         p->setShininess(64.0);
         }
     };
+
 
     ///------------------------------------------------------------------------|
     /// Две ножки под корзину.
@@ -669,6 +676,7 @@ namespace mdl
     inline Decor decor;
 }
 
+
 namespace mdl
 {
     struct  Cursor : Glob
@@ -721,8 +729,6 @@ namespace mdl
         }manT;
     };
 }
-
-
 
 
 #endif // PRIMITIVES_H

@@ -276,7 +276,7 @@ namespace mdl
             chtGameOver = 0;
 
             static ConfigGame cfgHard {0, 21, 15, 5, 6   };
-            static ConfigGame cfgDemo {0, 11, 15, 5, 5   };
+            static ConfigGame cfgDemo {0, 11, 15, 4, 5   };
 
             switch(nPlayers)
             {   case 1: ConfigGame::get().pConfigGame = &cfgDemo; break;
