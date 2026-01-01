@@ -75,6 +75,7 @@ namespace mdl
         {   
             cam = scnMgr->createCamera("myCam");
             cam->setNearClipDistance  (5);
+            cam->setFarClipDistance(600000.0f);
 
             camGoal = scnMgr->getRootSceneNode()->createChildSceneNode();
             camGoal->setPosition(0, 850, 0);
@@ -91,9 +92,7 @@ namespace mdl
                                 Real(vp->getActualHeight()));
 
             cam->setAutoAspectRatio(true);
-
-            cam->setNearClipDistance(1.0f);
-            cam->setFarClipDistance(600000.0f);
+            
 
             ///------------------|
             /// Manager.         |
@@ -228,7 +227,7 @@ namespace mdl
             MeshManager::getSingleton().createPlane(
                 name, RGN_DEFAULT,
                 plane,
-                2500, 2500, 20, 20,
+                3500, 3500, 20, 20,
                 true,
                 1, 5, 5,
                 Vector3::UNIT_Z
@@ -237,9 +236,10 @@ namespace mdl
             Entity* groundEntity = scnMgr->createEntity(name);
             node = nodeBase->createChildSceneNode(name);
             node->attachObject(groundEntity);
+            node->setScale(3.0, 3.0, 3.0);
 
             groundEntity->setCastShadows (false);
-            groundEntity->setMaterialName("Examples/Rockwall");
+            groundEntity->setMaterialName("Examples/GrassFloor");
         }
     };
 

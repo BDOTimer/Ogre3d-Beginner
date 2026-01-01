@@ -48,6 +48,8 @@ namespace mdl
     /// Intro                intro;
         Sky                    sky;
 
+        InstancingNinja  instNinja;
+
         ///---------------------------------------|
         /// Игра...                               |
         ///---------------------------------------:
@@ -95,12 +97,14 @@ namespace mdl
             else if(const bool isModul{1})
             { //scnMgr->setShadowTextureSize (2048);
                 scnMgr->setShadowTechnique(
-                    ShadowTechnique::SHADOWTYPE_TEXTURE_MODULATIVE);
+                    //ShadowTechnique::SHADOWDETAILTYPE_ADDITIVE);
+                    SHADOWTYPE_TEXTURE_MODULATIVE);
 
-                scnMgr->setShadowTextureSettings(2048, 2);
-                scnMgr->setShadowFarDistance    (6000);
+                scnMgr->setShadowTextureSettings(2048, 2, PF_BYTE_LA);//
+                scnMgr->setShadowFarDistance    (60000);
+                scnMgr->setShadowDirectionalLightExtrusionDistance(20000.0f);
 
-                scnMgr->setShadowTextureCount(3);
+                //scnMgr->setShadowTextureCount(3);
               //scnMgr->setShadowTextureSize (2048);
               //scnMgr->setShadowPolygonOffsetFactor(1.0f);
               //scnMgr->setShadowPolygonOffsetUnits(6.0f);
@@ -160,6 +164,7 @@ namespace mdl
             effects  .setup();
         /// intro    .setup();
             sky      .setup();
+        /// instNinja.setup();
 
             ///-----------------------------------|
             /// Сохраняем ориентацию мира.        |
@@ -330,6 +335,10 @@ namespace mdl
 
             // Явно загружаем .fontdef файл
             rgm.initialiseResourceGroup("General");
+
+            MaterialManager::getSingleton()
+                .setDefaultTextureFiltering(TFO_ANISOTROPIC);
+            MaterialManager::getSingleton().setDefaultAnisotropy(1);
 
             // ИЛИ инициализируем все
             //rgm.initialiseAllResourceGroups();

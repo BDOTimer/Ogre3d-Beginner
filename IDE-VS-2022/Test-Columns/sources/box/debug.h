@@ -9,6 +9,7 @@
 #include <exception>
 #include <iostream>
 #include <format>
+#include <tuple>
 
 #include <OgreImGuiInputListener.h>
 #include "OgreApplicationContext.h"

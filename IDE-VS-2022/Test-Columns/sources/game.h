@@ -153,7 +153,7 @@ namespace mdl
             Ogre::Quaternion rot(angle, Ogre::Vector3::UNIT_Y);
             decor.ninja.node->setOrientation(rot);
 
-            decor.ground.node->setScale(3.0, 3.0, 3.0);
+        /// decor.ground.node->setScale(3.0, 3.0, 3.0);
             decor.tree.node->setPosition(-cfg.getWellW()/2 -200, 0, -600);
 
             events.call("setCam", {2200});
@@ -239,7 +239,7 @@ namespace mdl
             Ogre::Quaternion rot(angle, Ogre::Vector3::UNIT_Y);
             decor.ninja.node->setOrientation(rot);
 
-            decor.ground.node->setScale(3.0, 1.0, 3.0);
+        /// decor.ground.node->setScale(3.0, 1.0, 3.0);
 
             nodePl[0]->yaw(Ogre::Degree(-10));
             nodePl[1]->yaw(Ogre::Degree( 10));

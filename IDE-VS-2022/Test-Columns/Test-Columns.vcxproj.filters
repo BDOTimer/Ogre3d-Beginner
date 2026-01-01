@@ -48,11 +48,11 @@
     <ClInclude Include="sources\intro.h">
       <Filter>sources\new</Filter>
     </ClInclude>
-    <ClInclude Include="sources\sky.h">
-      <Filter>sources\new</Filter>
-    </ClInclude>
     <ClInclude Include="sources\light.h">
       <Filter>sources\new</Filter>
+    </ClInclude>
+    <ClInclude Include="sources\sky.h">
+      <Filter>sources</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

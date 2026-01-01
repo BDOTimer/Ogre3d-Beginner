@@ -9,6 +9,9 @@ material Examples/Instancing/HWBasic/shadow_caster
 	{
 		pass
 		{
+            depth_bias 1.0
+            iteration once_per_light
+        
 			rtshader_system
 			{
 				lighting_stage gbuffer depth
@@ -26,6 +29,7 @@ material Examples/Instancing/HWBasic/Robot
 
 		pass
 		{
+            
 			specular	1 1 1 1 12.5
 
 			texture_unit Diffuse
@@ -54,8 +58,31 @@ material Examples/Instancing/HWBasic/spine
 
 			texture_unit Diffuse
 			{
-				texture		circuit.dds
+                texture		circuit.dds
 				tex_address_mode	clamp
+			}
+
+			rtshader_system
+            {
+				transform_stage instanced
+			}
+		}
+	}
+}
+
+material Examples/Instancing/HWBasic/tree
+{
+	technique
+	{
+		shadow_caster_material Examples/Instancing/HWBasic/shadow_caster
+
+		pass
+		{
+			specular	1 1 1 1 12.5
+
+			texture_unit Diffuse
+			{
+				texture	SnowyPineTree_Diffuse.png
 			}
 
 			rtshader_system
