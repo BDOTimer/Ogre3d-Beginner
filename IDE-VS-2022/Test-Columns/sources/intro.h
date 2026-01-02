@@ -30,7 +30,7 @@ namespace mdl
     ///------------------------------------------------------------------------|
     /// 
     ///------------------------------------------------------------------------:
-    struct InstancingNinja :  Glob
+    struct InstancingForest :  Glob
     {
         void setup()
         {
@@ -57,9 +57,8 @@ namespace mdl
 
                     ent->setPosition({ X, 0, Z });
                     ent->setScale   ({ S, S, S });
-                    //ent->setCastShadows(true);
+                /// ent->setCastShadows(true);
                     
-
                     ent->setRenderingDistance(0); // 0 = всегда рендерить
                     ent->setRenderQueueGroup(RENDER_QUEUE_MAIN);
                     ent->setVisibilityFlags(0xFFFFFFFF);

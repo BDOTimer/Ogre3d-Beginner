@@ -88,6 +88,8 @@ namespace mdl
             vp = ctx->getRenderWindow()->addViewport(cam);
             vp->setBackgroundColour(ColourValue(0, 0, 0.02f));
 
+            //vp->setMaterialScheme(MSN_SHADERGEN);
+
             cam->setAspectRatio(Real(vp->getActualWidth ()) / 
                                 Real(vp->getActualHeight()));
 

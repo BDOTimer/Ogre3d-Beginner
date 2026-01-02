@@ -48,7 +48,7 @@ namespace mdl
     /// Intro                intro;
         Sky                    sky;
 
-        InstancingNinja  instNinja;
+        InstancingForest    forest;
 
         ///---------------------------------------|
         /// Игра...                               |
@@ -100,7 +100,7 @@ namespace mdl
                     //ShadowTechnique::SHADOWDETAILTYPE_ADDITIVE);
                     SHADOWTYPE_TEXTURE_MODULATIVE);
 
-                scnMgr->setShadowTextureSettings(2048, 2, PF_BYTE_LA);//
+                scnMgr->setShadowTextureSettings(1024, 2, PF_DEPTH16);//
                 scnMgr->setShadowFarDistance    (60000);
                 scnMgr->setShadowDirectionalLightExtrusionDistance(20000.0f);
 
@@ -110,7 +110,7 @@ namespace mdl
               //scnMgr->setShadowPolygonOffsetUnits(6.0f);
 
               //scnMgr->setShadowDirectionalLightExtrusionDistance(10000);
-              //scnMgr->setShadowTextureSelfShadow(true);
+                scnMgr->setShadowTextureSelfShadow(false);
             }
             else
             {   scnMgr->setShadowTechnique(
@@ -164,7 +164,7 @@ namespace mdl
             effects  .setup();
         /// intro    .setup();
             sky      .setup();
-        /// instNinja.setup();
+            forest   .setup();
 
             ///-----------------------------------|
             /// Сохраняем ориентацию мира.        |
