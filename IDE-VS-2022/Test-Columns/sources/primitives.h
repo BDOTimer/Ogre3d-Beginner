@@ -231,7 +231,7 @@ namespace mdl
                 plane,
                 3500, 3500, 20, 20,
                 true,
-                1, 5, 5,
+                1, 20, 20,
                 Vector3::UNIT_Z
             );
 

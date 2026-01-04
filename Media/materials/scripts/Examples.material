@@ -742,6 +742,7 @@ material Examples/GrassFloor
 			texture_unit
 			{
 				texture grass_1024.jpg
+                //texture ground123.jpg
 			}
 		}
 	}
@@ -1304,6 +1305,20 @@ material TestLevel_b0_m0/TEXFACE/Soil.jpg
 			texture_unit
 			{
 				texture egyptrockyfull.jpg
+			}
+		}
+	}
+}
+
+material Examples/Floor
+{
+	technique
+	{
+		pass
+		{
+			texture_unit
+			{
+				ground123.jpg
 			}
 		}
 	}

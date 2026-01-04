@@ -164,7 +164,7 @@ namespace mdl
             effects  .setup();
         /// intro    .setup();
             sky      .setup();
-            forest   .setup();
+        /// forest   .setup();
 
             ///-----------------------------------|
             /// Сохраняем ориентацию мира.        |
