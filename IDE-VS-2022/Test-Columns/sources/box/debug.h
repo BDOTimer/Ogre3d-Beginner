@@ -25,6 +25,7 @@
 #include "OgreApplicationContext.h"
 #include "OgreTrays.h"
 
+//#include <RenderSystems/GL/OgreGLPlugin.h>
 #include <OgreImGuiInputListener.h>
 #include "OgreImGuiOverlay.h"
 #pragma warning(pop)

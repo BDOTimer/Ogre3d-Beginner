@@ -9,8 +9,10 @@
 ///-------------------------------------------|
 /// Свой путь к "ogre.h"                      |
 ///-------------------------------------------:
-#include "OgreConfigPaths.h"
+//#include "OgreConfigPaths.h"
 #pragma warning(pop)
+
+#define OGRE_CONFIG_DIR ""
 
 ///---------|
 /// Models. |
@@ -34,7 +36,7 @@ namespace mdl
         if (!Ogre::FileSystemLayer::fileExists(pluginsPath))
         {
             pluginsPath = Ogre::FileSystemLayer::resolveBundlePath(
-                OGRE_CONFIG_DIR "/plugins.cfg"
+               OGRE_CONFIG_DIR "/plugins.cfg"
             );
         }
     #endif

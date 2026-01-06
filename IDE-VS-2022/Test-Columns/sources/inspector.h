@@ -84,6 +84,10 @@ namespace mdl
             Glob::pIListener     = this;
 
             root   = getRoot();
+
+            //Ogre::GLPlugin* glPlugin = new Ogre::GLPlugin();
+            //root->installPlugin(glPlugin);
+
             scnMgr = root->createSceneManager();
             scnMgr->setAmbientLight(ColourValue(0.1f, 0.1f, 0.1f));
 

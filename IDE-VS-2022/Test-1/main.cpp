@@ -1,3 +1,4 @@
+//#define OGRE_STATIC
 #pragma warning(push, 0)
 #pragma warning(disable: 4275 4251)
 #include <exception>
@@ -17,7 +18,7 @@ ApplicationContext*   ctx;
 
 namespace mdl
 {
-        ///------------------------------------------------------------------------|
+    ///------------------------------------------------------------------------|
     /// Camera.
     ///----------------------------------------------------------------- Camera:
     struct  Camera

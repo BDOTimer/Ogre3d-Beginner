@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <IncludePath>D:\!!!pro-cyber\myTests\EMS\vcpkg\vcpkg\packages;$(IncludePath)</IncludePath>
+    <TargetName>$(ProjectName)_stattic.exe</TargetName>
+    <LibraryPath>D:\!!!pro-cyber\myTests\EMS\vcpkg\vcpkg\packages\ogre_x64-windows-static\lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>D:\!!!pro-cyber\myTests\EMS\vcpkg\vcpkg\packages\sfml_x64-windows-static\include;D:\!!!pro-cyber\myTests\EMS\vcpkg\vcpkg\packages\imgui_x64-windows-static\include;D:\!!!pro-cyber\myTests\EMS\vcpkg\vcpkg\packages\ogre_x64-windows-static\include\OGRE\Plugins\Assimp;D:\!!!pro-cyber\myTests\EMS\vcpkg\vcpkg\packages\ogre_x64-windows-static\include\OGRE\Overlay;D:\!!!pro-cyber\myTests\EMS\vcpkg\vcpkg\packages\ogre_x64-windows-static\include\OGRE\RTShaderSystem;D:\!!!pro-cyber\myTests\EMS\vcpkg\vcpkg\packages\ogre_x64-windows-static\include\OGRE;D:\!!!pro-cyber\myTests\EMS\vcpkg\vcpkg\packages\ogre_x64-windows-static\include\OGRE\Bites;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>SFML_STATIC;OGRE_STATIC;_WINDOWS;WIN32;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>FLAC.lib;sfml-audio-s.lib;sfml-system-s.lib;vorbisenc.lib;vorbisfile.lib;vorbis.lib;ogg.lib;poly2tri.lib;polyclipping.lib;minizip.lib;imm32.lib;d3d11.lib;dxgi.lib;d3dcompiler.lib;dxguid.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;version.lib;setupapi.lib;hid.lib;winmm.lib;SDL2main.lib;SDL2-static.lib;imgui.lib;bz2.lib;raw_r.lib;raw.lib;kubazip.lib;draco.lib;jpegxr.lib;jxrglue.lib;Imath-3_2.lib;pugixml.lib;lcms2.lib;OgreMainStatic.lib;Codec_AssimpStatic.lib;Codec_FreeImageStatic.lib;Codec_STBIStatic.lib;Plugin_BSPSceneManagerStatic.lib;Plugin_DotSceneStatic.lib;Plugin_OctreeSceneManagerStatic.lib;Plugin_OctreeZoneStatic.lib;Plugin_ParticleFXStatic.lib;Plugin_PCZSceneManagerStatic.lib;RenderSystem_Direct3D11Static.lib;RenderSystem_GL3PlusStatic.lib;RenderSystem_GLStatic.lib;libpng16.lib;lzma.lib;zlib.lib;openjp2.lib;FreeImage.lib;FreeImagePlus.lib;assimp-vc143-mt.lib;brotlicommon.lib;brotlidec.lib;brotlienc.lib;freetype.lib;GlU32.Lib;OpenGL32.Lib;OgreRTShaderSystemStatic.lib;OgreBitesStatic.lib;OgreGLSupportStatic.lib;OgreOverlayStatic.lib;OgreMeshLodGeneratorStatic.lib;OgreTerrainStatic.lib;OgreVolumeStatic.lib;OgrePropertyStatic.lib;OgrePagingStatic.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>D:\!!!pro-cyber\myTests\EMS\vcpkg\libs-ogre;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup />
+</Project>
