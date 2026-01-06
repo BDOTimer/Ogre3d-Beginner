@@ -1,0 +1,86 @@
+
+material Cartoon_Desert_Skybox_2.fbxCartoon_Desert2 
+{
+	technique
+	{
+		pass 
+		{
+            lighting off
+			depth_write off
+            
+            cull_hardware none  // Отключаем отсечение задних граней
+            //cull_software none
+            
+            ambient 1
+            diffuse 1 1 1 1
+            specular 0 0 0 1 0
+
+			texture_unit
+			{
+				texture Cartoon_Desert_6x-2.jpg
+				//colour_op_ex add src_texture src_current
+				//colour_op_multipass_fallback one one
+                
+                //tex_address_mode clamp
+                //filtering anisotropic
+                tex_address_mode clamp     // Важно для скайбокса
+                filtering anisotropic      // Качество
+                max_anisotropy 8
+			}
+		}
+	}
+}
+
+material Cartoon_Desert_Skybox_2.fbxMaterial
+{
+	technique
+	{
+		pass 
+		{
+            //ambient 1 1 1 1
+            //diffuse 1 1 1 1
+            //specular 0 0 0 1 0
+		}
+
+	}
+
+}
+
+material XSSkybox/CartoonDesert
+{
+    technique
+    {
+        pass
+        {
+            // КРИТИЧЕСКИ ВАЖНЫЕ НАСТРОЙКИ для скайбокса:
+            lighting off                   // Освещение ВЫКЛЮЧИТЬ!
+            depth_write off                // Глубину не писать
+            depth_check off                // Проверку глубины отключить
+            
+            cull_hardware none             // Отключаем отсечение
+            cull_software none
+            
+            // Цвета не нужны для скайбокса с текстурой
+            ambient 1 1 1 1
+            diffuse 1 1 1 1
+            specular 0 0 0 1 0
+            
+            texture_unit
+            {
+                // cubic_texture для скайбокса (6 отдельных текстур)
+                cubic_texture Cartoon_Desert_6x-2.jpg
+                
+                // ИЛИ если у вас одна текстура, попробуйте:
+                // texture Cartoon_Desert_6x-2.jpg
+                // tex_coord_set 0
+                
+                tex_address_mode clamp     // Важно для скайбокса
+                filtering anisotropic      // Качество
+                max_anisotropy 8
+                
+                // Для cubic texture можно указать имена отдельных сторон:
+                // cubic_texture front.jpg back.jpg left.jpg right.jpg top.jpg bottom.jpg
+            }
+        }
+    }
+}

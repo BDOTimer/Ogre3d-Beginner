@@ -1,33 +1,28 @@
 
 material 12150_Christmas_Tree_V2_L2.objChristmas_Tree
 {
-    //receive_shadows on
+    receive_shadows on
 	technique
 	{
-        //receive_shadows on
 		pass 
 		{
 			lighting on
-            scene_blend alpha_blend
-            depth_write off
+            //scene_blend alpha_blend
+            //depth_write off
             
-            cull_hardware none
-            cull_software none
+            //cull_hardware none
+            //cull_software none
             
-            ambient 0.2 0.2 0.3 0.5
-            diffuse 0.5 0.5 0.8 0.8  // синеватое стекло
-            specular 1.0 1.0 1.0 1.0 50
-            
-            shininess 128
+            ambient 0.2 0.2 0.3 1
+            diffuse 0.5 0.5 0.8 1  // синеватое стекло
+            specular 1.0 1.0 1.0 1.0 96
 
 			texture_unit
 			{
 				texture tree.jpg
 			}
 		}
-
 	}
-
 }
 
 material X12150_Christmas_Tree_V2_L2.objChristmas_Tree
@@ -35,22 +30,19 @@ material X12150_Christmas_Tree_V2_L2.objChristmas_Tree
     receive_shadows on
 	technique
 	{
-        receive_shadows on
 		pass 
 		{
 			lighting on
-            scene_blend alpha_blend
-            depth_write off
+            //scene_blend alpha_blend
+            //depth_write off
             //scene_blend off
             
-            cull_hardware none
+            //cull_hardware none
             //cull_software none
             
             ambient 0.2 0.2 0.3 0.2
             diffuse 0.5 0.5 0.8 0.3  // синеватое стекло
             specular 1.0 1.0 1.0 1.0 100
-            
-            shininess 128
 
 			texture_unit
 			{
@@ -67,7 +59,7 @@ material 12150_Christmas_Tree_V2_L2.objball_metall
 	technique
 	{
 		pass 
-		{
+		{   lighting on
 			ambient 0.6588 0.6196 0.4824 1
 			diffuse 0.6588 0.6196 0.4824 1
 			specular 0.6839 0.662 0.5741 1 80
@@ -83,14 +75,12 @@ material 12150_Christmas_Tree_V2_L2.objblue
 	technique
 	{
 		pass 
-		{
+		{   lighting on
 			ambient 0.0706 0 1 1
 			diffuse 0.0706 0 1 1
 			specular 0.6863 0.349 1 1 50
 		}
-
 	}
-
 }
 
 material 12150_Christmas_Tree_V2_L2.objcloth
@@ -99,14 +89,12 @@ material 12150_Christmas_Tree_V2_L2.objcloth
 	technique
 	{
 		pass 
-		{
+		{   lighting on
 			ambient 0.2706 0.0706 0.0706 1
 			diffuse 0.2706 0.0706 0.0706 1
 			specular 0.0078 0.0078 0.0078 1 10
 		}
-
 	}
-
 }
 
 material 12150_Christmas_Tree_V2_L2.objloop
@@ -115,14 +103,12 @@ material 12150_Christmas_Tree_V2_L2.objloop
 	technique
 	{
 		pass 
-		{
+		{   lighting on
 			ambient 0.3412 0.298 0.2157 1
 			diffuse 0.3412 0.298 0.2157 1
 			specular 0.63 0.63 0.63 1 20
 		}
-
 	}
-
 }
 
 material 12150_Christmas_Tree_V2_L2.objpink
@@ -131,14 +117,12 @@ material 12150_Christmas_Tree_V2_L2.objpink
 	technique
 	{
 		pass 
-		{
+		{   lighting on
 			ambient 1 0.502 0.8 1
 			diffuse 1 0.502 0.8 1
 			specular 0.0784 0.8549 0.949 1 50
 		}
-
 	}
-
 }
 
 material 12150_Christmas_Tree_V2_L2.objred
@@ -147,14 +131,12 @@ material 12150_Christmas_Tree_V2_L2.objred
 	technique
 	{
 		pass 
-		{
+		{   lighting on
 			ambient 0.749 0 0 1
 			diffuse 0.749 0 0 1
 			specular 1 1 0.349 1 50
 		}
-
 	}
-
 }
 
 material 12150_Christmas_Tree_V2_L2.objyellow
@@ -163,13 +145,11 @@ material 12150_Christmas_Tree_V2_L2.objyellow
 	technique
 	{
 		pass 
-		{
+		{   lighting on
 			ambient 1 0.7176 0 1
 			diffuse 1 0.7176 0 1
 			specular 1 0.5059 0.5765 1 50
 		}
-
 	}
-
 }
 

@@ -25,13 +25,13 @@ material Ogre/Skin1
 	{
 		pass
 		{
-            //lighting on
-            //scene_blend alpha_blend
-            depth_write off
+            lighting on
+            scene_blend alpha_blend
+            //depth_write off
         
-			ambient 0.3 0.3 0.3
-            diffuse 0.1 0.1 0.1
-			emissive 0.3 0.2 0.2
+			//ambient 0.2 0.3 0.5
+            diffuse 0.1 0.1 0.3 0.8
+			//emissive 0.3 0.2 0.2
             
             //shininess 64
 

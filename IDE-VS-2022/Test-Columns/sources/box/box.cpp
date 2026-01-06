@@ -9,8 +9,10 @@
 ///-------------------------------------------|
 /// Свой путь к "ogre.h"                      |
 ///-------------------------------------------:
-#include "OgreConfigPaths.h"
+//#include "OgreConfigPaths.h"
 #pragma warning(pop)
+
+#define OGRE_CONFIG_DIR ""
 
 ///---------|
 /// Models. |
@@ -34,7 +36,7 @@ namespace mdl
         if (!Ogre::FileSystemLayer::fileExists(pluginsPath))
         {
             pluginsPath = Ogre::FileSystemLayer::resolveBundlePath(
-                OGRE_CONFIG_DIR "/plugins.cfg"
+               OGRE_CONFIG_DIR "/plugins.cfg"
             );
         }
     #endif
@@ -127,103 +129,154 @@ namespace mdl
         return  o;
     }
 
-    void Well::infoNewGame2Console() const
-    {   std::cout << '\n' << std::format("{}\n{}{:2}{}\n{}\n",
+    void IGame::infoNewGame2Console(std::string_view a) const
+    {   std::cout << '\n' << std::format("{}\n{}{:2}{}\n{}\n{}\n",
         "|----------------------------------|",
         "|     Новая игра  - ", Glob::cntGame," создана!    |",
-        "|----------------------------------|");
+        "|----------------------------------|",a);
     }
 
-        ///---------------------------------|
-        /// Ищем где совпало.               |
-        ///---------------------------------:
-        int WellLogic::findMatchGems()
-        {   
-            for       (auto& r : gm)
-            {   for   (auto& e : r )
-                {   if(nullptr != e)
-                    {   e->match.reset();
-                    }
+    ///---------------------------------|
+    /// Ищем где совпало.               |
+    ///---------------------------------:
+    int WellLogic::findMatchGems()
+    {   
+        for       (auto& r : gm)
+        {   for   (auto& e : r )
+            {   if(nullptr != e)
+                {   e->match.reset();
                 }
             }
-
-            for(    size_t h{}; h < H; ++h)
-            {   for(size_t w{}; w < W; ++w)
-                {   
-                    ///------------------------|
-                    /// В фокусе только 1 раз! |
-                    ///------------------------:
-                    const auto& a{gm[h][w]};
-
-                    if(nullptr == a)
-                    {   continue;
-                    }
-                    
-                    ///------------------------|
-                    /// Горизонталь.           |
-                    ///------------------------:
-                    if(size_t i = w + 1; i < W )
-                    {   const auto& b{gm[h][i]};
-                        
-                        if(nullptr != b && a->id == b->id)
-                        {   b->match.addLG(a->match.getLG());
-                        }
-                    }
-
-                    ///------------------------|
-                    /// Вертикаль.             |
-                    ///------------------------:
-                    if(size_t j = h + 1; j < H )
-                    {   const auto& b{gm[j][w]};
-                        
-                        if(nullptr != b && a->id == b->id)
-                        {   b->match.addLV(a->match.getLV());
-                        }
-                    }
-
-                    ///------------------------|
-                    /// Диагональ "Плюс".      |
-                    ///------------------------:
-                    if(size_t j = h + 1, i = w + 1; j < H && i < W )
-                    {   const auto& b{gm[j][i]};
-                        
-                        if(nullptr != b && a->id == b->id)
-                        {   b->match.addL1(a->match.getL1());
-                        }
-                    }
-
-                    ///------------------------|
-                    /// Диагональ "Минус".     |
-                    ///------------------------:
-                    if(size_t j = h + 1, i = w - 1; j < H && i < W )
-                    {   const auto& b{gm[j][i]};
-                        
-                        if(nullptr != b && a->id == b->id)
-                        {   b->match.addL5(a->match.getL5());
-                        }
-                    }
-                }
-            }
-
-            int cnt{};
-
-            for       (const auto& r : gm)
-            {   for   (const auto& e : r )
-                {   if(nullptr != e)
-                    {   if(e->match.doIsMatch())
-                        {
-                            ++cnt;
-                        }
-                    }
-                }
-            }
-
-            SetScore(statisticScore += cnt);
-
-            return cnt;
         }
 
-    void GemData::setGem2Well    (GemData* gem)
-    {   Glob::pInspectorRoot->well->setGem(gem);
+        for(    size_t h{}; h < H; ++h)
+        {   for(size_t w{}; w < W; ++w)
+            {   
+                ///------------------------|
+                /// В фокусе только 1 раз! |
+                ///------------------------:
+                const auto& a{gm[h][w]};
+
+                if(nullptr == a)
+                {   continue;
+                }
+                    
+                ///------------------------|
+                /// Горизонталь.           |
+                ///------------------------:
+                if(size_t i = w + 1; i < W )
+                {   const auto& b{gm[h][i]};
+                        
+                    if(nullptr != b && a->id == b->id)
+                    {   b->match.addLG(a->match.getLG());
+                    }
+                }
+
+                ///------------------------|
+                /// Вертикаль.             |
+                ///------------------------:
+                if(size_t j = h + 1; j < H )
+                {   const auto& b{gm[j][w]};
+                        
+                    if(nullptr != b && a->id == b->id)
+                    {   b->match.addLV(a->match.getLV());
+                    }
+                }
+
+                ///------------------------|
+                /// Диагональ "Плюс".      |
+                ///------------------------:
+                if(size_t j = h + 1, i = w + 1; j < H && i < W )
+                {   const auto& b{gm[j][i]};
+                        
+                    if(nullptr != b && a->id == b->id)
+                    {   b->match.addL1(a->match.getL1());
+                    }
+                }
+
+                ///------------------------|
+                /// Диагональ "Минус".     |
+                ///------------------------:
+                if(size_t j = h + 1, i = w - 1; j < H && i < W )
+                {   const auto& b{gm[j][i]};
+                        
+                    if(nullptr != b && a->id == b->id)
+                    {   b->match.addL5(a->match.getL5());
+                    }
+                }
+            }
+        }
+
+        int cnt{};
+
+        for       (const auto& r : gm)
+        {   for   (const auto& e : r )
+            {   if(nullptr != e)
+                {   if(e->match.doIsMatch())
+                    {
+                        ++cnt;
+                    }
+                }
+            }
+        }
+
+        events.call("setScore", 
+            {   float(figure.id),
+                float(statisticScore += cnt)
+            }
+        );
+
+        return cnt;
     }
-}
+
+    void GemData::setGem2Well    (GemData* gem)
+    {   ASSERT(pwellLogic)
+        pwellLogic->setGem(gem);
+    }
+
+    void Cursor::createCustomCursor()
+    {
+        Ogre::OverlayManager& overlayMgr 
+            = Ogre::OverlayManager::getSingleton();
+        
+        Ogre::OverlayElement* cursorElement
+            = overlayMgr.createOverlayElement("Panel", "CustomCursor");
+
+        cursorElement->setMetricsMode(Ogre::GMM_PIXELS);
+        cursorElement->setDimensions(32, 32);
+        
+        Ogre::MaterialPtr cursorMat
+            = Ogre::MaterialManager::getSingleton().create(
+                "CursorMaterial", 
+                Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+        
+        Ogre::TextureUnitState* texUnit
+            = cursorMat->getTechnique(0)->getPass(0)
+                ->createTextureUnitState("cursor-mouse.png");
+
+        texUnit->setTextureScale(1, 1);
+        
+        cursorMat->getTechnique(0)->getPass(0)
+            ->setSceneBlending(Ogre::SBT_TRANSPARENT_ALPHA);
+        
+        cursorElement->setMaterialName("CursorMaterial");
+        
+        mCursorOverlay = overlayMgr.create("CursorOverlay");
+        mCursorOverlay->add2D(
+            static_cast<Ogre::OverlayContainer*>(cursorElement));
+        mCursorOverlay->setZOrder(650); // Поверх всего
+        mCursorOverlay->show();
+    }
+
+    void Cursor::toggleCursor()
+    {   Ogre::Overlay* cursorOverlay = Ogre::OverlayManager::getSingleton()
+            .getByName("CursorOverlay");
+    
+        if(cursorOverlay->isVisible())
+            cursorOverlay->hide();
+        else
+            cursorOverlay->show();
+    }
+
+} // namespace mdl
+

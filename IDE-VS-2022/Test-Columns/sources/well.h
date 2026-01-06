@@ -22,7 +22,7 @@ namespace mdl
         Ogre::SceneNode* wallNode{nullptr};
         Ogre::Entity*    walls[4];
 
-        const char* nameMat1{"Ogre/Skin1"};
+        const char* nameMat1{"Ogre/Skin1"}; /// Ogre/Skin1
         const char* nameMat2{"drbunsen_glasses"};
         const char* nameMat {"Glass/WellWallsSimple"};
     /// const char* nameMat {"Examples/Rockwall"};
@@ -33,10 +33,13 @@ namespace mdl
             "BackWall" ,
             "DownWall"
         };
+
+        unsigned idPlayer;
     
-        void setup(SceneNode*  node)
+        void setup(SceneNode* node, unsigned id)
         {
-            wallNode = node->createChildSceneNode("3Walls");
+            idPlayer = id;
+            wallNode = node->createChildSceneNode();
 
             const auto& cfg{ConfigGame::get()};
 
@@ -54,34 +57,34 @@ namespace mdl
             Ogre::Plane downPlane (Ogre::Vector3::UNIT_Y, 0);
 
             Ogre::MeshManager::getSingleton().createPlane(
-                names[0],
+                Nm(names[0]),
                 Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
                 leftPlane,
                 H, D+D, 1, 1, true, 1, 1.0f, 1.0f, Ogre::Vector3::UNIT_Z);
             
             Ogre::MeshManager::getSingleton().createPlane(
-                names[1],
+                Nm(names[1]),
                 Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
                 rightPlane,
                 H, D+D, 1, 1, true, 1, 1.0f, 1.0f, Ogre::Vector3::UNIT_Z);
             
             Ogre::MeshManager::getSingleton().createPlane(
-                names[2],
+                Nm(names[2]),
                 Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
                 backPlane,
                 W, H, 1, 1, true, 1, 1.0f, 1.0f, Ogre::Vector3::UNIT_Y);
 
             Ogre::MeshManager::getSingleton().createPlane(
-                names[3],
+                Nm(names[3]),
                 Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
                 downPlane,
                 W, D+D, 1, 1, true, 1, 1.f, 1.f, Ogre::Vector3::UNIT_Z);
         
             // Создаем Entity для каждой стенки
-            walls[0] = scnMgr->createEntity(names[0]);
-            walls[1] = scnMgr->createEntity(names[1]);
-            walls[2] = scnMgr->createEntity(names[2]);
-            walls[3] = scnMgr->createEntity(names[3]);
+            walls[0] = scnMgr->createEntity(Nm(names[0]));
+            walls[1] = scnMgr->createEntity(Nm(names[1]));
+            walls[2] = scnMgr->createEntity(Nm(names[2]));
+            walls[3] = scnMgr->createEntity(Nm(names[3]));
         
             for(int i = 0; i < 3; ++i)
             {
@@ -93,25 +96,25 @@ namespace mdl
             walls[3]->setCastShadows (true);
 
             // Позиционируем стенки
-            Ogre::SceneNode* lNode = wallNode->createChildSceneNode(names[0]);
+            Ogre::SceneNode* lNode = wallNode->createChildSceneNode(Nm(names[0]));
             lNode->attachObject(walls[0]);
             lNode->setPosition (-W2, H2, 0);
         
-            Ogre::SceneNode* rNode = wallNode->createChildSceneNode(names[1]);
+            Ogre::SceneNode* rNode = wallNode->createChildSceneNode(Nm(names[1]));
             rNode->attachObject(walls[1]);
             rNode->setPosition ( W2, H2, 0);
         
-            Ogre::SceneNode* bNode = wallNode->createChildSceneNode(names[2]);
+            Ogre::SceneNode* bNode = wallNode->createChildSceneNode(Nm(names[2]));
             bNode->attachObject(walls[2]);
             bNode->setPosition (0, H2, -D);
 
-            Ogre::SceneNode* dNode = wallNode->createChildSceneNode(names[3]);
+            Ogre::SceneNode* dNode = wallNode->createChildSceneNode(Nm(names[3]));
             dNode->attachObject(walls[3]);
             dNode->setPosition (0, 0, 0);
         }
 
         void destroy()
-        {
+        {   
             if (!wallNode) return;
 
             Ogre::SceneManager* ScnMgr = wallNode->getCreator();
@@ -129,10 +132,15 @@ namespace mdl
             Ogre::MeshManager& meshMgr = Ogre::MeshManager::getSingleton();
             for (const auto& name : names)
             {
-                if (meshMgr.resourceExists(name))
-                {   meshMgr.remove(name);
+                if (meshMgr.resourceExists(Nm(name)))
+                {   meshMgr.remove(Nm(name));
                 }
             }
+        }
+
+    private:
+        std::string Nm(std::string_view name)
+        {   return std::format("{}{}", name, idPlayer);
         }
     };
 
@@ -152,22 +160,21 @@ namespace mdl
                 ///-----------------------------|
                 /// Настраиваем физику.         |
                 ///-----------------------------:
-                phs::Collisions::get().fooLookWay = [this](int x, int y)
+                collisions.fooLookWay = [this](int x, int y)
                 {   return this->fooLookWay(x, y);
                 };
             }
 
-        std::function<void(int)> SetScore;
-        void setDelegateSetScore(std::function<void(int)> dlg)
-        {   SetScore = dlg;
-            SetScore   (0);
+        void setup(SceneNode*  nodeB)
+        {   node = nodeB->createChildSceneNode();
         }
+
 
     private:
         Figure& figure;
 
-        const      ConfigGame& cfg       {     ConfigGame::get()};
-        const phs::Collisions& collisions{phs::Collisions::get()};
+        const ConfigGame& cfg{ ConfigGame::get() };
+        phs:: Collisions collisions;
 
         size_t W;
         size_t H;
@@ -193,11 +200,6 @@ namespace mdl
 
         int statisticScore{};
 
-        void setup(SceneNode*  nodeWell)
-        {   
-           node = nodeWell->createChildSceneNode("WellLogic");
-        }
-
         ///---------------------------------|
         /// true - Путь свободен!           |
         ///---------------------------------:
@@ -207,16 +209,16 @@ namespace mdl
 
             if( 0 > w || w >= (int)W  ||
                 0 > h || h >= (int)H) return false;
-                
-            if( nullptr != gm[h][w])  return false;
+            if( nullptr != gm [h][w]) return false;
 
             return true;
         };
 
-        bool add(Figure& fig)///-///////////////////////////////////////////////
+        ///---------------------------------|
+        /// Добавить фигуру в колодец.      |
+        ///---------------------------------:
+        bool add(Figure& fig)
         {   
-            /// return true;
-
             const Ogre::Vector3& posFig{fig.node->getPosition()};
 
             for(auto& gem : fig.gems)
@@ -233,12 +235,7 @@ namespace mdl
                 {   collisions.getIndex3(
                         {posGemF.x, posGemF.y - 50.f, posGemF.z})
                 };
-
-                //LN//////////////////////////////////////////////////////////-?
-                //l(posGemF)
-                //l(posGemI)
                 
-
                 if(posGemI[0] < 0)
                 {   std::cout << "ERROR-[Физика]: Фигура за левым бортом!\n";
                     return false;
@@ -254,7 +251,9 @@ namespace mdl
                     return false;
                 }
 
-                if(!addOne(gem, posGemI, posGemF)) break;
+                if(isGameOver = !addOne(gem, posGemI, posGemF); isGameOver) 
+                {   return false;
+                }
             }
 
             findMatchGems();
@@ -282,14 +281,16 @@ namespace mdl
             /// Ячейка занята.               |
             ///------------------------------:
             if(nullptr != cell)
-            {   std::cout << "ERROR-[Физика]: Ячейка занята! ---> "; l(posGemI)
+            {   
+            /// std::cout << "ERROR-[Физика]: Ячейка занята! ---> "; l(posGemI)
                 std::cout << '\n' <<
                     "|-----------------------------|\n"
                     "|      Чувак, геймовер!       |\n"
                     "|-----------------------------.\n\n";
 
-            /// figure.setVisibleGems(false);
-                fooGameOver();
+                Sound::get().wus[figure.id]->stop();
+
+                Glob::events.call("UserOver", {(float)figure.id});
                 return  false;
             }
 
@@ -298,9 +299,8 @@ namespace mdl
             allocator.back().igm = --allocator.end();
 
             cell = &allocator.back();
-
-            cell->setupGravitate(new phs::Stepper);
-            cell->steperGrav->setup    (posGemF.y);
+            cell->setupGravitate(new phs::Stepper(posGemF.y), &collisions);
+            cell->pwellLogic = this;
 
             gem.reset();
             
@@ -327,11 +327,6 @@ namespace mdl
         }
 
         ///---------------------------------|
-        /// Повесь сюда делегат!            |
-        ///---------------------------------:
-        std::function<void()> fooGameOver{[](){}};
-
-        ///---------------------------------|
         /// Ищем где совпало. [box.cpp]     |
         ///---------------------------------:
         int                  findMatchGems();
@@ -343,17 +338,17 @@ namespace mdl
         {       RepeatMatch(WellLogic* wl) : wl(wl) {}
 
             void tick(bool t) /// Вызвается на сигнале покоя в колодце.
-            {   if((tt ^ t) )
-                {   tt = t;
-                    wl->findMatchGems();
+            {   if  ((tt ^ t))
+                {     tt = t;
+                      wl->findMatchGems();
 
-                    /// l1("RepeatMatch:tick(.) run findMatchGems().\n")
+                    //l1("RepeatMatch:tick(.) run findMatchGems().\n")
                 }
             }
 
         private:
             bool tt{false};
-            WellLogic* wl;
+            WellLogic*  wl;
         }repeatMatch;
 
         void update()
@@ -362,11 +357,11 @@ namespace mdl
 
             for(auto it = allocator.begin(); it !=  allocator.end(); )
             {
-                ASSERT(it->isLive()) 
+                ASSERT(it->isLive())
 
                 isActive |= it->update();
 
-                if(!it->isLive())
+                if(   !it->isLive())
                 {   gm[it->pos2gm[1]][it->pos2gm[0]] = nullptr;
                        it = allocator.erase(it);
                 }
@@ -374,6 +369,21 @@ namespace mdl
             }
 
             repeatMatch.tick(isActive);
+        }
+
+    public:
+        void setGem(GemData* gem)
+        {
+            const int x = gem->pos2gm[0];
+            const int y = gem->pos2gm[1];
+
+            gem->pos2gm[1] -= 1;
+
+            ASSERT(gem->pos2gm[1] >= 0)
+            ASSERT(gm[gem->pos2gm[1]][x] == nullptr)
+
+            gm[gem->pos2gm[1]][x] = gem;
+            gm[y             ][x] = nullptr;
         }
 
         friend struct Well;
@@ -384,17 +394,18 @@ namespace mdl
     /// Корзина.
     ///------------------------------------------------------------------- Well:
     struct  Well   : Glob
-    {       Well() : logic(figure)
+    {       Well(unsigned id) : idPlayer(id), figure(id), logic(figure)
             {   
-                infoNewGame2Console();
             }
            ~Well()
             {
             }
-        
+
+        Cube2       cube2        ;
+        unsigned    idPlayer     ;
         SceneNode*  node{nullptr};
-        Figure      figure;
-        Well3Wall   well3Wall;
+        Figure      figure       ;
+        Well3Wall   well3Wall    ;
 
         ///----------------------------|
         /// Содержимое корзины!        |
@@ -402,20 +413,24 @@ namespace mdl
         WellLogic  logic;
 
     private:
-        void setup()
-        {   
+
+        void setup(SceneNode* nodeGame)
+        {
             ///------------------------|
             /// Нод корзины!           |
             ///------------------------:
-            node = nodeBase->createChildSceneNode("Well");
+            node = nodeGame->createChildSceneNode(
+                std::format("Well{}", idPlayer)
+            );
 
-            figure   .setup(node); 
-            well3Wall.setup(node); 
+            figure   .setup(node, &logic.collisions); 
+            well3Wall.setup(node, idPlayer);
             logic    .setup(node);
 
             const auto& cfgPOS{ConfigGame::get().positionWell};
 
             node->setPosition(cfgPOS);
+            cube2.setup      (node  );
 
             ///------------------------|
             /// Делегируем.            |
@@ -423,43 +438,32 @@ namespace mdl
             figure.delegate4Well = [this](Figure* figure){ logic.add(*figure);};
         }
 
-        void setDelegateGameOver(std::function<void()> foo)
-        {   logic.fooGameOver = foo;
-        }
-
         ///-------------------------------------------|
         /// Обработка клавиш.                         |
         ///-------------------------------------------:
         bool keyPressed(const KeyboardEvent& evt)
-        {   
+        {   if(logic.isGameOver) return false;
+
             switch(evt.keysym.sym)
-            {   case '1': ln(logic.gm) break; /// Дебаг.
+            {   case '5': ln(logic.gm) break; /// Дебаг.
                 default:;
             }
-            return figure.keyPressed(evt);
+            figure.keyPressed(evt);
+
+            return true;
         }
 
         void update()
-        {   figure.update();
+        {   if(logic.isGameOver) return;
+            
+            figure.update();
             logic .update();
         }
 
-        void infoNewGame2Console() const;
-
-    public:
-
-        void setGem(GemData* gem)
-        {
-            const int x = gem->pos2gm[0];
-            const int y = gem->pos2gm[1];
-
-            gem->pos2gm[1] -= 1;
-
-            logic.gm[y - 1][x] = gem;
-            logic.gm[y    ][x] = nullptr;
-        }
-
         friend struct InspectorRoot;
+        friend struct   Game1Player;
+        friend struct   Game2Player;
+        friend struct         IGame;
     };
 }
 

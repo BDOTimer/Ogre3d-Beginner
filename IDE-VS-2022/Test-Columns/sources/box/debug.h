@@ -9,6 +9,7 @@
 #include <exception>
 #include <iostream>
 #include <format>
+#include <tuple>
 
 #include <OgreImGuiInputListener.h>
 #include "OgreApplicationContext.h"
@@ -18,8 +19,15 @@
 #include "OgreInput.h"
 #include "Ogre.h"
 
+#include <OgreInstancedEntity.h>
+#include <OgreInstanceManager.h>
+
 #include "OgreApplicationContext.h"
 #include "OgreTrays.h"
+
+//#include <RenderSystems/GL/OgreGLPlugin.h>
+#include <OgreImGuiInputListener.h>
+#include "OgreImGuiOverlay.h"
 #pragma warning(pop)
 
 #ifdef _MSC_VER

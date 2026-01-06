@@ -16,3 +16,19 @@ material PSSM/shadow_caster
 	}
 }
 
+material Columns/ShadowCaster
+{
+    technique
+    {
+        pass
+        {
+            vertex_program_ref Columns/ShadowCasterVP
+            {
+                param_named_auto lightViewProjMatrix worldviewproj_matrix
+                param_named normalOffset float 0.002  // ← настраиваемый параметр
+            }
+            fragment_program_ref Ogre/ShadowCasterFP {} // можно оставить стандартный
+        }
+    }
+}
+

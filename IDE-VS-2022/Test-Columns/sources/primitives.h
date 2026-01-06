@@ -5,6 +5,7 @@
 #define PRIMITIVES_H
 #include "config-game.h"
 #include "effects.h"
+#include "light.h"
 
 ///---------|
 /// Models. |
@@ -27,7 +28,7 @@ namespace mdl
 
         void changeOrbitDistance(float delta)
         {   mOrbitDistance += delta;
-            mOrbitDistance = Ogre::Math::Clamp(mOrbitDistance, 10.0f, 500.0f);
+            mOrbitDistance  = Ogre::Math::Clamp(mOrbitDistance, 10.0f, 500.0f);
             updateOrbitCamera();
         }
 
@@ -37,8 +38,8 @@ namespace mdl
         }
 
     private:
-        float mOrbitDistance;
-        Ogre::Vector3 mOrbitTarget;
+        float         mOrbitDistance;
+        Ogre::Vector3 mOrbitTarget  ;
 
         void updateOrbitCamera()
         {   // Получаем текущее направление от камеры к цели
@@ -48,10 +49,11 @@ namespace mdl
 
             // Новая позиция на нужном расстоянии
             Ogre::Vector3 newPos = mOrbitTarget + direction * mOrbitDistance;
-            mCamera->setPosition(newPos);
-        ///mCamera->lookAt(mOrbitTarget);
+            mCamera->setPosition (newPos);
+        /// mCamera->lookAt(mOrbitTarget);
         }
     };
+
 
     ///------------------------------------------------------------------------|
     /// Camera.
@@ -69,14 +71,11 @@ namespace mdl
 
         float val{2200.0f};
 
-        void reset()
-        {   val = 2200.0f;
-        }
-
         void setup(SceneNode* nodeUser)
         {   
             cam = scnMgr->createCamera("myCam");
             cam->setNearClipDistance  (5);
+            cam->setFarClipDistance(600000.0f);
 
             camGoal = scnMgr->getRootSceneNode()->createChildSceneNode();
             camGoal->setPosition(0, 850, 0);
@@ -89,10 +88,13 @@ namespace mdl
             vp = ctx->getRenderWindow()->addViewport(cam);
             vp->setBackgroundColour(ColourValue(0, 0, 0.02f));
 
+            //vp->setMaterialScheme(MSN_SHADERGEN);
+
             cam->setAspectRatio(Real(vp->getActualWidth ()) / 
                                 Real(vp->getActualHeight()));
 
             cam->setAutoAspectRatio(true);
+            
 
             ///------------------|
             /// Manager.         |
@@ -106,24 +108,109 @@ namespace mdl
             ctx->addInputListener(man.get());
 
             set2Start();
+
+            addEvent(set2Start);
+            addEvent(setCam   );
         }
 
-        void set2Start()
+        void set2Start([[maybe_unused]]Args_t a = {})
         {   man->setYawPitchDist(Ogre::Degree(0), Ogre::Degree(10), val);
-            reset();
+        }
+
+        void setCam(Args_t d)
+        {   val = d[0];
+            man->setYawPitchDist(Ogre::Degree(0), Ogre::Degree(10), val);
         }
     };
+
 
     ///------------------------------------------------------------------------|
-    /// Текст.
-    ///--------------------------------------------------------------- TextTest:
-    struct  TextTest : Glob
-    {
-        void setup()
+    /// Свет.
+    ///----------------------------------------------------------------- Lights:
+    struct  Lights : Glob
+    {       
+        Ogre::Entity*  entity;
+
+        void setup([[maybe_unused]] SceneNode*  nodeUser)
         {   
-            
+            using namespace Ogre;
+
+            const ColourValue colourValue1(ColourValue::White);
+            const ColourValue colourValue8(0.8f, 0.8f, 0.8f);
+            const ColourValue colourValue5(0.5f, 0.5f, 0.5f);
+            const ColourValue colourValue2(0.2f, 0.2f, 0.2f);
+            const ColourValue colourValue0(0.0f, 0.0f, 0.0f);
+
+            ///------------|
+            /// SpotLight  |
+            ///------------:
+            if(1)
+            {
+                Light* spotLight = scnMgr->createLight("SpotLight");
+
+                spotLight->setDiffuseColour (colourValue5);
+                spotLight->setSpecularColour(colourValue8);
+
+                spotLight->setType(Light::LT_SPOTLIGHT);
+
+                SceneNode* spotLightNode
+                    = scnMgr->getRootSceneNode()->createChildSceneNode();
+                    //= nodeUser->createChildSceneNode();
+                spotLightNode->attachObject(spotLight);
+                spotLightNode->setDirection(
+                    Vector3(0, -0.5f, -1).normalisedCopy());
+                spotLightNode->setPosition (Vector3(0, 900, 1400));
+
+                spotLight->setSpotlightRange(Degree(100), Degree(120));
+
+                spotLight->setCastShadows(true);
+                spotLight->setShadowFarDistance(2000.0f);
+            }
+
+            ///------------|
+            /// DirLight   |
+            ///------------:
+            if(1)
+            {
+                Light* dirLight = scnMgr->createLight("dirLight");
+                dirLight->setType(Light::LT_DIRECTIONAL);
+
+                dirLight->setDiffuseColour (ColourValue(colourValue5));
+                dirLight->setSpecularColour(ColourValue(colourValue5));
+
+                SceneNode* directionalLightNode
+                    = scnMgr->getRootSceneNode()->createChildSceneNode();
+                directionalLightNode->attachObject(dirLight);
+                directionalLightNode->setDirection(
+                    Vector3(0.5f, -1, -1).normalisedCopy());
+
+                dirLight->setCastShadows      (true);
+                dirLight->setShadowFarDistance(3000.0f);
+            }
+
+            ///------------|
+            /// PointLight |
+            ///------------:
+            if(0)
+            {
+                Light* pointLight = scnMgr->createLight("PointLight");
+                pointLight->setType(Light::LT_POINT);
+
+                pointLight->setDiffuseColour (colourValue8);
+                pointLight->setSpecularColour(colourValue8);
+
+                SceneNode* pointLightNode
+                    = scnMgr->getRootSceneNode()->createChildSceneNode();
+                    //= nodeUser->createChildSceneNode();
+                pointLightNode->attachObject(pointLight);
+                pointLightNode->setPosition(Vector3(0, 1000, 1000));
+
+                pointLight->setCastShadows      (false);
+                pointLight->setShadowFarDistance(5000.0f);
+            }
         }
     };
+
 
     ///------------------------------------------------------------------------|
     /// Грунт.
@@ -142,20 +229,22 @@ namespace mdl
             MeshManager::getSingleton().createPlane(
                 name, RGN_DEFAULT,
                 plane,
-                2500, 2500, 20, 20,
+                3500, 3500, 20, 20,
                 true,
-                1, 5, 5,
+                1, 20, 20,
                 Vector3::UNIT_Z
             );
 
             Entity* groundEntity = scnMgr->createEntity(name);
             node = nodeBase->createChildSceneNode(name);
             node->attachObject(groundEntity);
+            node->setScale(3.0, 3.0, 3.0);
 
             groundEntity->setCastShadows (false);
-            groundEntity->setMaterialName("Examples/Rockwall");
+            groundEntity->setMaterialName("Examples/GrassFloor");
         }
     };
+
 
     ///------------------------------------------------------------------------|
     /// Нидзя.
@@ -167,18 +256,53 @@ namespace mdl
 
         void setup()
         {   
-            auto X{ConfigGame::get().getWellW() / 2 + 100};
-
             entity = scnMgr->createEntity("ninja.mesh");
             entity ->setCastShadows(true);
 
             node = nodeBase->createChildSceneNode("Ninja");
             node->attachObject   (entity);
-            node->yaw(Ogre::Degree (160));
-            node->setPosition (X, 0, 100);
+            node->yaw(Ogre::Degree (180));
+            node->setPosition (0, 0, 0);
             node->setScale(3.0, 3.0, 3.0);
         }
     };
+
+
+    ///------------------------------------------------------------------------|
+    /// Модель.
+    ///------------------------------------------------------------------ Model:
+    struct  Model : Glob
+    {       
+        Ogre::Entity*  entity;
+        SceneNode*     node  {nullptr};
+
+        void setup(const std::string& nameMesh)
+        {   entity = scnMgr->createEntity(nameMesh + ".mesh");
+            entity ->setCastShadows(true);
+
+            node = nodeBase->createChildSceneNode(nameMesh);
+            node->attachObject(entity);
+        }
+    };
+
+
+    ///------------------------------------------------------------------------|
+    /// ModelSky.
+    ///--------------------------------------------------------------- ModelSky:
+    struct  ModelSky : Glob
+    {       
+        Ogre::Entity*  entity;
+        SceneNode*     node  {nullptr};
+
+        void setup(const std::string& nameMesh)
+        {   entity = scnMgr->createEntity(nameMesh + ".mesh");
+            entity->setCastShadows       (false); // ← ВАЖНО!
+
+            node = nodeBase->createChildSceneNode(nameMesh);
+            node->attachObject(entity);
+        }
+    };
+
 
     ///------------------------------------------------------------------------|
     /// Sphere.
@@ -234,67 +358,6 @@ namespace mdl
         }
     };
 
-    ///------------------------------------------------------------------------|
-    /// Свет.
-    ///----------------------------------------------------------------- Lights:
-    struct  Lights : Glob
-    {       
-        Ogre::Entity*  entity;
-
-        void setup(SceneNode*  nodeUser)
-        {   
-            using namespace Ogre;
-
-            ColourValue colourValue(0.5f, 0.5f, 0.5f);
-
-            ///------------------|
-            /// directionalLight |
-            ///------------------:
-            Light* directionalLight = scnMgr->createLight("DirectionalLight");
-            directionalLight->setType(Light::LT_DIRECTIONAL);
-            directionalLight->setDiffuseColour (colourValue);
-            directionalLight->setSpecularColour(colourValue);
-
-            SceneNode* directionalLightNode
-                = nodeUser->createChildSceneNode();
-            directionalLightNode->attachObject(directionalLight);
-            directionalLightNode->setDirection(Vector3(0, -1, -1));
-
-            ///------------------|
-            /// pointLight       |
-            ///------------------:
-            Light* pointLight = scnMgr->createLight("PointLight");
-            pointLight->setType(Light::LT_POINT);
-
-            pointLight->setDiffuseColour (0.3f, 0.3f, 0.3f);
-            pointLight->setSpecularColour(0.3f, 0.3f, 0.3f);
-
-            SceneNode* pointLightNode
-                = nodeUser->createChildSceneNode();
-            pointLightNode->attachObject(pointLight);
-            pointLightNode->setPosition(Vector3(0, 300, 600));
-
-            //return;
-
-            ///------------------|
-            /// spotLight        |
-            ///------------------:
-            Light* spotLight = scnMgr->createLight("SpotLight");
-            spotLight->setDiffuseColour (1, 1, 1.0);
-            spotLight->setSpecularColour(1, 1, 1.0);
-            spotLight->setType(Light::LT_SPOTLIGHT);
-
-            SceneNode* spotLightNode
-                = nodeUser->createChildSceneNode();
-            spotLightNode->attachObject(spotLight);
-            spotLightNode->setDirection(0, 0, 1);
-            spotLightNode->setPosition(Vector3(0, 300, 600));
-
-            spotLight->setSpotlightRange(Degree(100), Degree(100));
-
-            spotLight->setVisible(false);
-        }
-    };
 
     ///------------------------------------------------------------------------|
     /// Нидзя.
@@ -324,6 +387,7 @@ namespace mdl
         }
     };
 
+
     ///------------------------------------------------------------------------|
     /// Ёлка.
     ///------------------------------------------------------------------ Ninja:
@@ -348,6 +412,7 @@ namespace mdl
             node->setScale   (7, 7, 7);
         }
     };
+
 
     ///------------------------------------------------------------------------|
     /// Цилиндр.
@@ -384,6 +449,7 @@ namespace mdl
         }
 
     private:
+
 
         Ogre::SceneNode* mNode;
         Ogre::Entity*  mEntity;
@@ -422,6 +488,7 @@ namespace mdl
         }
     };
 
+
     ///------------------------------------------------------------------------|
     /// Две ножки под корзину.
     ///--------------------------------------------------------- BlackCylinder2:
@@ -453,7 +520,7 @@ namespace mdl
         SceneNode*        node  ;
         Ogre::MaterialPtr mat   ;
 
-        void setup(const char* mesh = "cube")
+        void setup(SceneNode*  par, const char* mesh = "cube")
         {   
             auto X{ConfigGame::get().getWellW() / 2 + 100};
 
@@ -463,10 +530,10 @@ namespace mdl
             entity->setMaterial(mat);
             entity ->setCastShadows(true);
 
-            node = nodeBase->createChildSceneNode();
-            node->attachObject   (entity);
-            node->setPosition (X, 0, 100);
-            node->setScale(1.f, 1.f, 2.f);
+            node = par->createChildSceneNode();
+            node->attachObject        (entity);
+            node->setPosition    (X,   0, 100);
+            node->setScale     (1.f, 1.f, 2.f);
         }
 
         void createMaterial()
@@ -490,6 +557,7 @@ namespace mdl
         }
     };
 
+
     ///------------------------------------------------------------------------|
     /// Две ножки под корзину.
     ///------------------------------------------------------------------ Cube2:
@@ -501,13 +569,15 @@ namespace mdl
 
         Cube m[2];
 
-        void setup()
+        void setup(SceneNode*  node)
         {
-            m[0].setup();
-            m[1].setup();
+            auto X{ConfigGame::get().getWellW() / 2 - 100};
 
-            m[0].node->setPosition(Ogre::Vector3(-300,50,0));
-            m[1].node->setPosition(Ogre::Vector3( 300,50,0));
+            m[0].setup(node);
+            m[1].setup(node);
+
+            m[0].node->setPosition(Ogre::Vector3(-X,-51,0));
+            m[1].node->setPosition(Ogre::Vector3( X,-51,0));
         }
     };
 }
@@ -536,5 +606,131 @@ inline void PrintNodeHierarchy(Ogre::SceneNode* root)
     PrintNodeHierarchy2(root);
     std::cout << std::endl;
 }
+
+namespace mdl
+{
+    struct Decor : Glob
+    {   Ninja    ninja;
+        Tree      tree;
+        Model    tree2;
+        Model    tree3;
+        Ground  ground;
+
+        void setup()
+        {   
+            
+            tree .setup();
+            
+        /// tree2        .setup  ("Christmas_Tree");
+        /// tree2.node  ->setPosition(200, 0, -200);
+
+            tree3        .setup     ("SnowyPineTree");
+            tree3.node  ->setPosition(1000, 0, -1000);
+            tree3.node  ->setScale(20,20,20);
+
+            ninja .setup();
+            ground.setup();
+
+            //tree.entity = createTreeWithShadowsTest("Christmas_Tree.mesh");
+        }
+
+        static Entity* createTreeWithShadowsTest(const String& nameMesh)
+        {
+            // 1. Загрузите оригинальный меш
+            Entity* entTree = Glob::scnMgr->createEntity(nameMesh);
+        
+            // 2. Принудительно установите большой bounding box
+            MeshPtr mesh = entTree->getMesh();
+            mesh->_setBounds(
+                AxisAlignedBox(-60, 0, -60, 60, 60, 60),
+                false
+            );
+        
+            // 3. Создайте простой материал с тенями
+            MaterialPtr shadowMat = MaterialManager::getSingleton().create(
+                "TreeShadowFixMaterial",
+                ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME
+            );
+        
+            Technique* tech = shadowMat->createTechnique();
+            Pass* pass = tech->createPass();
+            pass->setLightingEnabled (true);
+            pass->setAmbient(0.5f, 0.5f, 0.5f);
+            pass->setDiffuse(0.8f, 0.8f, 0.8f, 1.f);
+        
+            for(unsigned short i = 0; i < entTree->getNumSubEntities(); i++)
+            {
+                entTree->getSubEntity(i)->setMaterialName("TreeShadowFixMaterial");
+            }
+        
+            // 5. Включите тени
+            entTree->setCastShadows(true);
+
+            auto node = nodeBase->createChildSceneNode(nameMesh);
+            node->attachObject(entTree);
+
+            node->setPosition(200, 0, -200);
+        
+            return entTree;
+        }
+    };
+
+    inline Decor decor;
+}
+
+
+namespace mdl
+{
+    struct  Cursor : Glob
+    {       Cursor()
+            {   
+            }
+
+        void setup()
+        {
+            createCustomCursor();
+
+            manT.oel = Ogre::OverlayManager::getSingleton()
+                     .getOverlayElement("CustomCursor");
+        }
+
+        bool mouseMoved(const OgreBites::MouseMotionEvent& evt)
+        {   manT.on();
+            manT.oel->setPosition((float)evt.x, (float)evt.y);
+            return true;
+        }
+
+        void tick(){ manT.tick(); }
+
+    private:
+        Ogre::Overlay* mCursorOverlay;
+        
+        void createCustomCursor();
+        void toggleCursor      ();
+
+        struct
+        {   
+            Ogre::OverlayElement* oel;
+
+            ///--------------------------------|
+            /// Вызывать на метрономе.         |
+            ///--------------------------------:
+            void tick()
+            {   timeStart += 1;
+                if(timeStart > timeMax)
+                {   off();
+                }
+            }
+
+            void off(){ if( oel->isVisible()) oel->hide(); timeStart = 0;}
+            void on (){ if(!oel->isVisible()) oel->show(); }
+
+        private:
+            int timeMax  {3};
+            int timeStart{0};
+        }manT;
+    };
+}
+
 
 #endif // PRIMITIVES_H

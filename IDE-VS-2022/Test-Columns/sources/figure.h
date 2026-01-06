@@ -14,6 +14,7 @@ namespace mdl
     ///------------------------------------------------------------------------|
     /// Данные юзера, которые записываются в нод.
     ///----------------------------------------------------------- UserDataNode:
+    struct WellLogic;
     struct GemData;
 
     using  igm_t = std::list<GemData>::iterator;
@@ -30,12 +31,22 @@ namespace mdl
                 }
             }
         
-        size_t             id   {  NPOS};  /// Масть(тип) жемчужины.
+        WellLogic* pwellLogic   {nullptr};
+        size_t             id   {  NPOS }; /// Масть(тип) жемчужины.
         Ogre::SceneNode* node   {nullptr}; /// Нод на котором висит жемчужена.
         Ogre::Entity*  entity   {nullptr}; /// Геометрия + материал жемчужины.
         igm_t             igm;             /// Место аллокации этих данных.
         float       speed{50};
         Vector2i    pos2gm   ;             /// Позиция в зеркале.
+
+        void setupGravitate(phs::Stepper* grav, phs::Collisions* cln)
+        {   ASSERT(nullptr != node)
+            steperGrav = grav;
+            ASSERT(nullptr != steperGrav)
+            isGrav = true;
+
+            collisions = cln;
+        }
 
         ///------------------------------|
         /// Отвязать камень от фигуры.   |
@@ -45,11 +56,6 @@ namespace mdl
             Ogre::SceneNode*  parent = node->getParentSceneNode();
             ASSERT(nullptr != parent)
             parent->removeChild(node);
-        }
-
-        void XdeLinkDelete()///-//////////////////////////////////////////////-?
-        {   deLink();
-            node = nullptr;
         }
 
         ///------------------------------|
@@ -64,8 +70,6 @@ namespace mdl
         bool isLive() const
         {   return node != nullptr;
         }
-
-        inline static int cntDead{};
 
         ///------------------------------|
         /// Танец жемчужины.             |
@@ -90,51 +94,51 @@ namespace mdl
         ///------------------------------:
         bool update()
         {   
-            if(match.isMatch == 2) return false;
-
-            if(match.isMatch == 0) updateGravitate();///-///////////////////////
+            ASSERTM(node != nullptr, "Мёртвые с косами стоят...")
 
             animate();
 
-            ///--------------------------|
-            /// Анимация Matching.       |
-            ///--------------------------:
-            if(match.isMatch == 1)
-            {   float S = 1.f - 2.f * deltaTime;
-                if(S > 0.005f && node->getScale().x > 0.1f)
-                {   node->scale({S, S, S});
-                }
-                else
-                {   match.isMatch = 2;
-                /// node->setVisible(false);
-
-                    ///--------------------------------|
-                    /// Удаление камня из колодца.     |
-                    ///--------------------------------:-/////////////////////-!
-                    ASSERTM(node != nullptr, "Мёртвые с косами стоят...")
-                    
-                    ///---------------|
-                    /// Debug.        |
-                    ///---------------:
-                    if(false)
-                    {   LN
-                        l1(std::format("Удалён Cnt: {}\n", ++cntDead))
-                        l(pos2gm)
+            switch(match.isMatch)
+            {   case  0: updateGravitate(); break;
+                case  1:
+                {   
+                    if( float S = 1.f - 2.f * deltaTime;
+                        S > 0.005f && node->getScale().x > 0.1f)
+                    {   
+                        ///---------------------------|
+                        /// Анимация Matching.        |
+                        ///---------------------------:
+                        node->scale({S, S, S});
                     }
+                    else
+                    {   ///---------------------------|
+                        /// Анимация закончилась:     |
+                        /// удаление камня из колодца.|
+                        ///---------------------------:
+                        match.isMatch = 2;
+                    
+                        ///-------|
+                        /// Debug.|
+                        ///-------:
+                        if(false)
+                        {   
+                            static int cntDead{};
+                            LN
+                            l1(std::format("Удалён Cnt: {}\n", ++cntDead))
+                            l(pos2gm)
+                        }
 
-                    deLink();
-                    scnMgr->destroySceneNode(node);
-                    node = nullptr;
+                        deLink();
+                        scnMgr->destroySceneNode(node);
+                        node = nullptr;
+                    }
+                    break;
                 }
+                default: ASSERT(false);
             }
 
             return steperGrav->isActive;
         }
-
-        ///------------------------------|
-        /// Сколько нужно для match?     |
-        ///------------------------------:
-        static constexpr const uint8_t AMOUNTMATCH{3};
 
         enum ETYPEMATCH
         {   LV, /// Линия по вертикали.
@@ -163,11 +167,12 @@ namespace mdl
             int isMatch{0};
 
             bool doIsMatch()
-            {   isMatch
-                =   pp[0]->nType[0] >= AMOUNTMATCH ||
-                    pp[1]->nType[1] >= AMOUNTMATCH ||
-                    pp[2]->nType[2] >= AMOUNTMATCH ||
-                    pp[3]->nType[3] >= AMOUNTMATCH ;
+            {   const unsigned& AM = ConfigGame::get().AMOUNTMATCH;
+                isMatch
+                =   pp[0]->nType[0] >= AM ||
+                    pp[1]->nType[1] >= AM ||
+                    pp[2]->nType[2] >= AM ||
+                    pp[3]->nType[3] >= AM ;
                 return isMatch;
             }
 
@@ -195,32 +200,23 @@ namespace mdl
             }
         }
 
+    private:
         ///---------------------------------------|
         /// Гравитация.                           |
         ///---------------------------------------:
-        phs::Stepper* steperGrav{nullptr};
-        bool          isGrav    {false  };
-
-        void setupGravitate(phs::Stepper* grav)
-        {   ASSERT(nullptr != node)
-            const auto& posFig = node->getPosition();
-            steperGrav = grav;
-            steperGrav->setup(posFig.y);
-            isGrav = true;
-        }
+        phs::Collisions* collisions{nullptr};
+        phs::Stepper*    steperGrav{nullptr};
+        bool             isGrav    {false  };
 
         void updateGravitate()
         {   if(!isGrav) return;
 
-            const    ::ConfigGame& cfg       {   ::ConfigGame::get()};
-            const phs::Collisions& collisions{phs::Collisions::get()};
-
+            const ::ConfigGame& cfg{ ::ConfigGame::get() };
+            
             const auto& posGem = node->getPosition();
 
             if(steperGrav->isActive)
             {   
-                ASSERT(nullptr != steperGrav)
-                
                 float y = steperGrav->update(Glob::deltaTime * 150.f);
 
                 node->setPosition(posGem.x, y, posGem.z);
@@ -230,35 +226,31 @@ namespace mdl
                 ///---------------------:
                 if(!steperGrav->isActive)
                 {   
-                    isCorrect("Финиш");
+                    checkAssert("Финиш");
                 }
             }
-            else if(collisions.isDown(
+            else if(collisions->isDown(
                         {posGem.x, posGem.y - 50.f, posGem.z}, false))
             {   steperGrav->start(-cfg.sizeCell);
 
-            /// steperGrav->doDebug();//////////////////////////////////////////
-
-                isCorrect("Старт", true);
-
+                checkAssert("Старт", true);
+                
                 setGem2Well(this);
             }
         }
 
-    private:
         void setGem2Well(GemData* gem);
 
         int cntStart{};
 
-        bool isCorrect(const char* mess, bool isStart = false)
+        void checkAssert(const char* mess, bool isStart = false)
         {   
-            /// TODO ... ///////////////////////////////////////////////////////
             const auto& posGem = node->getPosition();
 
             const int x = pos2gm[0];
             const int y = pos2gm[1];
 
-            Ogre::Vector3i _vi_{phs::Collisions::get().getIndex3(
+            Ogre::Vector3i _vi_{collisions->getIndex3(
                 {   posGem.x,
                     posGem.y - 50.f,
                     posGem.z
@@ -287,8 +279,6 @@ namespace mdl
             ASSERTM(_vi_[0] == x, format(sErr, "X"))
             ASSERTM(_vi_[1] == y, format(sErr, "Y"))
             ASSERTM(steperGrav->pos == posGem.y, "steperGrav bad setup")
-
-            return true;
         }
     };
 
@@ -338,14 +328,15 @@ namespace mdl
     ///------------------------------------------------------------------------|
     /// Figure
     ///----------------------------------------------------------------- Figure:
-    struct  Figure   : Glob
-    {       Figure() : 
-                gems(ConfigGame::get().N)
+    struct  Figure              : Glob
+    {       Figure(unsigned id) : 
+                id         (id)
+            ,   gems(ConfigGame::get().N)
             ,   mat (ConfigGame::get().descriptionGems.size())
             {   
-                rndMax = cfg.T > mat.size() ? unsigned(mat.size()) : cfg.T;
             }
 
+        unsigned                 id  ;
         std::vector<Gem>         gems;
         std::vector<MaterialPtr> mat ;
         SceneNode*               node; /// Нод фигуры!
@@ -357,8 +348,6 @@ namespace mdl
 
         const ConfigGame& cfg{ConfigGame::get()};
         const float       D2 {cfg.sizeCell  / 2};
-
-        unsigned rndMax;
 
         struct 
         {   float  get() const   { return speedMoveCurr ; }
@@ -374,12 +363,14 @@ namespace mdl
         ///---------------------------------------|
         /// Стартовая инициализация.              |
         ///---------------------------------------:
-        void setup(SceneNode* well)
+        void setup(SceneNode* well, phs::Collisions* cln)
         {   
+            collisions = cln;
+
             ///------------------------|
             /// Крепим к корзине.      |
             ///------------------------:
-            node = well->createChildSceneNode("Figure");
+            node = well->createChildSceneNode();
 
             createMaterial();
             reGenerate    ();
@@ -393,7 +384,7 @@ namespace mdl
             
             for(unsigned i{}; i < gems.size( ); ++i)
             {   
-                const size_t rnd{rndGen()};
+                const size_t rnd{cfg.rndGen()};
                 
                 gems[i].setup(i, node, rnd);
                 gems[i].entity->setMaterialName(mat[rnd]->getName());
@@ -404,22 +395,7 @@ namespace mdl
             steperLR  .setup(posStart.x);
             steperGrav.setup(posStart.y);
 
-            node->setVisible(collisions.isHereEmpty(posStart));
-        }
-
-        size_t rndGen() const
-        {   
-            if(true) return rand() % rndMax;
-
-            static constexpr const size_t N{8};
-            
-            std::array<size_t, N> r
-            {   1, 1, 0, 0,
-                0, 0, 1, 1
-            };
-
-            static size_t i{};
-            return r[ i++%N ];
+            node->setVisible(collisions->isHereEmpty(posStart));
         }
 
         ///---------------------------------------|
@@ -428,7 +404,7 @@ namespace mdl
         bool  isFalling{true};
         float speedLR{200.0f};
 
-        const phs::Collisions& collisions{phs::Collisions::get()};
+        phs::Collisions* collisions{nullptr};
         
         ///---------------------------------------|
         /// Вызывается для каждого фрейма(кадра). |
@@ -457,7 +433,7 @@ namespace mdl
                 node->setPosition(posFig.x, y, posFig.z);
             }
             else if(isFalling &&
-                    collisions.isDown(posFig, steperLR.isActive))
+                    collisions->isDown(posFig, steperLR.isActive))
             {   
                 steperGrav.start(-cfg.sizeCell);
                 antiBugInjectionY();
@@ -469,7 +445,7 @@ namespace mdl
             ///-------------------:
             if(!isFalling && !steperLR.isActive)
             {   onGroundCollision();
-                SNDSTOP(drop1);
+                Sound::get().drop1s[id]->stop();
             }
             
             ///-------------------|
@@ -479,51 +455,57 @@ namespace mdl
         }
 
         ///---------------------------------------|
-        /// Обработка клавиш.                     |
+        /// Карта управления.                     |
         ///---------------------------------------:
-        bool  keyPressed (const KeyboardEvent& evt)
+        inline static constexpr std::array<size_t, 4> userKeys[2]
+        {
+            {   OgreBites::SDLK_UP, 
+                OgreBites::SDLK_DOWN, 
+                OgreBites::SDLK_LEFT,
+                OgreBites::SDLK_RIGHT
+            },
+            { 'w', 's', 'a', 'd'}
+        };
+
+        void  keyPressed (const KeyboardEvent& evt)
         {   
-            switch(evt.keysym.sym)
-            {
-            case OgreBites::SDLK_UP:
+            const auto& K{evt.keysym.sym};
+
+            if(K == userKeys[id][0])
+            {   
                 reShuffleGems();
                 SNDPLAY(sony2);
-                break;
+            }
                 
-            case OgreBites::SDLK_DOWN:
+            else if(K == userKeys[id][1])
+            {
                 speedFall.up();
-                SNDPLAY(drop1);
-                break;
+                Sound::get().drop1s[id]->play();
+            }
                 
-            case OgreBites::SDLK_LEFT:
-            {   
+            else if(K == userKeys[id][2])
+            {
                 const auto& p = node->getPosition();
 
-                if(collisions.isLeft(p))
+                if(collisions->isLeft(p))
                 {   steperLR .start (-cfg.sizeCell);
                     antiBugInjectionX();
                     MUSPLAY(dart);
                 }
                 else MUSPLAY(wow1);
-                break;
             }
-            case OgreBites::SDLK_RIGHT:
-            {   const auto& p = node->getPosition();
 
-                if(collisions.isRight(p))
+            else if(K == userKeys[id][3])
+            {
+                const auto& p = node->getPosition();
+
+                if(collisions->isRight(p))
                 {   steperLR .start (cfg.sizeCell);
                     antiBugInjectionX();
                     MUSPLAY(dart);
                 }
                 else MUSPLAY(wow1);
-                break;
-            } 
-            default:
-            /// l(evt.keysym.sym)
-                return true; // Другие клавиши не обрабатываем
             }
-
-            return false;
         }
         
         ///---------------------------------------|
@@ -546,9 +528,12 @@ namespace mdl
 
                 Ogre::Pass* const p = mat[i]->getTechnique(0)->getPass(0);
                         p->setDiffuse (cfg.descriptionGems[i].color);
-                        p->setAmbient (ColourValue(0.3f, 0.15f, 0.0));
-                        p->setSpecular(ColourValue(1.0 , 1.0  , 1.0));
-                        p->setShininess(64.0);
+                        ///p->setAmbient (ColourValue(0.4f));
+                        p->setAmbient (ColourValue(0.6f, 0.5f, 0.5f));
+                        p->setSpecular(ColourValue(0.9f));
+                        p->setShininess(48.0f);
+                    /// p->setEmissive(ColourValue(0.2f,0.1f,0.05f));
+                    /// p->setSelfIllumination(ColourValue(0.1f,0.1f,0.1f,1));
             }
         }
 
@@ -561,7 +546,7 @@ namespace mdl
             reGenerate     ();
 
             isFalling = true;
-            MUSPLAY(wu);
+            Sound::get().wus[id]->play();
         }
 
         ///----------------------------------------|

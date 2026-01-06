@@ -3,8 +3,11 @@
 ///----------------------------------------------------------------------------:
 #ifndef INSPECTOR_H
 #define INSPECTOR_H
-#include "well.h"
-#include "ui.h"
+#include "intro.h"
+#include "game.h"
+#include "sky.h"
+
+#include <windows.h>
 
 
 ///---------|
@@ -19,32 +22,38 @@ namespace mdl
             :   Glob
             ,   OgreBites::ApplicationContext
             ,   OgreBites::InputListener
+            ,   OgreBites::TrayListener
 
     {       InspectorRoot( ) : 
                 OgreBites::ApplicationContext("")
             ,   autoCotrollerSin( camera.val,
-                                  [this](){this->camera.set2Start();})
-            {}
+                                  [this](){ this->camera.set2Start(); })
+            {
+            }
+
+        OgreBites::TrayManager* trayMgr{nullptr};
 
         Ogre::Root*           root;
         Ogre::SceneManager* scnMgr;
         SceneNode*        nodeBase;
         SceneNode*        nodeUser;
 
-        Camera            camera;
-        Lights            lights;
-        Ninja              ninja;
-        UI                    ui;
-        Tree                tree;
-        Ground            ground;
-    /// BlackCylinder2 cylinders;
-        Effects          effects;
-        Cube2              cube2;
+        Cursor              cursor;
+        Camera              camera;
+        Lights              lights;
+        ManLights        manLights;
+
+        UI                      ui;
+        Effects            effects;
+    /// Intro                intro;
+        Sky                    sky;
+
+        InstancingForest    forest;
 
         ///---------------------------------------|
         /// Игра...                               |
         ///---------------------------------------:
-        Well*    well{ nullptr };
+        GameMain games;
 
         Ogre::RTShader::ShaderGenerator* shadergen;
 
@@ -64,24 +73,73 @@ namespace mdl
         void setup() override
         {   
             OgreBites::ApplicationContext::setup();
+            addInputListener      (this);
 
-            addInputListener(this);
+            trayMgr = new OgreBites::TrayManager(
+                "UI", getRenderWindow(), this
+            );
 
             Glob::pInspectorRoot = this;
             Glob::ctx            = this;
             Glob::pIListener     = this;
 
             root   = getRoot();
-            scnMgr = root->createSceneManager();
-            scnMgr->setAmbientLight(ColourValue(0, 0, 0));
-            scnMgr->setShadowTechnique(
-                ShadowTechnique::SHADOWTYPE_STENCIL_ADDITIVE);
 
+            //Ogre::GLPlugin* glPlugin = new Ogre::GLPlugin();
+            //root->installPlugin(glPlugin);
+
+            scnMgr = root->createSceneManager();
+            scnMgr->setAmbientLight(ColourValue(0.1f, 0.1f, 0.1f));
+
+            shadergen = RTShader::ShaderGenerator::getSingletonPtr();
+            shadergen-> addSceneManager(scnMgr);
+
+            if(const bool isStensil{0})
+            {   scnMgr->setShadowTechnique(
+                    ShadowTechnique::SHADOWTYPE_STENCIL_ADDITIVE);
+            }
+            else if(const bool isModul{1})
+            { //scnMgr->setShadowTextureSize (2048);
+                scnMgr->setShadowTechnique(
+                    //ShadowTechnique::SHADOWDETAILTYPE_ADDITIVE);
+                    SHADOWTYPE_TEXTURE_MODULATIVE);
+
+                scnMgr->setShadowTextureSettings(1024, 2, PF_DEPTH16);//
+                scnMgr->setShadowFarDistance    (60000);
+                scnMgr->setShadowDirectionalLightExtrusionDistance(20000.0f);
+
+                //scnMgr->setShadowTextureCount(3);
+              //scnMgr->setShadowTextureSize (2048);
+              //scnMgr->setShadowPolygonOffsetFactor(1.0f);
+              //scnMgr->setShadowPolygonOffsetUnits(6.0f);
+
+              //scnMgr->setShadowDirectionalLightExtrusionDistance(10000);
+                scnMgr->setShadowTextureSelfShadow(false);
+            }
+            else
+            {   scnMgr->setShadowTechnique(
+                    ShadowTechnique::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
+
+                scnMgr->setShadowTextureSettings(2048, 2);
+                scnMgr->setShadowFarDistance    (10000);
+                scnMgr->setShadowTextureCount   (3);
+
+                ResourceGroupManager::getSingleton()
+                    .initialiseAllResourceGroups  ();
+                MaterialPtr casterMat   = MaterialManager::getSingleton()
+                    .getByName("PSSM/shadow_caster");
+
+                ASSERTM(casterMat != nullptr, "PSSM casterMat   not found!")
+
+                scnMgr->setShadowTextureCasterMaterial(casterMat);
+            }
+            
             nodeBase = scnMgr->getRootSceneNode()->createChildSceneNode("Glob");
             nodeUser = scnMgr->getRootSceneNode()->createChildSceneNode();
 
             Glob::scnMgr   = scnMgr;
             Glob::nodeBase = nodeBase;
+            Glob::pUI      = &ui;
 
             addResourcePath();
 
@@ -90,21 +148,27 @@ namespace mdl
             setWindowIcon      (window);
             ////////////////////////////////////////////////////////////////////
 
-        /// root->loadPlugin("OgreAssimp");
+            #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
+            ShowCursor(FALSE);
+            #endif
 
-            shadergen = RTShader::ShaderGenerator::getSingletonPtr();
-            shadergen-> addSceneManager(scnMgr);
+            ///-----------------------------------|
+            /// Регистрация обработчиков событий. |
+            ///-----------------------------------:
+            addEvent(gameOver);
 
+            cursor   .setup();
             camera   .setup(nodeUser);
-            lights   .setup(camera.camNode);
-            ninja    .setup();
-            tree     .setup();
-            ground   .setup();
-            ui       .setup();
-        /// cylinders.setup(ground.node);
+        /// lights   .setup(camera.camNode);
+            manLights.setup();
+            manLights.doMenu();
+
+            decor    .setup();
+            ui       .setup(trayMgr);
             effects  .setup();
-            cube2    .setup();
-            createNewGame  ();
+        /// intro    .setup();
+            sky      .setup();
+        /// forest   .setup();
 
             ///-----------------------------------|
             /// Сохраняем ориентацию мира.        |
@@ -117,16 +181,28 @@ namespace mdl
         ///---------------------------------------:
         bool keyPressed(const KeyboardEvent& evt)
         {   
+            if(this->isGameOver)
+            switch(evt.keysym.sym)
+            {   case OgreBites::SDLK_ESCAPE:
+                    trayMgr->showOkDialog("!!!", "Exit");
+                    return true;
+                case '1': startGame(1); return true;
+                case '2': startGame(2); return true;
+                default:;
+            }
+
+            static unsigned iSky{};
+
             switch(evt.keysym.sym)
             {
                 case OgreBites::SDLK_ESCAPE:
-                    getRoot()->queueEndRendering();
+                    gameOver({});
                     return true;
-                case OgreBites::SDLK_F4:
-                    createNewGame();
-                    break;
                 case OgreBites::SDLK_F8:
                 /// PrintNodeHierarchy(Glob::nodeBase);
+                    break;
+                case OgreBites::SDLK_F4:
+                    sky.toggle();
                     break;
                 case OgreBites::SDLK_F5:
                     isSpeedRotWold = isSpeedRotWold ? 0 :  speedRotWold;
@@ -153,20 +229,23 @@ namespace mdl
             bool    b{false};
                     b |= ui   .keyPressed(evt);
             if(!isPause || !isGameOver)
-                    b |= well->keyPressed(evt);
+            {       b |= games.keyPressed(evt);
+            }
             return  b;
         }
 
-        bool mousePressed(const OgreBites::MouseButtonEvent& evt)
-        {   return ui.mousePressed(evt);
+        bool mousePressed(
+            [[maybe_unused]]
+            const OgreBites::MouseButtonEvent& evt)
+        {   return true;
         }
 
-        float    accumulatedTime { 0};  // Накопленное время
+        float    accumulatedTime { 0};  // Накопленное время.
         float    intervalTime    { 1};  // Интервал (1 секунда)
         float    isSpeedRotWold  { 0};  // Нет вращения Мира.
         const float speedRotWold {30};  // Нет вращения Мира.
         bool     isPause      {false};
-        bool     isGameOver   {false};
+        bool     isGameOver   {true };
         float    seconds          {0};
 
         ///---------------------------------------|
@@ -176,6 +255,9 @@ namespace mdl
         {
             Glob::deltaTime = evt.timeSinceLastFrame;
 
+            ///-----------------------------------|
+            /// Метроном.                         |
+            ///-----------------------------------:
             accumulatedTime += evt.timeSinceLastFrame;
        
             if(accumulatedTime >= intervalTime)
@@ -187,24 +269,55 @@ namespace mdl
                 seconds++;
 
                 effects.update(seconds);
+                cursor .tick();
             }
 
             ///-----------------------------------|
             /// FPS.                              |
             ///-----------------------------------:
             /// myl::Fps::get().update(deltaTime);
+   
+            sky.update();
 
             if(isPause || isGameOver)
-            {
+            {   //sky.update();
             }
             else
-            {   well->update();
+            {   games.update();
             }
 
             if(isSpeedRotWold != 0)
             {   nodeBase->yaw(Ogre::Degree(deltaTime * isSpeedRotWold));
                 autoCotrollerSin.update();
             }
+        }
+
+        void buttonHit(OgreBites::Button* button) override
+        {
+                 if (button == ui.menuStart.btStart1)
+            {   startGame(1);
+            }
+            else if (button == ui.menuStart.btStart2)
+            {   startGame(2);
+            }
+            else if (button == ui.menuStart.btTuning)
+            {   trayMgr->showOkDialog(NAMEGAME,"...");
+                openTuning();
+            }
+            else if (button == ui.menuStart.btExit)
+            {   getRoot()->queueEndRendering();
+            }
+
+            ui.buttonHit(button);
+        }
+
+        ///---------------------------------------|
+        /// Диалог выхода из игры.                |
+        ///---------------------------------------:
+        void okDialogClosed(const Ogre::DisplayString& message) override
+        {   std::cout << "OK-диалог закрыт: " + Ogre::String(message);
+
+            if(message == "Exit") getRoot()->queueEndRendering();
         }
 
         ///---------------------------------------|
@@ -227,62 +340,73 @@ namespace mdl
             // Явно загружаем .fontdef файл
             rgm.initialiseResourceGroup("General");
 
+            MaterialManager::getSingleton()
+                .setDefaultTextureFiltering(TFO_ANISOTROPIC);
+            MaterialManager::getSingleton().setDefaultAnisotropy(1);
+
             // ИЛИ инициализируем все
             //rgm.initialiseAllResourceGroups();
         }
 
-        void fooGameOver()
+        void gameOver(Args_t)
         {   isGameOver     = true;
-            isSpeedRotWold = true;
+            isSpeedRotWold = 20.f * (1 - (rand()%2)*2);
+
+            this->trayMgr
+                ->getTrayContainer(TrayLocation::TL_CENTER)
+                ->setVisible(true);
+
+            manLights.doMenu();
         }
 
-        void createNewGame()
-        {   
-            Glob::  cntGame++;
+        void gameStart()
+        {   isSpeedRotWold = 0;
+            isPause    = false;
             isGameOver = false;
-
-            if (well)
-            {   safeRemoveNode(well->node);
-                delete(well);
-            }
-
-            well = new Well();
-            well->setDelegateGameOver(
-                [this]()
-                {   this->fooGameOver(); 
-                }
-            );
-            well->logic.setDelegateSetScore(
-                [this](int score)
-                {   this->setScore(score);
-                }
-            );
-            well->setup     ();
             camera2StartGame();
-            isSpeedRotWold = 0;
-        }
-
-        void safeRemoveNode(Ogre::SceneNode* node)
-        {
-            while (node->numAttachedObjects())
-            {   node->detachObject(node->getAttachedObject(0));
-            }
-
-            while (node->numChildren())
-            {   safeRemoveNode(static_cast<Ogre::SceneNode*>(node->getChild(0)));
-            }
-    
-            node->getCreator()->destroySceneNode(node);
-        }
-
-        void setScore(int score)
-        {   ui.score->set(score);
         }
 
         void camera2StartGame()
         {   camera.set2Start ();
             nodeBase->setOrientation(orientationWorldStart);
         }
+
+
+    private:
+        void startGame(int players)
+        {   
+            switch(players)
+            {
+                case 1 : 
+                {   manLights.doOnePlayer();
+                    break;
+                }
+                case 2 : 
+                {   manLights.doTwoPlayers();
+                    break;
+                }
+            }
+
+            std::cout << std::format(
+                "▶ Starting game with {} player(s)...\n", players);
+
+            gameStart();
+            games.setup(players);
+
+            this->trayMgr
+                ->getTrayContainer(TrayLocation::TL_CENTER)
+                ->setVisible(false);
+        }
+
+        void openTuning()
+        {   std::cout << "⚙ Opening tuning menu...\n";
+        }
+
+        bool mouseMoved(const OgreBites::MouseMotionEvent& evt) override
+        {   return cursor.mouseMoved(evt);
+        }
+
+        std::unique_ptr<MenuStart> mMenu;
 
     }; // struct InspectorRoot
 }      // namespace mdl

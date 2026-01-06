@@ -5,7 +5,7 @@
 ///----------------------------------------------------------------------------:
 #include "inspector.h"
 
-const char* const NAMEGAME{"Колоны-2025::Demo-rc1::ver-0.4"};
+const char* const NAMEGAME{"Game-2025::Demo-rc1::ver-0.5"};
 
 ///----------------------------------------------------------------------------|
 /// Application.
@@ -31,6 +31,8 @@ struct  Application
 ///----------------------------------------------------------------------------|
 /// Тесты.
 ///---------------------------------------------------------------------- tests:
+#pragma warning(push, 0)
+#pragma warning(disable: 4702)
 bool tests()
 {   
     /// 
@@ -45,9 +47,10 @@ bool tests()
 
     /// phs::tests();
 
+    __assume(0);
     return true;
 }
-
+#pragma warning(pop)
 
 ///----------------------------------------------------------------------------|
 /// Старт.
@@ -57,13 +60,10 @@ int main([[maybe_unused]] int    argc,
 {
     std::system("chcp 65001>nul");
 
+    //xmain();
+
     unsigned int RANDSEED{false ? (unsigned int)time(NULL) : 2025}; 
     srand       (RANDSEED); l(RANDSEED)
-
-    ConfigGame  cfgHard {11, 15, 5, 6};
-    ConfigGame  cfgDemo {11, 15, 4, 5};
-    ConfigGame  cfgDebug{ 7, 15, 4, 2};
-    ConfigGame::get().configGame = &cfgDemo;
 
     ///-----------------|
     /// Запуск тестов.  |
@@ -82,7 +82,9 @@ int main([[maybe_unused]] int    argc,
         /// Отключаем логи в MeshManager.                  |
         ///------------------------------------------------:
         Ogre::LogManager logMgr;
-        logMgr.createLog("", false, false, false);  // Пустой лог
+        if(const bool isLog = true)
+        {   logMgr.createLog("", false, false, false);  // Пустой лог
+        }
 
         Application app;
     }
